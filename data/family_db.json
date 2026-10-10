@@ -14,7 +14,7 @@
         "세종대왕 한글 메달",
         "충무공 이순신 메달"
       ],
-      "lastActive": "2026-10-11 07:36"
+      "lastActive": "2026-10-11 08:13"
     },
     "eunwoo": {
       "id": "eunwoo",
@@ -145,6 +145,97 @@
     }
   ],
   "activities": [
+    {
+      "id": "act_1791674031990",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 모험 입장",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:13:51",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791674003943",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🔊",
+      "title": "동화 청취: 하늘에서 내려온 환웅님",
+      "detail": "아빠 AI 목소리로 동화 듣기",
+      "category": "history",
+      "timeSpentSec": 90,
+      "timestamp": "2026-10-11 08:13:23",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791674002918",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 모험 입장",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:13:22",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791673973470",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🔊",
+      "title": "동화 청취: 하늘에서 내려온 환웅님",
+      "detail": "아빠 AI 목소리로 동화 듣기",
+      "category": "history",
+      "timeSpentSec": 90,
+      "timestamp": "2026-10-11 08:12:53",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791673971974",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 모험 입장",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:12:51",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791673960594",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 모험 입장",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:12:40",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791673658170",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "lang",
+      "icon": "🎧",
+      "title": "4개국어 전 언어 연속 완독",
+      "detail": "[저는 매일 아침 활기차게 학교에 가요.] 한·영·중·일 연속 청취 완료",
+      "category": "language",
+      "timeSpentSec": 90,
+      "timestamp": "2026-10-11 08:07:38",
+      "date": "2026-10-11"
+    },
     {
       "id": "act_1791671773519",
       "childId": "eunchan",

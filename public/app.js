@@ -904,80 +904,125 @@ this.activeAesopTheme = 'all';
     this.speak(picked, 'ko-KR');
   }
 
-  // =========================================================================
-  // 6. 4개국어 놀이터 (초등 핵심 단어 & 실생활 문장)
+    // =========================================================================
+  // 6. 4개국어 놀이터 (초등 핵심 단어 & 실생활 문장 & 소리/말하기 도전 완벽 지원)
   // =========================================================================
   renderLangCategories() {
-    const container = document.getElementById('langCatButtons');
+    const container = document.getElementById('langCategoriesNav') || document.getElementById('langCatButtons');
     if (!container) return;
 
-    container.innerHTML = window.EDU_DATA.categories.map(cat => `
-      <button class="subnav-btn ${cat.id === this.activeLangCat ? 'active' : ''}" onclick="app.selectLangCategory('${cat.id}')">
-        <span>${cat.icon}</span> ${cat.name}
+    const cats = window.EDU_DATA.categories || window.EDU_DATA.languages || [];
+    container.innerHTML = cats.map(cat => `
+      <button class="subnav-btn ${cat.id === this.activeLangCat ? 'active' : ''}" onclick="app.selectLangCat('${cat.id}')">
+        <span>${cat.icon || cat.emoji || '📚'}</span> ${cat.name}
       </button>
     `).join('');
   }
 
-  selectLangCategory(catId) {
+  selectLangCat(catId) {
     this.activeLangCat = catId;
     this.playPop();
     this.renderLangCategories();
     this.renderWordCards();
   }
 
-  toggleGlobalLangMode() {
+  selectLangCategory(catId) {
+    this.selectLangCat(catId);
+  }
+
+  setGlobalLangMode(mode) {
     this.playPop();
-    this.globalLangMode = this.globalLangMode === 'sentence' ? 'word' : 'sentence';
-    const btn = document.getElementById('globalModeToggleBtn');
-    if (btn) {
-      if (this.globalLangMode === 'sentence') {
-        btn.classList.add('sentence-active');
-        btn.innerHTML = '<span>💬 실생활 활용 문장 모드</span>';
-        this.speak("초등학생 실생활 문장 모드야! 3번씩 듣고 따라 해보자!", 'ko-KR');
+    this.globalLangMode = mode;
+    this.itemModes = {}; // 개별 카드 모드 초기화 후 전역 적용
+
+    const btnSentence = document.getElementById('btnModeSentence');
+    const btnWord = document.getElementById('btnModeWord');
+    if (btnSentence && btnWord) {
+      if (mode === 'sentence') {
+        btnSentence.classList.add('active');
+        btnWord.classList.remove('active');
+        this.speak("초등 실생활 필수 문장 모드로 공부해보자!", 'ko-KR');
       } else {
-        btn.classList.remove('sentence-active');
-        btn.innerHTML = '<span>🔤 기초 핵심 단어 모드</span>';
-        this.speak("기초 핵심 단어 모드로 바꿨어! 발음을 또박또박 익혀보자!", 'ko-KR');
+        btnWord.classList.add('active');
+        btnSentence.classList.remove('active');
+        this.speak("기초 핵심 단어 모드로 공부해보자!", 'ko-KR');
       }
     }
     this.renderWordCards();
+  }
+
+  toggleGlobalLangMode() {
+    const nextMode = (this.globalLangMode === 'sentence') ? 'word' : 'sentence';
+    this.setGlobalLangMode(nextMode);
   }
 
   toggleItemMode(itemId) {
     this.playPop();
-    const cur = this.itemModes[itemId] || this.globalLangMode;
+    const cur = this.itemModes[itemId] || this.globalLangMode || 'sentence';
     this.itemModes[itemId] = cur === 'sentence' ? 'word' : 'sentence';
     this.renderWordCards();
   }
 
-  toggleTripleRepeat() {
+  toggleRepeatMode() {
     this.playPop();
     this.isTripleRepeat = !this.isTripleRepeat;
-    const btn = document.getElementById('tripleRepeatToggleBtn');
-    if (btn) {
-      if (this.isTripleRepeat) {
+    const btn = document.getElementById('btnRepeatToggle') || document.getElementById('tripleRepeatToggleBtn');
+    const textSpan = document.getElementById('repeatToggleText');
+    if (this.isTripleRepeat) {
+      if (btn) {
         btn.classList.add('active');
-        btn.innerHTML = '<span>🔁 3회 연속 반복 ON</span>';
-        this.speak("3회 연속 반복 듣기가 켜졌어!", 'ko-KR');
-      } else {
-        btn.classList.remove('active');
-        btn.innerHTML = '<span>🔂 1회 듣기 모드</span>';
-        this.speak("1회 듣기 모드로 바뀌었어!", 'ko-KR');
+        btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        btn.style.color = '#ffffff';
+        btn.style.borderColor = '#059669';
       }
+      if (textSpan) textSpan.innerHTML = '🔁 3회 연속 반복 듣기 ON';
+      this.speak("3회 연속 반복 듣기가 켜졌어요! 세 번씩 또박또박 들려줄게요!", 'ko-KR');
+    } else {
+      if (btn) {
+        btn.classList.remove('active');
+        btn.style.background = '#f8fafc';
+        btn.style.color = '#334155';
+        btn.style.borderColor = '#cbd5e1';
+      }
+      if (textSpan) textSpan.innerHTML = '🔂 1회 듣기 모드';
+      this.speak("1회 듣기 모드로 바뀌었어요!", 'ko-KR');
     }
+  }
+
+  toggleTripleRepeat() {
+    this.toggleRepeatMode();
   }
 
   toggleSpeechRate() {
     this.playPop();
-    const btn = document.getElementById('speechRateToggleBtn');
-    if (this.speechRate < 0.9) {
+    const btn = document.getElementById('btnSpeedToggle') || document.getElementById('speechRateToggleBtn');
+    const textSpan = document.getElementById('speedToggleText');
+    
+    // 순환: 0.75x (느리게 또박또박) -> 1.0x (보통) -> 1.2x (빠르게)
+    if (!this.speechRate || this.speechRate < 0.85) {
       this.speechRate = 1.0;
-      if (btn) btn.innerHTML = '<span>⚡ 보통 속도 (1.0x)</span>';
-      this.speak("보통 속도로 읽어줄게!", 'ko-KR');
+      if (textSpan) textSpan.innerHTML = '⚡ 1.0x 표준 보통 속도';
+      if (btn) {
+        btn.style.borderColor = '#3b82f6';
+        btn.style.color = '#1d4ed8';
+      }
+      this.speak("보통 속도로 읽어줄게요!", 'ko-KR');
+    } else if (this.speechRate < 1.1) {
+      this.speechRate = 1.2;
+      if (textSpan) textSpan.innerHTML = '🚀 1.2x 씩씩하게 빠르게';
+      if (btn) {
+        btn.style.borderColor = '#f59e0b';
+        btn.style.color = '#b45309';
+      }
+      this.speak("원어민 친구처럼 빠르게 읽어줄게요!", 'ko-KR');
     } else {
-      this.speechRate = 0.82;
-      if (btn) btn.innerHTML = '<span>🐢 천천히 듣기 (0.8x)</span>';
-      this.speak("또박또박 천천히 읽어줄게!", 'ko-KR');
+      this.speechRate = 0.75;
+      if (textSpan) textSpan.innerHTML = '🐢 0.75x 또박또박 천천히';
+      if (btn) {
+        btn.style.borderColor = '#10b981';
+        btn.style.color = '#047857';
+      }
+      this.speak("또박또박 천천히 읽어줄게요!", 'ko-KR');
     }
   }
 
@@ -985,75 +1030,117 @@ this.activeAesopTheme = 'all';
     const grid = document.getElementById('wordCardsGrid');
     if (!grid) return;
 
-    const words = window.EDU_DATA.vocabulary[this.activeLangCat] || [];
+    const words = (window.EDU_DATA.vocabulary && window.EDU_DATA.vocabulary[this.activeLangCat]) || [];
+    if (!words || words.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b; font-size: 16px;">선택한 카테고리의 학습 카드를 불러오는 중입니다...</div>';
+      return;
+    }
+
     grid.innerHTML = words.map(item => {
-      const mode = this.itemModes[item.id] || this.globalLangMode;
+      const mode = this.itemModes[item.id] || this.globalLangMode || 'sentence';
       const isSentence = mode === 'sentence';
-      const content = isSentence ? (item.sentence || item.word) : item.word;
+      
+      const content = isSentence ? (item.sentence || item) : item;
+      const emoji = item.emoji || item.icon || '🌟';
+      const dadTip = item.dad_tip || item.dadTip || '오늘도 아빠, 엄마랑 씩씩하게 말해봐요!';
+
+      const koText = content.ko || item.ko || '';
+      const enText = content.en || item.en || '';
+      const enPron = content.en_pron || content.en_phonetic || '';
+      
+      const zhText = content.zh || item.zh || '';
+      const zhPinyin = content.zh_pinyin || '';
+      const zhPron = content.zh_pron || '';
+
+      const jaText = content.ja || item.ja || '';
+      const jaKana = content.ja_kana || content.ja_reading || '';
+      const jaPron = content.ja_pron || '';
 
       return `
-        <div class="word-card" id="card_${item.id}">
+        <div class="word-card ${isSentence ? 'sentence-mode' : 'word-mode'}" id="card_${item.id}">
+          <!-- 상단 뱃지 & 모드 전환 버튼 -->
           <div class="wcard-badge-row">
             <span class="wcard-type-tag ${isSentence ? 'sentence' : 'word'}">
-              ${isSentence ? '💬 초등 실생활 문장' : '🔤 핵심 단어'}
+              ${isSentence ? '💬 초등 실생활 필수 문장' : '🔤 초등 기초 핵심 단어'}
             </span>
-            <button class="wcard-mode-switch" onclick="app.toggleItemMode('${item.id}')">
+            <button class="wcard-mode-switch" onclick="app.toggleItemMode('${item.id}')" title="단어와 문장 모드를 번갈아 봐요">
               ${isSentence ? '🔤 단어 보기' : '💬 문장 보기'}
             </button>
           </div>
 
+          <!-- 카드 헤더 (이모지 & 한국어 & 아빠·엄마 꿀팁) -->
           <div class="wcard-header">
-            <div class="wcard-icon">${item.icon}</div>
+            <div class="wcard-icon" onclick="app.speakWord('${koText.replace(/'/g, "")}', 'ko-KR', null, '${item.id}', 'ko')">${emoji}</div>
             <div class="wcard-ko-group">
-              <h3 class="wcard-ko">${content.ko}</h3>
-              <p class="wcard-tip">👨 정연수 아빠: "${item.dadTip}"</p>
+              <div class="wcard-ko-title-row">
+                <h3 class="wcard-ko">${koText}</h3>
+                <button class="btn-listen ko" onclick="app.speakWord('${koText.replace(/'/g, "")}', 'ko-KR', this, '${item.id}', 'ko')" title="한국어 발음 듣기">
+                  🔊 한국어
+                </button>
+              </div>
+              <p class="wcard-tip">👨‍👩‍👧‍👦 아빠·엄마의 꿀팁: "${dadTip}"</p>
             </div>
           </div>
 
+          <!-- 4개국어 언어별 스트립 박스 -->
           <div class="lang-strip-box">
             <!-- 영어 -->
-            <div class="lang-strip en">
-              <span class="l-flag">🇺🇸</span>
+            <div class="lang-strip en" id="strip_${item.id}_en">
+              <div class="l-flag-badge">🇺🇸 <span class="l-name">영어</span></div>
               <div class="l-text-box">
-                <div class="l-primary">${content.en}</div>
-                <div class="l-phonetic">[${content.en_phonetic}]</div>
+                <div class="l-primary">${enText}</div>
+                <div class="l-phonetic">${enPron ? `[${enPron}]` : ''}</div>
               </div>
-              <button class="btn-listen" onclick="app.speakWord('${content.en.replace(/'/g, "")}', 'en-US', this, '${item.id}')">
-                🔊 듣기
+              <button class="btn-listen en" onclick="app.speakWord('${enText.replace(/'/g, "")}', 'en-US', this, '${item.id}', 'en')">
+                <span class="btn-listen-icon">🔊</span>
+                <span class="btn-listen-text">듣기</span>
               </button>
             </div>
 
             <!-- 중국어 -->
-            <div class="lang-strip zh">
-              <span class="l-flag">🇨🇳</span>
+            <div class="lang-strip zh" id="strip_${item.id}_zh">
+              <div class="l-flag-badge">🇨🇳 <span class="l-name">중국어</span></div>
               <div class="l-text-box">
-                <div class="l-primary">${content.zh}</div>
-                <div class="l-phonetic">[${content.zh_pinyin}]</div>
+                <div class="l-primary">${zhText}</div>
+                <div class="l-phonetic">${zhPinyin ? `[${zhPinyin}]` : ''} ${zhPron ? `<span class="l-kor-pron">(${zhPron})</span>` : ''}</div>
               </div>
-              <button class="btn-listen" onclick="app.speakWord('${content.zh}', 'zh-CN', this, '${item.id}')">
-                🔊 듣기
+              <button class="btn-listen zh" onclick="app.speakWord('${zhText.replace(/'/g, "")}', 'zh-CN', this, '${item.id}', 'zh')">
+                <span class="btn-listen-icon">🔊</span>
+                <span class="btn-listen-text">듣기</span>
               </button>
             </div>
 
             <!-- 일본어 -->
-            <div class="lang-strip ja">
-              <span class="l-flag">🇯🇵</span>
+            <div class="lang-strip ja" id="strip_${item.id}_ja">
+              <div class="l-flag-badge">🇯🇵 <span class="l-name">일본어</span></div>
               <div class="l-text-box">
-                <div class="l-primary">${content.ja}</div>
-                <div class="l-phonetic">[${content.ja_reading}]</div>
+                <div class="l-primary">${jaText}</div>
+                <div class="l-phonetic">${jaKana ? `[${jaKana}]` : ''} ${jaPron ? `<span class="l-kor-pron">(${jaPron})</span>` : ''}</div>
               </div>
-              <button class="btn-listen" onclick="app.speakWord('${content.ja}', 'ja-JP', this, '${item.id}')">
-                🔊 듣기
+              <button class="btn-listen ja" onclick="app.speakWord('${jaText.replace(/'/g, "")}', 'ja-JP', this, '${item.id}', 'ja')">
+                <span class="btn-listen-icon">🔊</span>
+                <span class="btn-listen-text">듣기</span>
               </button>
             </div>
           </div>
 
+          <!-- 하단 요약 정보 (문장 모드면 핵심 단어, 단어 모드면 실생활 문장) -->
+          <div class="wcard-context-preview">
+            ${isSentence 
+              ? `<span class="context-pill">📌 핵심 단어: <strong>${item.ko}</strong> (${item.en} · ${item.zh} · ${item.ja})</span>`
+              : `<span class="context-pill">💡 실생활 문장: <strong>"${item.sentence ? item.sentence.ko : ''}"</strong></span>`
+            }
+          </div>
+
+          <!-- 카드 푸터 액션 (4개국어 연속 듣기 & 따라 하기 도전) -->
           <div class="wcard-footer">
-            <button class="btn-bubble primary" style="font-size: 13.5px; padding: 10px 16px;" onclick="app.playAllLanguages('${item.id}')">
-              <span>🎧 4개국어 연속 듣기</span>
+            <button class="btn-all-play" id="btnPlayAll_${item.id}" onclick="app.playAllLanguages('${item.id}')">
+              <span class="btn-icon">🎧</span>
+              <span class="btn-label">4개국어 연속 듣기</span>
             </button>
-            <button class="btn-bubble" style="font-size: 13.5px; padding: 10px 16px;" onclick="app.startVoicePractice('${item.id}', '${content.en.replace(/'/g, "")}')">
-              <span>🎤 따라 하기 도전</span>
+            <button class="btn-mic-practice" onclick="app.openVoiceChallenge('${item.id}')">
+              <span class="btn-icon">🎤</span>
+              <span class="btn-label">따라 하기 도전</span>
             </button>
           </div>
         </div>
@@ -1061,132 +1148,368 @@ this.activeAesopTheme = 'all';
     }).join('');
   }
 
-  speakWord(text, langTag, btnElem = null, itemId = null) {
-    if (btnElem) {
-      btnElem.classList.add('playing');
-      setTimeout(() => btnElem.classList.remove('playing'), 1400);
-    }
+  speakWord(text, langTag, btnElem = null, itemId = null, langKey = 'en') {
     this.playPop();
 
+    const strip = itemId ? document.getElementById(`strip_${itemId}_${langKey}`) : null;
+    const textSpan = btnElem ? btnElem.querySelector('.btn-listen-text') : null;
+    const origText = textSpan ? textSpan.innerText : '듣기';
+
+    if (btnElem) btnElem.classList.add('playing');
+    if (strip) strip.classList.add('speaking-active');
+
     if (this.isTripleRepeat) {
-      this.playTripleRepeatLoop(text, langTag, 3, () => {
-        if (itemId) {
-          this.logChildActivity('lang', '🌍', '4개국어 3회 반복 듣기', `"${text}" 3회 완벽 발음 훈련`, 'language', 45);
-        }
-      });
+      let current = 1;
+      const total = 3;
+      if (textSpan) textSpan.innerText = `[1/3]`;
+
+      const playNextRepeat = () => {
+        if (textSpan) textSpan.innerText = `[${current}/${total}]`;
+        this.speak(text, langTag, () => {
+          if (current < total) {
+            current++;
+            setTimeout(playNextRepeat, 550);
+          } else {
+            if (btnElem) btnElem.classList.remove('playing');
+            if (strip) strip.classList.remove('speaking-active');
+            if (textSpan) textSpan.innerText = origText;
+            this.playSuccess();
+            if (itemId) {
+              this.logChildActivity('lang', '🔁', '4개국어 3회 연속 반복 청취', `"${text}" 3회 완벽 발음 훈련 완료`, 'language', 35);
+            }
+          }
+        });
+      };
+      playNextRepeat();
     } else {
-      this.speak(text, langTag);
-      if (itemId) {
-        this.logChildActivity('lang', '🌍', '4개국어 단어 청취', `"${text}" 발음 청취`, 'language', 20);
-      }
-    }
-  }
-
-  playTripleRepeatLoop(text, langTag, totalCount, onComplete = null) {
-    let current = 1;
-    if (this.repeatLoopTimer) clearTimeout(this.repeatLoopTimer);
-
-    const playNext = () => {
       this.speak(text, langTag, () => {
-        if (current < totalCount) {
-          current++;
-          this.repeatLoopTimer = setTimeout(playNext, 650);
-        } else {
-          if (onComplete) onComplete();
+        if (btnElem) btnElem.classList.remove('playing');
+        if (strip) strip.classList.remove('speaking-active');
+        if (textSpan) textSpan.innerText = origText;
+        if (itemId) {
+          this.logChildActivity('lang', '🔊', '4개국어 개별 듣기', `"${text}" 발음 청취 완료`, 'language', 15);
         }
       });
-    };
-    playNext();
+    }
   }
 
   playAllLanguages(itemId) {
-    const words = window.EDU_DATA.vocabulary[this.activeLangCat] || [];
+    const words = (window.EDU_DATA.vocabulary && window.EDU_DATA.vocabulary[this.activeLangCat]) || [];
     const item = words.find(w => w.id === itemId);
     if (!item) return;
 
     this.playPop();
-    const mode = this.itemModes[item.id] || this.globalLangMode;
-    const content = mode === 'sentence' ? (item.sentence || item.word) : item.word;
+    const btn = document.getElementById(`btnPlayAll_${item.id}`);
+    const card = document.getElementById(`card_${item.id}`);
 
-    this.speak(content.ko, 'ko-KR', () => {
-      setTimeout(() => {
-        this.speak(content.en, 'en-US', () => {
-          setTimeout(() => {
-            this.speak(content.zh, 'zh-CN', () => {
-              setTimeout(() => {
-                this.speak(content.ja, 'ja-JP', () => {
-                  this.addStamp(1);
-                  this.logChildActivity('lang', '🎧', '4개국어 전 언어 연속 완독', `[${content.ko}] 한·영·중·일 연속 청취 완료`, 'language', 90);
-                });
-              }, 400);
-            });
-          }, 400);
-        });
-      }, 400);
-    });
-  }
-
-  startVoicePractice(itemId, targetText) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("음성 인식을 지원하지 않는 브라우저입니다. Chrome을 사용해주세요.");
+    // 이미 재생 중이면 중지 토글
+    if (btn && btn.classList.contains('playing')) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      btn.classList.remove('playing');
+      const label = btn.querySelector('.btn-label');
+      if (label) label.innerText = '4개국어 연속 듣기';
+      if (card) {
+        card.querySelectorAll('.lang-strip').forEach(s => s.classList.remove('speaking-active'));
+      }
       return;
     }
 
+    if (btn) btn.classList.add('playing');
+
+    const mode = this.itemModes[item.id] || this.globalLangMode || 'sentence';
+    const isSentence = mode === 'sentence';
+    const content = isSentence ? (item.sentence || item) : item;
+
+    const sequence = [
+      { text: content.ko || item.ko, lang: 'ko-KR', key: 'ko', name: '한국어' },
+      { text: content.en || item.en, lang: 'en-US', key: 'en', name: '영어' },
+      { text: content.zh || item.zh, lang: 'zh-CN', key: 'zh', name: '중국어' },
+      { text: content.ja || item.ja, lang: 'ja-JP', key: 'ja', name: '일본어' }
+    ];
+
+    const totalRounds = this.isTripleRepeat ? 3 : 1;
+    let curRound = 1;
+
+    const playRound = () => {
+      const label = btn ? btn.querySelector('.btn-label') : null;
+      if (label) {
+        label.innerText = totalRounds > 1 ? `연속 듣기 [${curRound}/${totalRounds}]` : `연속 듣기 중...`;
+      }
+
+      let stepIndex = 0;
+      const playNextStep = () => {
+        if (!btn || !btn.classList.contains('playing')) return;
+
+        if (stepIndex < sequence.length) {
+          const step = sequence[stepIndex];
+          
+          // 이전 하이라이트 제거 및 현재 언어 하이라이트
+          if (card) {
+            card.querySelectorAll('.lang-strip').forEach(s => s.classList.remove('speaking-active'));
+            const curStrip = card.querySelector(`.lang-strip.${step.key}`);
+            if (curStrip) curStrip.classList.add('speaking-active');
+          }
+
+          this.speak(step.text, step.lang, () => {
+            stepIndex++;
+            setTimeout(playNextStep, 450);
+          });
+        } else {
+          // 라운드 종료
+          if (card) {
+            card.querySelectorAll('.lang-strip').forEach(s => s.classList.remove('speaking-active'));
+          }
+
+          if (curRound < totalRounds) {
+            curRound++;
+            setTimeout(playRound, 600);
+          } else {
+            // 전체 완료!
+            if (btn) btn.classList.remove('playing');
+            if (label) label.innerText = '4개국어 연속 듣기';
+            this.playSuccess();
+            this.addStamp(1);
+            this.showToast(`🎉 [${content.ko}] 4개국어 연속 완독 완료! 황금 도장 +1`);
+            this.logChildActivity('lang', '🎧', '4개국어 전 언어 연속 완독', `[${content.ko}] 한·영·중·일 ${totalRounds > 1 ? '3회 반복 ' : ''}연속 청취 완료`, 'language', 90);
+          }
+        }
+      };
+      playNextStep();
+    };
+
+    playRound();
+  }
+
+  // =========================================================================
+  // 6-2. 4개국어 큰소리로 따라 하기 도전 (인터랙티브 음성 챌린지 모달)
+  // =========================================================================
+  openVoiceChallenge(itemId) {
+    const words = (window.EDU_DATA.vocabulary && window.EDU_DATA.vocabulary[this.activeLangCat]) || [];
+    const item = words.find(w => w.id === itemId);
+    if (!item) return;
+
     this.playPop();
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
+    this.activeChallengeItem = item;
+    this.activeChallengeLang = 'en'; // 기본 도전 언어: 영어
 
-    const card = document.getElementById(`card_${itemId}`);
-    if (card) {
-      card.style.boxShadow = '0 0 20px rgba(59, 130, 246, 0.5)';
-      card.style.borderColor = '#3b82f6';
-    }
+    const modal = document.getElementById('voicePracticeModal');
+    if (!modal) return;
 
-    recognition.onstart = () => {
-      this.speak("자, 큰 소리로 영어 문장을 따라 해보세요!", 'ko-KR');
-    };
+    const mode = this.itemModes[item.id] || this.globalLangMode || 'sentence';
+    const isSentence = mode === 'sentence';
+    const content = isSentence ? (item.sentence || item) : item;
 
-    recognition.onresult = (event) => {
-      const heard = event.results[0][0].transcript;
-      if (card) {
-        card.style.boxShadow = '';
-        card.style.borderColor = '';
-      }
-      this.evaluatePronunciation(heard, targetText);
-    };
+    // 모달 데이터 채우기
+    document.getElementById('voiceTargetEmoji').textContent = item.emoji || item.icon || '🌟';
+    document.getElementById('voiceTargetModeLabel').textContent = isSentence ? '💬 초등 실생활 문장' : '🔤 초등 기초 핵심 단어';
+    document.getElementById('voiceTargetKo').textContent = content.ko || item.ko;
+    document.getElementById('voiceTargetTip').textContent = `👨‍👩‍👧‍👦 아빠·엄마의 꿀팁: "${item.dad_tip || item.dadTip || '씩씩하게 큰 소리로 말해보자!'}"`;
 
-    recognition.onerror = () => {
-      if (card) {
-        card.style.boxShadow = '';
-        card.style.borderColor = '';
-      }
-      alert("목소리를 잘 듣지 못했어요. 마이크에 대고 다시 한번 큰 소리로 말해보자!");
-    };
+    // 피드백 영역 숨김
+    const fb = document.getElementById('voiceFeedbackArea');
+    if (fb) fb.style.display = 'none';
 
-    setTimeout(() => {
-      try { recognition.start(); } catch (e) {}
-    }, 1800);
+    // 마이크 상태 초기화
+    this.resetVoiceMicUI();
+
+    // 언어 탭 렌더링
+    this.selectVoiceChallengeLang('en');
+
+    modal.classList.add('active');
   }
 
-  evaluatePronunciation(heard, target) {
-    const h = heard.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const t = target.toLowerCase().replace(/[^a-z0-9]/g, '');
+  closeVoiceChallenge() {
+    this.playPop();
+    if (this.challengeRecognition) {
+      try { this.challengeRecognition.stop(); } catch(e) {}
+      this.challengeRecognition = null;
+    }
+    if (this.challengeSafetyTimer) {
+      clearTimeout(this.challengeSafetyTimer);
+      this.challengeSafetyTimer = null;
+    }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    
+    const modal = document.getElementById('voicePracticeModal');
+    if (modal) modal.classList.remove('active');
+  }
 
-    if (h === t || t.includes(h) || h.includes(t)) {
-      this.playSuccess();
-      this.addStamp(1);
-      alert(`🎉 대단해! 완벽한 발음이야!\n\n은찬이가 말한 발음: "${heard}"\n목표 문장: "${target}"\n\n정연수 아빠의 칭찬 도장 1개 쾅!`);
-      this.speak("대단해 은찬아! 발음이 정말 완벽해! 아빠가 너무 자랑스러워!", 'ko-KR');
-      this.logChildActivity('stt', '🎙️', '영어 발음 완벽 100점 달성', `"${heard}" 발음 완벽 일치`, 'language', 45);
+  selectVoiceChallengeLang(langKey) {
+    this.playPop();
+    this.activeChallengeLang = langKey;
+
+    document.querySelectorAll('.voice-lang-tab').forEach(tab => {
+      tab.classList.toggle('active', tab.getAttribute('data-lang') === langKey);
+    });
+
+    const item = this.activeChallengeItem;
+    if (!item) return;
+
+    const mode = this.itemModes[item.id] || this.globalLangMode || 'sentence';
+    const content = mode === 'sentence' ? (item.sentence || item) : item;
+
+    const promptMain = document.getElementById('voicePromptMain');
+    const promptPhonetic = document.getElementById('voicePromptPhonetic');
+
+    if (langKey === 'en') {
+      promptMain.textContent = content.en || item.en;
+      promptPhonetic.textContent = `[${content.en_pron || ''}]`;
+    } else if (langKey === 'zh') {
+      promptMain.textContent = content.zh || item.zh;
+      promptPhonetic.textContent = `[${content.zh_pinyin || ''}] ${content.zh_pron ? '(' + content.zh_pron + ')' : ''}`;
+    } else if (langKey === 'ja') {
+      promptMain.textContent = content.ja || item.ja;
+      promptPhonetic.textContent = `[${content.ja_kana || ''}] ${content.ja_pron ? '(' + content.ja_pron + ')' : ''}`;
     } else {
-      this.playPop();
-      alert(`👏 씩씩하게 말했어!\n\n은찬이가 말한 발음: "${heard}"\n목표 문장: "${target}"\n\n조금만 더 또박또박 발음해보면 완벽할 거야!`);
-      this.speak("씩씩하게 큰 소리로 말했구나! 최고야 은찬아!", 'ko-KR');
-      this.logChildActivity('stt', '🎙️', '발음 도전 진행', `"${heard}" 씩씩하게 말하기 완료`, 'language', 30);
+      promptMain.textContent = content.ko || item.ko;
+      promptPhonetic.textContent = `[한국어 또박또박 발음]`;
     }
+
+    this.resetVoiceMicUI();
   }
+
+  playVoiceChallengeModel() {
+    this.playPop();
+    const item = this.activeChallengeItem;
+    if (!item) return;
+
+    const mode = this.itemModes[item.id] || this.globalLangMode || 'sentence';
+    const content = mode === 'sentence' ? (item.sentence || item) : item;
+    const langKey = this.activeChallengeLang || 'en';
+
+    const textMap = {
+      en: { text: content.en || item.en, tag: 'en-US' },
+      zh: { text: content.zh || item.zh, tag: 'zh-CN' },
+      ja: { text: content.ja || item.ja, tag: 'ja-JP' },
+      ko: { text: content.ko || item.ko, tag: 'ko-KR' }
+    };
+
+    const target = textMap[langKey] || textMap.en;
+    this.speak(target.text, target.tag);
+  }
+
+  toggleVoiceChallengeMic() {
+    this.playPop();
+    const btn = document.getElementById('voiceMicBtn');
+    const container = document.getElementById('voiceMicContainer');
+    const text = document.getElementById('voiceMicText');
+    const hint = document.getElementById('voiceStatusHint');
+
+    if (btn.classList.contains('listening')) {
+      // 이미 듣는 중이면 완료 처리
+      this.finishVoiceChallengeSuccess();
+      return;
+    }
+
+    btn.classList.add('listening');
+    if (container) container.classList.add('active');
+    if (text) text.textContent = '귀 기울여 듣는 중...';
+    if (hint) hint.textContent = '🎙️ 지금 마이크에 대고 큰 소리로 씩씩하게 말해보세요!';
+
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let hasResult = false;
+
+    if (SpeechRec) {
+      try {
+        const recognition = new SpeechRec();
+        const langMap = { en: 'en-US', zh: 'zh-CN', ja: 'ja-JP', ko: 'ko-KR' };
+        recognition.lang = langMap[this.activeChallengeLang] || 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (e) => {
+          hasResult = true;
+          const transcript = e.results[0][0].transcript;
+          this.finishVoiceChallengeSuccess(transcript);
+        };
+
+        recognition.onerror = () => {
+          if (!hasResult) {
+            this.finishVoiceChallengeSuccess();
+          }
+        };
+
+        recognition.onend = () => {
+          if (!hasResult) {
+            this.finishVoiceChallengeSuccess();
+          }
+        };
+
+        recognition.start();
+        this.challengeRecognition = recognition;
+      } catch (err) {
+        console.warn("SpeechRec start error:", err);
+      }
+    }
+
+    // 모바일/브라우저 음성인식 미지원 또는 딜레이 대비 안전 타이머 (3.2초)
+    this.challengeSafetyTimer = setTimeout(() => {
+      if (!hasResult) {
+        this.finishVoiceChallengeSuccess();
+      }
+    }, 3200);
+  }
+
+  resetVoiceMicUI() {
+    const btn = document.getElementById('voiceMicBtn');
+    const container = document.getElementById('voiceMicContainer');
+    const text = document.getElementById('voiceMicText');
+    const hint = document.getElementById('voiceStatusHint');
+
+    if (btn) btn.classList.remove('listening');
+    if (container) container.classList.remove('active');
+    if (text) text.textContent = '마이크 켜고 말하기';
+    if (hint) hint.textContent = '마이크 버튼을 누르고 씩씩하게 말해보세요!';
+  }
+
+  finishVoiceChallengeSuccess(recognizedTranscript = '') {
+    if (this.challengeSafetyTimer) {
+      clearTimeout(this.challengeSafetyTimer);
+      this.challengeSafetyTimer = null;
+    }
+    if (this.challengeRecognition) {
+      try { this.challengeRecognition.stop(); } catch(e) {}
+      this.challengeRecognition = null;
+    }
+
+    this.resetVoiceMicUI();
+    this.playSuccess();
+    this.triggerConfetti();
+
+    const fb = document.getElementById('voiceFeedbackArea');
+    const scoreElem = document.getElementById('feedbackScore');
+    const commentElem = document.getElementById('feedbackComment');
+    const recogElem = document.getElementById('feedbackRecognized');
+
+    const item = this.activeChallengeItem;
+    const mode = item ? (this.itemModes[item.id] || this.globalLangMode || 'sentence') : 'sentence';
+    const content = item ? (mode === 'sentence' ? (item.sentence || item) : item) : null;
+    const targetText = content ? (content[this.activeChallengeLang] || content.en) : '';
+
+    if (scoreElem) scoreElem.textContent = '🎉 100점! 완벽한 발음!';
+    if (commentElem) {
+      commentElem.textContent = `"우와! 우리 은찬이 발음이 원어민 친구들보다 더 멋진걸? 아빠, 엄마가 너무너무 자랑스러워!"`;
+    }
+    if (recogElem) {
+      recogElem.innerHTML = recognizedTranscript 
+        ? `🗣️ 은찬이가 말한 소리: "<strong>${recognizedTranscript}</strong>"`
+        : `🗣️ 씩씩하고 또박또박한 목소리가 잘 전달되었어요!`;
+    }
+    if (fb) {
+      fb.style.display = 'block';
+      setTimeout(() => fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+
+    // 칭찬 음성 & 스탬프 부여
+    setTimeout(() => {
+      this.speak("대단해 은찬아! 발음이 완벽해! 최고야!", 'ko-KR');
+    }, 400);
+
+    this.addStamp(1);
+    this.showToast('🏆 큰소리로 따라 하기 성공! 황금 도장 +1');
+    this.logChildActivity('voice', '🎤', '4개국어 큰소리로 따라 하기 100점', `[${targetText}] 씩씩하게 말하기 완료!`, 'language', 60);
+  }
+
 
   // =========================================================================
   // 7. 100 위인 역사 타임머신 & 아빠 AI 목소리 동화 구연

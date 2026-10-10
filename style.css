@@ -642,7 +642,7 @@ body {
 }
 
 .tm-info h2 {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 6px;
 }
@@ -977,7 +977,7 @@ body {
 }
 
 .car-banner-info h2 {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 6px;
 }
@@ -1180,7 +1180,7 @@ body {
 }
 
 .car-modal-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: #0f172a;
   margin-bottom: 4px;
@@ -2829,7 +2829,7 @@ body {
 }
 
 .pstamp-icon {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .pstamp-giver {
@@ -4055,7 +4055,7 @@ body {
 }
 
 .target-sentence-display {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 2.2;
   letter-spacing: 1.5px;
@@ -4302,7 +4302,7 @@ body {
 }
 
 .toast-bell-icon {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
   display: flex;
   align-items: center;
@@ -5037,7 +5037,7 @@ body {
 
 .country-modal-header h3 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
   color: #ffffff;
 }
@@ -6031,5 +6031,650 @@ body {
     width: 100% !important;
     font-size: 15px !important;
     padding: 13px 20px !important;
+  }
+}
+
+
+
+/* ==========================================================================
+   4개국어 놀이터 (초등 실생활 문장 & 기초 핵심 단어 & 소리/말하기 도전 완벽 스타일)
+   ========================================================================== */
+
+/* 카드 상단 배지 & 모드 전환 스위치 */
+.wcard-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.wcard-type-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.wcard-type-tag.sentence {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.wcard-type-tag.word {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.wcard-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.wcard-mode-switch:hover {
+  background: #f1f5f9;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* 카드 헤더 */
+.wcard-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.wcard-icon {
+  font-size: 38px;
+  width: 58px;
+  height: 58px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+  transition: transform 0.2s;
+}
+
+.wcard-icon:hover {
+  transform: scale(1.1) rotate(6deg);
+}
+
+.wcard-ko-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.wcard-ko-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wcard-ko {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.wcard-tip {
+  font-size: 12.5px;
+  color: #64748b;
+  margin-top: 5px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+/* 4개국어 언어별 스트립 박스 */
+.lang-strip-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  margin-bottom: 12px;
+}
+
+.lang-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.lang-strip:hover {
+  border-color: #93c5fd;
+  background: #f0fdf4;
+  transform: translateX(2px);
+}
+
+.lang-strip.speaking-active {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.25) !important;
+  transform: scale(1.02);
+}
+
+.l-flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #475569;
+  min-width: 58px;
+  flex-shrink: 0;
+}
+
+.l-flag-badge .l-name {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.l-text-box {
+  flex: 1;
+  min-width: 0;
+}
+
+.l-primary {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.l-phonetic {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563eb;
+  margin-top: 2px;
+  word-break: keep-all;
+}
+
+.l-kor-pron {
+  font-size: 11.5px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* 🔊 듣기 버튼 */
+.btn-listen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-listen:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  transform: scale(1.04);
+}
+
+.btn-listen.ko {
+  padding: 4px 9px;
+  font-size: 11.5px;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.btn-listen.ko:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.btn-listen.playing {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  border-color: #047857 !important;
+  box-shadow: 0 0 10px rgba(16,185,129,0.4) !important;
+  transform: scale(1.05);
+}
+
+/* 하단 요약 정보 (문장 모드면 핵심 단어, 단어 모드면 실생활 문장) */
+.wcard-context-preview {
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.context-pill strong {
+  color: #0f172a;
+}
+
+/* 카드 푸터 액션 */
+.wcard-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.btn-all-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(37,99,235,0.25);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-all-play:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(37,99,235,0.35);
+}
+
+.btn-all-play.playing {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 0 12px rgba(245,158,11,0.5);
+  animation: pulseBtn 1s infinite alternate;
+}
+
+@keyframes pulseBtn {
+  from { transform: scale(1); }
+  to { transform: scale(1.03); }
+}
+
+/* 🎤 따라 하기 도전 모달 스타일 */
+.voice-challenge-box {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.voice-modal-header {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.voice-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.voice-challenge-badge {
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255,255,255,0.25);
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.voice-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.voice-modal-body {
+  padding: 12px 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.voice-target-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.voice-target-emoji {
+  font-size: 42px;
+  width: 60px;
+  height: 60px;
+  background: #ffffff;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+
+.voice-target-korean-wrap {
+  flex: 1;
+}
+
+.voice-target-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.voice-target-ko {
+  margin: 4px 0 2px 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.voice-target-tip {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* 언어 선택 탭 */
+.voice-lang-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.voice-lang-tab {
+  padding: 8px;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.voice-lang-tab:hover {
+  background: #e2e8f0;
+}
+
+.voice-lang-tab.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  box-shadow: 0 4px 10px rgba(37,99,235,0.15);
+}
+
+/* 프롬프트 카드 */
+.voice-prompt-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 2px solid #86efac;
+  border-radius: 18px;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.voice-prompt-main {
+  font-size: 20px;
+  font-weight: 800;
+  color: #065f46;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.voice-prompt-phonetic {
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* 듣기 및 마이크 컨트롤 */
+.voice-action-center {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 6px 0;
+}
+
+.voice-listen-btn {
+  background: #ffffff !important;
+  color: #2563eb !important;
+  border: 2px solid #93c5fd !important;
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  border-radius: 14px !important;
+}
+
+.voice-listen-btn:hover {
+  background: #eff6ff !important;
+}
+
+.voice-mic-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-mic-main-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 5px solid #ffffff;
+  box-shadow: 0 10px 30px rgba(16,185,129,0.4);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.voice-mic-main-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 14px 36px rgba(16,185,129,0.55);
+}
+
+.voice-mic-main-btn.listening {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 10px 30px rgba(239,68,68,0.5);
+  animation: micPulse 1s infinite alternate;
+}
+
+@keyframes micPulse {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.1); }
+}
+
+.voice-mic-main-btn .mic-icon {
+  font-size: 30px;
+}
+
+.voice-mic-main-btn .mic-text {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mic-waves {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  display: none;
+}
+
+.voice-mic-container.active .mic-waves {
+  display: block;
+}
+
+.mic-waves .wave {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  animation: waveSpread 1.6s infinite ease-out;
+}
+
+.mic-waves .w2 { animation-delay: 0.5s; }
+.mic-waves .w3 { animation-delay: 1s; }
+
+@keyframes waveSpread {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.voice-status-hint {
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  margin: 0;
+  text-align: center;
+}
+
+/* 피드백 결과 카드 */
+.voice-feedback-area {
+  animation: fadeInUp 0.3s ease;
+}
+
+.feedback-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 16px;
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(245,158,11,0.2);
+}
+
+.feedback-stars {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.feedback-score {
+  font-size: 20px;
+  font-weight: 800;
+  color: #92400e;
+  margin: 0 0 6px 0;
+}
+
+.feedback-comment {
+  font-size: 14px;
+  font-weight: 700;
+  color: #78350f;
+  margin: 0 0 10px 0;
+}
+
+.feedback-recognized {
+  font-size: 13px;
+  color: #451a03;
+  background: rgba(255,255,255,0.6);
+  padding: 6px 12px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.feedback-reward-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 800;
+  background: #ffffff;
+  color: #b45309;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid #f59e0b;
+}
+
+@media (max-width: 640px) {
+  .wcard-footer {
+    grid-template-columns: 1fr;
+  }
+  .voice-lang-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .voice-mic-main-btn {
+    width: 120px;
+    height: 120px;
+  }
+  .voice-mic-main-btn .mic-icon {
+    font-size: 38px;
+  }
+  .voice-prompt-main {
+    font-size: 20px;
   }
 }

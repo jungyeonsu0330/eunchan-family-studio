@@ -1066,6 +1066,86 @@
   </div>
 
 
+  
+  <!-- 🎤 4개국어 큰소리로 따라 하기 도전 모달 -->
+  <div id="voicePracticeModal" class="modal-overlay">
+    <div class="modal-box voice-challenge-box" style="max-width: 680px;">
+      <div class="modal-header voice-modal-header">
+        <div class="voice-header-info">
+          <span class="voice-challenge-badge">🎤 4개국어 말하기 챌린지</span>
+          <h3 id="voiceModalTitle">큰 소리로 따라 해봐요!</h3>
+        </div>
+        <button class="modal-close" onclick="app.closeVoiceChallenge()">✕</button>
+      </div>
+
+      <div class="modal-body voice-modal-body">
+        <!-- 대상 카드 미니 프리뷰 -->
+        <div class="voice-target-preview">
+          <div class="voice-target-emoji" id="voiceTargetEmoji">🏫</div>
+          <div class="voice-target-korean-wrap">
+            <span class="voice-target-label" id="voiceTargetModeLabel">💬 초등 실생활 문장</span>
+            <h4 class="voice-target-ko" id="voiceTargetKo">저는 매일 아침 활기차게 학교에 가요.</h4>
+            <p class="voice-target-tip" id="voiceTargetTip">👨‍👩‍👧‍👦 아빠·엄마의 꿀팁</p>
+          </div>
+        </div>
+
+        <!-- 언어 선택 탭 -->
+        <div class="voice-lang-tabs">
+          <button class="voice-lang-tab active" id="vtab_en" data-lang="en" onclick="app.selectVoiceChallengeLang('en')">
+            <span>🇺🇸</span> 영어
+          </button>
+          <button class="voice-lang-tab" id="vtab_zh" data-lang="zh" onclick="app.selectVoiceChallengeLang('zh')">
+            <span>🇨🇳</span> 중국어
+          </button>
+          <button class="voice-lang-tab" id="vtab_ja" data-lang="ja" onclick="app.selectVoiceChallengeLang('ja')">
+            <span>🇯🇵</span> 일본어
+          </button>
+          <button class="voice-lang-tab" id="vtab_ko" data-lang="ko" onclick="app.selectVoiceChallengeLang('ko')">
+            <span>🇰🇷</span> 한국어
+          </button>
+        </div>
+
+        <!-- 현재 도전 텍스트 박스 -->
+        <div class="voice-prompt-card">
+          <div class="voice-prompt-main" id="voicePromptMain">I go to school energetically every morning.</div>
+          <div class="voice-prompt-phonetic" id="voicePromptPhonetic">[아이 고 투 스쿨 에너제티컬리 에브리 모닝]</div>
+        </div>
+
+        <!-- 듣기 및 말하기 컨트롤 -->
+        <div class="voice-action-center">
+          <button class="btn-bubble voice-listen-btn" onclick="app.playVoiceChallengeModel()">
+            <span>🔊 먼저 원어민 소리 듣기</span>
+          </button>
+          
+          <div class="voice-mic-container" id="voiceMicContainer">
+            <button id="voiceMicBtn" class="voice-mic-main-btn" onclick="app.toggleVoiceChallengeMic()">
+              <span class="mic-icon">🎙️</span>
+              <span class="mic-text" id="voiceMicText">마이크 켜고 말하기</span>
+            </button>
+            <div class="mic-waves" id="voiceMicWaves">
+              <span class="wave w1"></span>
+              <span class="wave w2"></span>
+              <span class="wave w3"></span>
+            </div>
+          </div>
+          <p class="voice-status-hint" id="voiceStatusHint">마이크 버튼을 누르고 씩씩하게 말해보세요!</p>
+        </div>
+
+        <!-- 음성 인식 및 결과 피드백 영역 -->
+        <div id="voiceFeedbackArea" class="voice-feedback-area" style="display: none;">
+          <div class="feedback-card">
+            <div class="feedback-stars">⭐⭐⭐⭐⭐</div>
+            <h4 class="feedback-score" id="feedbackScore">🎉 100점! 완벽한 발음!</h4>
+            <p class="feedback-comment" id="feedbackComment">"우와! 은찬이 발음이 원어민 친구들보다 더 멋진걸?"</p>
+            <div class="feedback-recognized" id="feedbackRecognized"></div>
+            <div class="feedback-reward-badge">🏆 황금 칭찬 도장 +1 획득!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- 🔒 가족 전용 보안 인증 게이트 (나 혼자만 사용 가능한 보안 잠금화면) -->
   <div id="familyAuthGate" class="family-auth-overlay" style="display: none;">
     <div class="family-auth-box">
