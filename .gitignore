@@ -1,0 +1,16 @@
+# System & Cache
+__pycache__/
+*.pyc
+*.log
+chrome_console.log
+.chrome_tmp/
+.tempmediaStorage/
+.system_generated/
+
+# Test screenshots
+test_*.png
+parent_*.png
+scroll_test.html
+
+# Binary tools
+cloudflared.exe

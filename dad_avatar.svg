@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+    <linearGradient id="hoodieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background Circle Badge -->
+  <circle cx="120" cy="120" r="110" fill="url(#bgGrad)" filter="url(#shadow)"/>
+  <circle cx="120" cy="120" r="102" fill="#eff6ff" opacity="0.95"/>
+
+  <!-- Body / Blue Hoodie -->
+  <path d="M 60,220 C 60,175 85,160 120,160 C 155,160 180,175 180,220 Z" fill="url(#hoodieGrad)"/>
+  <!-- Hoodie Collar -->
+  <path d="M 100,160 Q 120,185 140,160 Z" fill="#1d4ed8"/>
+  <path d="M 112,165 Q 120,178 128,165 Z" fill="#fdba74"/>
+
+  <!-- Neck -->
+  <rect x="108" y="140" width="24" height="25" rx="6" fill="url(#skinGrad)"/>
+
+  <!-- Head -->
+  <ellipse cx="120" cy="105" rx="42" ry="46" fill="url(#skinGrad)"/>
+
+  <!-- Ears -->
+  <circle cx="76" cy="108" r="9" fill="#fdba74"/>
+  <circle cx="164" cy="108" r="9" fill="#fdba74"/>
+
+  <!-- Hair -->
+  <path d="M 75,95 C 75,60 90,48 120,48 C 150,48 165,60 165,95 C 165,98 158,82 145,80 C 130,78 122,86 105,82 C 90,78 80,90 75,95 Z" fill="url(#hairGrad)"/>
+
+  <!-- Glasses -->
+  <rect x="85" y="93" width="28" height="22" rx="7" fill="none" stroke="#1e293b" stroke-width="3.5"/>
+  <rect x="127" y="93" width="28" height="22" rx="7" fill="none" stroke="#1e293b" stroke-width="3.5"/>
+  <line x1="113" y1="102" x2="127" y2="102" stroke="#1e293b" stroke-width="3.5"/>
+  <!-- Glasses temple arms -->
+  <line x1="77" y1="100" x2="85" y2="101" stroke="#1e293b" stroke-width="3.5"/>
+  <line x1="155" y1="101" x2="163" y2="100" stroke="#1e293b" stroke-width="3.5"/>
+
+  <!-- Eyes with happy glint -->
+  <ellipse cx="99" cy="104" rx="4" ry="4.5" fill="#0f172a"/>
+  <circle cx="101" cy="102" r="1.5" fill="#ffffff"/>
+  <ellipse cx="141" cy="104" rx="4" ry="4.5" fill="#0f172a"/>
+  <circle cx="143" cy="102" r="1.5" fill="#ffffff"/>
+
+  <!-- Eyebrows -->
+  <path d="M 88,88 Q 99,84 108,88" stroke="#1e293b" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M 132,88 Q 141,84 152,88" stroke="#1e293b" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Nose -->
+  <path d="M 120,108 Q 123,115 120,118" stroke="#ea580c" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+
+  <!-- Cheeks (Blush) -->
+  <ellipse cx="88" cy="116" rx="6" ry="3.5" fill="#f87171" opacity="0.45"/>
+  <ellipse cx="152" cy="116" rx="6" ry="3.5" fill="#f87171" opacity="0.45"/>
+
+  <!-- Warm Smile -->
+  <path d="M 108,124 Q 120,138 132,124" stroke="#991b1b" stroke-width="3" stroke-linecap="round" fill="#fff"/>
+
+  <!-- Waving Hand -->
+  <g transform="translate(165, 145) rotate(-15)">
+    <circle cx="18" cy="18" r="14" fill="url(#skinGrad)" filter="url(#shadow)"/>
+    <rect x="6" y="24" width="24" height="10" rx="4" fill="url(#hoodieGrad)"/>
+    <ellipse cx="8" cy="12" rx="4" ry="6" fill="#fdba74"/>
+    <ellipse cx="16" cy="7" rx="3.5" ry="7" fill="#fdba74"/>
+    <ellipse cx="23" cy="9" rx="3.5" ry="6.5" fill="#fdba74"/>
+    <ellipse cx="29" cy="14" rx="3.5" ry="5.5" fill="#fdba74"/>
+  </g>
+
+  <!-- Sparkle badge "정연수 아빠" -->
+  <rect x="45" y="196" width="150" height="26" rx="13" fill="#1e3a8a" stroke="#fbbf24" stroke-width="2"/>
+  <text x="120" y="214" font-family="'Pretendard', sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">👑 정연수 아빠</text>
+</svg>
