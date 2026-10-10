@@ -862,7 +862,32 @@ this.activeAesopTheme = 'all';
     return "별이 총총 뜬 저녁이야! 오늘 하루도 은찬이가 최고였단다!";
   }
 
+  randomDadJoke() {
+    this.playPop();
+    const familyPhrases = [
+      "은찬아, 은우야! 아빠, 엄마는 우리 은찬이와 은우를 세상에서 가장 많이 사랑한단다! 언제나 힘차게 응원해!",
+      "스스로 씩씩하게 탐구하는 은찬이와 은우의 모습이 아빠, 엄마에게는 가장 큰 자랑이자 기쁨이야! 최고야!",
+      "오늘도 호기심 가득 찬 멋진 모험을 하고 있구나! 아빠, 엄마가 늘 든든하게 응원할게, 사랑해!",
+      "실패를 두려워하지 않고 한 걸음씩 나아가는 우리 아이들, 아빠, 엄마는 너희가 정말 멋지단다!",
+      "오늘 배운 재미있는 이야기나 퀴즈가 있다면 식사 시간에 아빠, 엄마에게도 꼭 들려주렴! 최고 멋쟁이!"
+    ];
+    const picked = familyPhrases[Math.floor(Math.random() * familyPhrases.length)];
+    const elem = document.getElementById('dadBubbleText');
+    if (elem) elem.textContent = picked;
+    this.speak(picked, 'ko-KR');
+  }
+
   speakCurrentBubble() {
+    const text = document.getElementById('dadBubbleText')?.textContent ||
+                 document.getElementById('dadDialogueText')?.textContent;
+    if (text) {
+      this.playPop();
+      this.speak(text.trim(), 'ko-KR');
+    }
+  }
+
+  // old_speak_removed
+  _speakCurrentBubbleOld() {
     const text = document.getElementById('dadDialogueText')?.textContent;
     if (text) {
       this.playPop();

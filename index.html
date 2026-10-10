@@ -100,30 +100,27 @@
     <section id="tab-home" class="tab-content active">
       <div class="hero-dad-card">
         <div class="dad-figure-box">
-          <img src="dad_avatar.svg" alt="정연수 아빠" id="heroDadAvatar" class="dad-avatar-img" onclick="app.speakCurrentBubble()">
+          <div class="family-avatar-wrapper" onclick="app.speakCurrentBubble()">
+            <img src="images/family_avatar.jpg" alt="정은찬 · 정은우 가족" id="heroDadAvatar" class="dad-avatar-img family-avatar-real">
+            <div class="family-avatar-badge">👨‍👩‍👧‍👦 정은찬 · 정은우 가족</div>
+          </div>
           <div class="dad-status-pill">
             <span class="status-dot"></span>
-            <span>정연수 아빠와 연결됨</span>
+            <span>정은찬 · 정은우 가족</span>
           </div>
         </div>
 
         <div class="dad-bubble-box">
           <div class="bubble-header">
-            <span class="bubble-tag">💬 아빠의 다정한 한마디</span>
-            <span style="font-size: 13px; color: #64748b;">(캐릭터나 버튼을 터치해봐!)</span>
+            <span class="bubble-tag">💬 아빠, 엄마의 다정한 한마디</span>
+            <span style="font-size: 13px; color: #64748b;">(터치하면 다정하게 응원해줘요!)</span>
           </div>
           <div id="dadBubbleText" class="bubble-text">
-            은찬아 안녕! 오늘 아빠랑 어디로 신나는 모험을 떠나볼까?
+            은찬아, 은우야 안녕! 오늘 아빠, 엄마랑 어디로 신나는 모험을 떠나볼까?
           </div>
           <div class="bubble-actions">
-            <button class="btn-bubble primary" onclick="app.speakCurrentBubble()">
-              <span>🔊 아빠 목소리로 듣기</span>
-            </button>
-            <button class="btn-bubble mic" onclick="app.startListening()">
-              <span>🎤 은찬이가 아빠에게 말하기</span>
-            </button>
-            <button class="btn-bubble" onclick="app.randomDadJoke()">
-              <span>💖 아빠의 응원과 칭찬 받기</span>
+            <button class="btn-bubble primary family-cheer-btn" onclick="app.randomDadJoke()">
+              <span>💖 아빠, 엄마의 응원과 칭찬 받기</span>
             </button>
           </div>
         </div>
