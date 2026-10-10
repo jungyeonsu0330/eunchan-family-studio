@@ -632,6 +632,136 @@ this.activeAesopTheme = 'all';
     });
   }
 
+  // 🎺 승리의 빵빠레 (Fanfare) & 축하 꽃가루 폭죽 엔진
+  // =========================================================================
+  playFanfare() {
+    if (this.isMuted) return;
+    try {
+      if (!this.audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.audioCtx = new AudioCtx();
+      }
+      if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+      const ctx = this.audioCtx;
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+
+      // 🎺 금관악기(트럼펫/혼 섹션) 하모닉 합성기 (Sawtooth + Triangle + Lowpass Resonant Filter)
+      const playBrassNote = (freq, startTime, duration, volume = 0.22) => {
+        try {
+          const osc1 = ctx.createOscillator();
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(freq, startTime);
+
+          const osc2 = ctx.createOscillator();
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(freq, startTime);
+
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(freq * 1.6, startTime);
+          filter.frequency.exponentialRampToValueAtTime(Math.min(freq * 4.5, 7500), startTime + 0.05);
+          filter.frequency.exponentialRampToValueAtTime(Math.max(freq * 1.5, 300), startTime + duration);
+          filter.Q.setValueAtTime(2.5, startTime);
+
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.0001, startTime);
+          gain.gain.linearRampToValueAtTime(volume, startTime + 0.03);
+          gain.gain.setValueAtTime(volume * 0.88, startTime + duration * 0.7);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+          osc1.connect(filter);
+          osc2.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc1.start(startTime);
+          osc2.start(startTime);
+          osc1.stop(startTime + duration);
+          osc2.stop(startTime + duration);
+        } catch (err) {}
+      };
+
+      // 🎶 승리의 빵빠레 (Fanfare) 경쾌한 멜로디 시퀀스
+      // 마디 1: 따-따-따-딴! (G4 - G4 - G4 - C5)
+      playBrassNote(392.00, now + 0.00, 0.12, 0.22);
+      playBrassNote(392.00, now + 0.14, 0.12, 0.22);
+      playBrassNote(392.00, now + 0.28, 0.14, 0.24);
+      playBrassNote(523.25, now + 0.44, 0.38, 0.28);
+
+      // 마디 2: 따-라-라-란! (E5 - C5 - E5 - G5)
+      playBrassNote(659.25, now + 0.84, 0.14, 0.25);
+      playBrassNote(523.25, now + 1.00, 0.14, 0.25);
+      playBrassNote(659.25, now + 1.16, 0.16, 0.28);
+      playBrassNote(783.99, now + 1.34, 0.40, 0.30);
+
+      // 마디 3: 대망의 승리 화음 빵빠레 피날레! (C4 + G4 + C5 + E5 + G5 + C6)
+      const chordTime = now + 1.76;
+      const chordDuration = 0.95;
+      playBrassNote(261.63, chordTime, chordDuration, 0.18); // C4
+      playBrassNote(392.00, chordTime, chordDuration, 0.20); // G4
+      playBrassNote(523.25, chordTime, chordDuration, 0.24); // C5
+      playBrassNote(659.25, chordTime, chordDuration, 0.24); // E5
+      playBrassNote(783.99, chordTime, chordDuration, 0.22); // G5
+      playBrassNote(1046.50, chordTime, chordDuration, 0.22); // C6
+
+      // 축하 실로폰 & 벨 글리산도 반주
+      const bellFreqs = [1046.50, 1174.66, 1318.51, 1567.98, 1760.00, 2093.00];
+      bellFreqs.forEach((bf, bi) => {
+        setTimeout(() => this.playBeep(bf, 'sine', 0.22, 0.10), 1760 + (bi * 65));
+      });
+    } catch (e) {
+      console.warn("Fanfare error:", e);
+      this.playSuccess();
+    }
+  }
+
+  triggerConfetti() {
+    this.createConfetti();
+  }
+
+  createConfetti() {
+    try {
+      const colors = ['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#eab308'];
+      const container = document.createElement('div');
+      container.className = 'confetti-burst-container';
+      document.body.appendChild(container);
+
+      const count = 48;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.floor(Math.random() * 8) + 8;
+        const left = Math.random() * 100;
+        const duration = (Math.random() * 1.5 + 1.2).toFixed(2);
+        const delay = (Math.random() * 0.4).toFixed(2);
+        const rot = Math.floor(Math.random() * 360);
+
+        p.style.cssText = `
+          position: absolute;
+          top: -20px;
+          left: ${left}vw;
+          width: ${size}px;
+          height: ${size * (Math.random() > 0.5 ? 1.6 : 1)}px;
+          background: ${color};
+          border-radius: ${Math.random() > 0.6 ? '50%' : '3px'};
+          transform: rotate(${rot}deg);
+          animation: confettiDrop ${duration}s ease-out ${delay}s forwards;
+        `;
+        container.appendChild(p);
+      }
+
+      setTimeout(() => {
+        if (container.parentNode) container.parentNode.removeChild(container);
+      }, 3500);
+    } catch(e) {
+      console.warn("Confetti error", e);
+    }
+  }
+
   // =========================================================================
   // 2. 음성 엔진 (20대 밝고 부드러운 여성 구연동화 성우 톤 & 뉴럴 보이스 최우선)
   // =========================================================================
@@ -2045,9 +2175,22 @@ this.activeAesopTheme = 'all';
     const stepData = ep.storyCards[this.activeStep];
     const resultBox = document.getElementById('storyQuizResult');
 
+    if (this.storyQuizAutoTimer) {
+      clearTimeout(this.storyQuizAutoTimer);
+      this.storyQuizAutoTimer = null;
+    }
+
     if (choiceIdx === stepData.correct) {
-      this.playSuccess();
+      // 🎺 빵빠레 & 축하 꽃가루 폭죽!
+      this.playFanfare();
       this.triggerConfetti();
+
+      const isLastStep = (this.activeStep + 1) >= ep.storyCards.length;
+
+      if (ep.badge && !this.unlockedBadges.includes(ep.badge)) {
+        this.unlockedBadges.push(ep.badge);
+        try { localStorage.setItem('eunchan_badges', JSON.stringify(this.unlockedBadges)); } catch(e) {}
+      }
 
       if (resultBox) {
         resultBox.style.display = 'block';
@@ -2055,17 +2198,36 @@ this.activeAesopTheme = 'all';
         resultBox.style.background = '#ecfdf5';
         resultBox.style.border = '2px solid #10b981';
         resultBox.innerHTML = `
-          🎉 <strong>딩동댕! 완벽한 정답!</strong><br>
+          🎉 <strong>딩동댕! 빵빠레 정답입니다! 🎺</strong><br>
           "${stepData.reaction}"<br>
-          <span style="display: inline-block; margin-top: 6px; font-size: 14px; color: #b45309;">
-            🏆 황금 칭찬 도장 +1 획득!
-          </span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; align-items: center;">
+            <span style="font-size: 14px; color: #b45309; font-weight: 800;">
+              🏆 황금 칭찬 도장 +1 획득!
+            </span>
+            <span class="feedback-auto-badge">
+              ⚡ 2초 뒤 ${isLastStep ? '다음 위인 모험' : '다음 장 이야기'}으로 자동 이동! ➔
+            </span>
+          </div>
         `;
       }
 
       this.addStamp(1);
-      this.speak(`딩동댕! 정답이야! ${stepData.reaction}`, 'ko-KR');
+      this.speak(`딩동댕! 완벽한 정답이야! ${stepData.reaction}`, 'ko-KR');
       this.logChildActivity('history', '⭐', `역사 그림책 퀴즈 만점: ${stepData.title}`, `"${stepData.question}" 100점 정답 완료`, 'history', 60);
+
+      // ⚡ 2.2초 후 다음 장(또는 다음 위인 에피소드)으로 자동 이동!
+      this.storyQuizAutoTimer = setTimeout(() => {
+        if (!isLastStep) {
+          this.nextHistoryPage();
+        } else {
+          const allEps = (window.EDU_DATA && window.EDU_DATA.historyEpisodes) || [];
+          const curEpIdx = allEps.findIndex(e => e.id === ep.id);
+          if (curEpIdx !== -1 && curEpIdx + 1 < allEps.length) {
+            const nextEp = allEps[curEpIdx + 1];
+            this.openHistoryModal(nextEp.id);
+          }
+        }
+      }, 2300);
     } else {
       this.playBeep(240, 'sine', 0.25, 0.25);
       if (resultBox) {
@@ -2081,6 +2243,7 @@ this.activeAesopTheme = 'all';
       this.speak("아쉬워요! 왼쪽 그림을 떠올려보며 다른 보기를 골라보자!", 'ko-KR');
     }
   }
+
 
   // =========================================================================
   // 8. 대한민국 인기 자동차 대백과 & 세대별 연혁관
@@ -2772,11 +2935,19 @@ this.activeAesopTheme = 'all';
     const story = stories.find(s => s.id === storyId);
     if (!story || !story.quiz) return;
 
+    if (this.aesopQuizAutoTimer) {
+      clearTimeout(this.aesopQuizAutoTimer);
+      this.aesopQuizAutoTimer = null;
+    }
+
     const feedbackBox = document.getElementById('aesopQuizFeedback');
     const allOptions = document.querySelectorAll('#aesopQuizOptions .btn-quiz-opt');
 
     if (selectedIdx === story.quiz.answer) {
-      this.playSuccess();
+      // 🎺 빵빠레 & 축하 꽃가루 폭죽
+      this.playFanfare();
+      this.triggerConfetti();
+
       allOptions.forEach((btn, idx) => {
         btn.disabled = true;
         if (idx === story.quiz.answer) btn.classList.add('correct');
@@ -2788,14 +2959,28 @@ this.activeAesopTheme = 'all';
         feedbackBox.style.borderColor = '#86efac';
         feedbackBox.style.color = '#15803d';
         feedbackBox.innerHTML = `
-          <div style="font-size: 15px; font-weight: 900; margin-bottom: 6px;">🎉 정답입니다! 최고예요!</div>
+          <div style="font-size: 15.5px; font-weight: 900; margin-bottom: 6px;">🎉 딩동댕! 정답입니다! 빵빠레! 🎺</div>
           <p style="margin: 4px 0; font-size: 13.5px; color: #166534;">👨 <strong>아빠의 칭찬:</strong> "${story.quiz.dadFeedback}"</p>
-          <div style="margin-top: 6px; font-size: 13px; font-weight: 800; color: #b45309;">💮 참 잘했어요 황금 도장 1개를 선물로 획득했어요!</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; align-items: center;">
+            <span style="font-size: 13px; font-weight: 800; color: #b45309;">💮 참 잘했어요 황금 도장 획득!</span>
+            <span class="feedback-auto-badge">⚡ 2초 뒤 다음 이솝우화로 자동 이동! ➔</span>
+          </div>
         `;
       }
 
       this.addStamp(1);
-      this.logChildActivity('quiz', '💡', `이솝우화 [${story.title}] 퀴즈 정답`, '참 잘했어요 도장 획득!', 'story', 45);
+      this.speak(`정답입니다! ${story.quiz.dadFeedback}`, 'ko-KR');
+      this.logChildActivity('quiz', '💡', `이솝우화 [${story.title}] 퀴즈 빵빠레 정답`, '참 잘했어요 도장 획득!', 'story', 45);
+
+      // ⚡ 2.3초 후 다음 이솝우화 이야기로 자동 이동!
+      this.aesopQuizAutoTimer = setTimeout(() => {
+        const curIdx = stories.findIndex(s => s.id === storyId);
+        if (curIdx !== -1 && curIdx + 1 < stories.length) {
+          const nextStory = stories[curIdx + 1];
+          this.openAesopModal(nextStory.id, false);
+          this.speak(`다음 이야기 [${nextStory.title}]를 들려줄게요!`, 'ko-KR');
+        }
+      }, 2300);
     } else {
       this.playBeep(260, 'sine', 0.25, 0.15);
       if (btnElem) btnElem.classList.add('wrong');
@@ -2812,6 +2997,7 @@ this.activeAesopTheme = 'all';
       }
     }
   }
+
 
   // =========================================================================
   // 8-2. ⌨️ 한글 타자기 & 문장 쓰기 모험 엔진
@@ -2958,14 +3144,23 @@ this.activeAesopTheme = 'all';
 
   onSentenceCompleted(sentence) {
     this.playTypewriterBell();
+    // 🎺 승리의 빵빠레 & 축하 꽃가루 폭죽
+    this.playFanfare();
+    this.triggerConfetti();
+
+    if (this.typingSentenceAutoTimer) {
+      clearTimeout(this.typingSentenceAutoTimer);
+      this.typingSentenceAutoTimer = null;
+    }
+
     const toast = document.getElementById('typingCompleteToast');
     const title = document.getElementById('toastSentenceTitle');
     const praise = document.getElementById('toastSentencePraise');
 
     if (toast) {
       toast.style.display = 'flex';
-      if (title) title.textContent = `🎉 [${sentence.category}] 완벽 성공!`;
-      if (praise) praise.textContent = `"${sentence.text}" 멋지게 작성하여 황금 칭찬 도장 1개를 획득했어요!`;
+      if (title) title.textContent = `🎉 [${sentence.category}] 문장 쓰기 미션 성공! 빵빠레! 🎺`;
+      if (praise) praise.innerHTML = `"${sentence.text}" 완벽 작성 완료! <span class="feedback-auto-badge" style="margin-left: 8px;">⚡ 2초 후 다음 문장으로 자동 이동! ➔</span>`;
     }
 
     this.completedSentenceCount++;
@@ -2974,8 +3169,14 @@ this.activeAesopTheme = 'all';
 
     this.addStamp(1);
     this.speak(`멋지게 완성했구나! ${sentence.text}`, 'ko-KR');
-    this.logChildActivity('typing', '⌨️', `타자기 문장 완성: [${sentence.category}]`, sentence.text, 'typing', 60);
+    this.logChildActivity('typing', '⌨️', `타자기 문장 완성 빵빠레: [${sentence.category}]`, sentence.text, 'typing', 60);
+
+    // ⚡ 2.2초 후 다음 문장으로 자동 이동!
+    this.typingSentenceAutoTimer = setTimeout(() => {
+      this.nextTypingSentence();
+    }, 2200);
   }
+
 
   nextTypingSentence() {
     this.playPop();
@@ -4297,6 +4498,11 @@ this.activeAesopTheme = 'all';
     const quiz = this.currentCountryQuiz;
     const isCorrect = (choiceIdx === quiz.answer);
 
+    if (this.countryQuizAutoTimer) {
+      clearTimeout(this.countryQuizAutoTimer);
+      this.countryQuizAutoTimer = null;
+    }
+
     const buttons = document.querySelectorAll('.btn-country-quiz-choice');
     buttons.forEach((btn, idx) => {
       btn.disabled = true;
@@ -4311,8 +4517,9 @@ this.activeAesopTheme = 'all';
     if (!feedbackBox) return;
 
     if (isCorrect) {
-      this.playSuccess();
-      this.createConfetti();
+      // 🎺 승리의 빵빠레 & 축하 꽃가루 폭죽!
+      this.playFanfare();
+      this.triggerConfetti();
       this.addStamp(1);
       this.countryQuizStreak++;
       this.countryQuizSolvedCount++;
@@ -4326,18 +4533,27 @@ this.activeAesopTheme = 'all';
       feedbackBox.className = 'quiz-feedback-box correct';
       feedbackBox.innerHTML = `
         <div class="feedback-badge-row">
-          <span>🎉 딩동댕! 완벽한 정답입니다!</span>
+          <span>🎉 딩동댕! 빵빠레 정답입니다! 🎺</span>
+          <span class="feedback-auto-badge">⚡ 1.8초 뒤 다음 문제로 자동 이동! ➔</span>
           <span style="font-size: 14px; background: #bbf7d0; color: #166534; padding: 3px 10px; border-radius: 999px;">+1 칭찬 도장 획득! ⭐</span>
         </div>
         <p class="feedback-explanation">${quiz.explanation}</p>
         <button class="btn-quiz-next-question" onclick="app.loadNextCountryQuiz()">
-          <span>다음 퀴즈 도전하기 ➔</span>
+          <span>지금 바로 다음 문제 풀기 ➔</span>
         </button>
       `;
       feedbackBox.style.display = 'flex';
 
+      // 20대 여성 구연동화 선생님 톤으로 경쾌하게 칭찬 멘트
+      this.speak(`정답이에요! ${quiz.countryName}! 참 잘했어요!`, 'ko-KR');
+
+      // ⚡ 맞추면 자동으로 다음 문제(스테이지)로 넘어감!
+      this.countryQuizAutoTimer = setTimeout(() => {
+        this.loadNextCountryQuiz();
+      }, 1900);
+
       // 타임라인 활동 로그 전송 (부모님 확인용)
-      this.logChildActivity('world_quiz', '🎯', '세계 지리 퀴즈 정답!', `[${quiz.countryName}] "${quiz.question.slice(0, 32)}..." 정답 (+1 스티커)`, 'world', 45);
+      this.logChildActivity('world_quiz', '🎯', '세계 지리 퀴즈 빵빠레 정답!', `[${quiz.countryName}] "${quiz.question.slice(0, 32)}..." 정답 (+1 스티커)`, 'world', 45);
     } else {
       this.playError();
       this.countryQuizStreak = 0;
@@ -4353,9 +4569,9 @@ this.activeAesopTheme = 'all';
         </button>
       `;
       feedbackBox.style.display = 'flex';
+      this.speak(`아쉬워요! 정답은 ${quiz.options[quiz.answer]}예요! 다시 도전해볼까요?`, 'ko-KR');
     }
   }
-
 }
 
 // 앱 실행 인스턴스
