@@ -633,14 +633,112 @@ this.activeAesopTheme = 'all';
   }
 
   // =========================================================================
-  // 2. 음성 합성기 (TTS)
+  // 2. 음성 엔진 (20대 밝고 부드러운 여성 구연동화 성우 톤 & 뉴럴 보이스 최우선)
   // =========================================================================
   initVoices() {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        this.voices = window.speechSynthesis.getVoices();
-      };
-      this.voices = window.speechSynthesis.getVoices();
+    this.setupVoiceEngine();
+  }
+
+  setupVoiceEngine() {
+    this.voices = [];
+    this.preferredVoices = {};
+    this.voicePersona = 'teacher'; // 기본값: 20대 밝은 구연동화 선생님 모드 ('teacher' 또는 'mom')
+
+    const loadVoices = () => {
+      if (!('speechSynthesis' in window)) return;
+      this.voices = window.speechSynthesis.getVoices() || [];
+      if (this.voices.length > 0) {
+        this.selectBestVoices();
+      }
+    };
+
+    loadVoices();
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }
+
+  selectBestVoices() {
+    if (!this.voices || this.voices.length === 0) return;
+
+    // 1. 한국어 20대 여성 최우선 후보군 (SunHi Natural, Yuna Natural, Google 한국어)
+    const koCandidatePredicates = [
+      v => /SunHi.*Natural/i.test(v.name),
+      v => /SunHi/i.test(v.name),
+      v => /Yuna.*Natural/i.test(v.name),
+      v => /Google.*한국/i.test(v.name),
+      v => (v.lang === 'ko-KR' || v.lang === 'ko_KR') && /natural|online|neural/i.test(v.name),
+      v => v.lang.startsWith('ko') && !/desktop|heami/i.test(v.name),
+      v => v.lang.startsWith('ko')
+    ];
+    for (const test of koCandidatePredicates) {
+      const match = this.voices.find(test);
+      if (match) {
+        this.preferredVoices['ko-KR'] = match;
+        break;
+      }
+    }
+
+    // 2. 영어 여성 최우선 (Jenny Natural, Aria Natural, Google US English)
+    const enCandidatePredicates = [
+      v => /Jenny.*Natural/i.test(v.name),
+      v => /Aria.*Natural/i.test(v.name),
+      v => /Google.*US/i.test(v.name),
+      v => v.lang.startsWith('en') && /natural|online|neural/i.test(v.name),
+      v => v.lang.startsWith('en')
+    ];
+    for (const test of enCandidatePredicates) {
+      const match = this.voices.find(test);
+      if (match) {
+        this.preferredVoices['en-US'] = match;
+        break;
+      }
+    }
+
+    // 3. 중국어 여성 최우선 (Xiaoxiao Natural)
+    const zhCandidatePredicates = [
+      v => /Xiaoxiao.*Natural/i.test(v.name),
+      v => v.lang.startsWith('zh') && /natural|online/i.test(v.name),
+      v => v.lang.startsWith('zh')
+    ];
+    for (const test of zhCandidatePredicates) {
+      const match = this.voices.find(test);
+      if (match) {
+        this.preferredVoices['zh-CN'] = match;
+        break;
+      }
+    }
+
+    // 4. 일본어 여성 최우선 (Nanami Natural)
+    const jaCandidatePredicates = [
+      v => /Nanami.*Natural/i.test(v.name),
+      v => v.lang.startsWith('ja') && /natural|online/i.test(v.name),
+      v => v.lang.startsWith('ja')
+    ];
+    for (const test of jaCandidatePredicates) {
+      const match = this.voices.find(test);
+      if (match) {
+        this.preferredVoices['ja-JP'] = match;
+        break;
+      }
+    }
+  }
+
+  toggleVoicePersona() {
+    this.playPop();
+    this.voicePersona = (this.voicePersona === 'teacher') ? 'mom' : 'teacher';
+
+    const label = document.getElementById('voicePersonaLabel');
+    const badge = document.getElementById('storyVoiceBadge');
+
+    if (this.voicePersona === 'mom') {
+      if (label) label.textContent = '🌸 상냥한 엄마 목소리';
+      if (badge) badge.textContent = '🎧 다정한 엄마 목소리 구연동화';
+      this.speak("은찬아, 은우야 사랑해! 엄마 목소리로 따뜻하게 읽어줄게요!", 'ko-KR');
+    } else {
+      if (label) label.textContent = '👩‍🏫 20대 밝은 구연동화 선생님';
+      if (badge) badge.textContent = '🎧 20대 선생님 목소리 구연동화';
+      this.speak("안녕하세요! 20대 구연동화 선생님 목소리로 재미있게 읽어줄게요!", 'ko-KR');
     }
   }
 
@@ -649,6 +747,7 @@ this.activeAesopTheme = 'all';
       if (onEndCallback) onEndCallback();
       return;
     }
+
     try {
       if (this.audioCtx && this.audioCtx.state === 'suspended') {
         this.audioCtx.resume();
@@ -659,17 +758,45 @@ this.activeAesopTheme = 'all';
       window.speechSynthesis.cancel();
 
       if (!this.voices || this.voices.length === 0) {
-        this.voices = window.speechSynthesis.getVoices();
+        this.voices = window.speechSynthesis.getVoices() || [];
+        this.selectBestVoices();
       }
 
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
-      utter.rate = this.speechRate || (lang === 'ko-KR' ? 0.95 : 0.88);
-      utter.pitch = 1.05;
 
-      if (this.voices && this.voices.length > 0) {
+      // 🌟 20대 여성 구연동화 밝고 상냥한 목소리 톤 정밀 조율 (기계음 탈피)
+      if (lang === 'ko-KR') {
+        if (this.voicePersona === 'mom') {
+          // 엄마 목소리: 다정하고 부드러운 톤
+          utter.pitch = 1.08;
+          utter.rate = (this.speechRate || 0.90) * 0.95;
+        } else {
+          // 20대 밝은 구연동화 선생님: 맑고 톡톡 튀는 경쾌한 톤
+          utter.pitch = 1.18;
+          utter.rate = this.speechRate || 0.91;
+        }
+      } else if (lang === 'en-US') {
+        utter.pitch = 1.10;
+        utter.rate = this.speechRate || 0.88;
+      } else if (lang === 'zh-CN') {
+        utter.pitch = 1.08;
+        utter.rate = this.speechRate || 0.88;
+      } else if (lang === 'ja-JP') {
+        utter.pitch = 1.12;
+        utter.rate = this.speechRate || 0.88;
+      } else {
+        utter.pitch = 1.10;
+        utter.rate = this.speechRate || 0.90;
+      }
+
+      // 최우선 뉴럴 여성 음성 배정
+      if (this.preferredVoices && this.preferredVoices[lang]) {
+        utter.voice = this.preferredVoices[lang];
+      } else if (this.voices && this.voices.length > 0) {
         const langPrefix = lang.split('-')[0].toLowerCase();
-        let match = this.voices.find(v => v.lang.toLowerCase() === lang.toLowerCase());
+        let match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix) && /natural|online|female|여|선희|sunhi/i.test(v.name));
+        if (!match) match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix) && !/desktop|heami/i.test(v.name));
         if (!match) match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
         if (match) utter.voice = match;
       }
@@ -691,7 +818,7 @@ this.activeAesopTheme = 'all';
         finish();
       };
 
-      const watchdog = setTimeout(finish, Math.max(3000, text.length * 300));
+      const watchdog = setTimeout(finish, Math.max(3500, text.length * 350));
       utter.addEventListener('end', () => clearTimeout(watchdog));
       utter.addEventListener('error', () => clearTimeout(watchdog));
 
@@ -1512,7 +1639,7 @@ this.activeAesopTheme = 'all';
 
 
   // =========================================================================
-  // 7. 100 위인 역사 타임머신 & 아빠 AI 목소리 동화 구연
+  // 7. 100 위인 역사 타임머신: 3D 양면 펼침형 인터랙티브 그림책 (Storybook Viewer)
   // =========================================================================
   filterHistoryVerse(verse) {
     this.activeHistoryVerse = verse;
@@ -1550,268 +1677,409 @@ this.activeAesopTheme = 'all';
         </div>
         <p class="hist-intro">${ep.intro}</p>
         <button class="btn-hist-start" onclick="app.openHistoryModal('${ep.id}')">
-          <span>🚀 아빠랑 타임머신 탑승하기</span>
+          <span>📖 동화책 열고 함께 읽기</span>
         </button>
       </div>
     `).join('');
+  }
+
+  // 시대별 장면 일러스트 테마 & 터치 오브젝트 매핑
+  getHistoricalSceneData(ep) {
+    const defaultThemes = {
+      h_dangun: {
+        bg: 'linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%)',
+        heroName: '단군 할아버지와 웅녀',
+        heroAvatar: '🐻',
+        items: [
+          { icon: '🌿', name: '신비한 쑥', desc: '100일 동안 햇빛을 보지 않고 먹은 신비한 쑥!', top: '20%', left: '12%' },
+          { icon: '🧄', name: '알싸한 마늘', desc: '맵고 아려도 꾹 참아낸 끈기의 마늘!', top: '65%', left: '16%' },
+          { icon: '🌳', name: '태백산 신단수', desc: '환웅님이 하늘에서 내려오신 거룩한 신단수!', top: '22%', right: '14%' },
+          { icon: '🐯', name: '씩씩한 호랑이', desc: '비록 동굴을 뛰쳐나갔지만 씩씩한 호랑이 친구!', top: '68%', right: '12%' }
+        ]
+      },
+      h_jumong: {
+        bg: 'linear-gradient(135deg, #854d0e 0%, #b45309 50%, #d97706 100%)',
+        heroName: '명궁 동명왕 주몽',
+        heroAvatar: '🏹',
+        items: [
+          { icon: '🏹', name: '황금 활', desc: '파리 한 마리도 백발백중 맞히는 주몽의 명궁 활!', top: '20%', left: '14%' },
+          { icon: '🐎', name: '고구려 천리마', desc: '만주 벌판을 바람처럼 질주하는 명마!', top: '65%', left: '15%' },
+          { icon: '🎯', name: '명중 과녁', desc: '백 걸음 밖에서도 정중앙을 꿰뚫는 과녁!', top: '24%', right: '15%' },
+          { icon: '🛡️', name: '철갑 방패', desc: '어떤 화살도 튕겨내는 튼튼한 방패!', top: '66%', right: '14%' }
+        ]
+      },
+      h_yisunsin: {
+        bg: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #0284c7 100%)',
+        heroName: '충무공 이순신 장군',
+        heroAvatar: '🐢',
+        items: [
+          { icon: '🐢', name: '무적 거북선', desc: '철갑 지붕과 용머리에서 불을 뿜는 세계 최초 철갑선!', top: '18%', left: '12%' },
+          { icon: '💥', name: '천자총통', desc: '적선을 일격에 격파하는 강력한 조선의 대포!', top: '65%', left: '16%' },
+          { icon: '🌊', name: '한산도 푸른 바다', desc: '학익진 전법으로 대승을 거둔 남해의 바다!', top: '22%', right: '15%' },
+          { icon: '⚔️', name: '장군의 장검', desc: '삼척서천 산하동색! 나라를 구한 구국의 검!', top: '68%', right: '14%' }
+        ]
+      },
+      h_sejong: {
+        bg: 'linear-gradient(135deg, #701a75 0%, #86198f 50%, #c026d3 100%)',
+        heroName: '세종대왕과 집현전 학사들',
+        heroAvatar: '👑',
+        items: [
+          { icon: '📜', name: '훈민정음 책', desc: '백성을 사랑하는 마음으로 창제한 아름다운 한글!', top: '20%', left: '14%' },
+          { icon: '☀️', name: '앙부일구 해시계', desc: '해의 그림자로 시각과 절기를 알려주는 오목 해시계!', top: '64%', left: '15%' },
+          { icon: '🌧️', name: '측우기', desc: '세계 최초로 비의 양을 과학적으로 잰 측정기!', top: '22%', right: '14%' },
+          { icon: '🌟', name: '집현전 등불', desc: '밤낮으로 백성을 위해 책을 연구하던 학문의 전당!', top: '66%', right: '15%' }
+        ]
+      },
+      h_gwanggaeto: {
+        bg: 'linear-gradient(135deg, #991b1b 0%, #b91c1c 50%, #ef4444 100%)',
+        heroName: '광개토대왕과 개마무사',
+        heroAvatar: '🏇',
+        items: [
+          { icon: '🐎', name: '철갑 개마무사', desc: '말과 무사가 온몸을 철갑으로 두른 무적 부대!', top: '20%', left: '14%' },
+          { icon: '📜', name: '광개토대왕릉비', desc: '만주벌판에 우뚝 선 위대한 대왕의 승전 비석!', top: '65%', left: '16%' },
+          { icon: '🚩', name: '고구려 군기', desc: '승리를 알리며 휘날리던 삼족오 깃발!', top: '22%', right: '15%' },
+          { icon: '⚔️', name: '환두대도', desc: '용과 봉황이 조각된 고구려 지휘관의 명검!', top: '68%', right: '14%' }
+        ]
+      }
+    };
+
+    if (defaultThemes[ep.id]) {
+      return defaultThemes[ep.id];
+    }
+
+    // 기본 동적 테마 생성 (어떤 영웅이든 100% 매칭)
+    return {
+      bg: `linear-gradient(135deg, ${ep.color || '#1e3a8a'} 0%, #312e81 100%)`,
+      heroName: ep.title,
+      heroAvatar: ep.icon || '📜',
+      items: [
+        { icon: ep.icon || '⭐', name: ep.title.split(' ')[0] || '영웅', desc: `${ep.period}을 빛낸 위대한 인물!`, top: '20%', left: '14%' },
+        { icon: '📜', name: '역사 두루마리', desc: '선조들의 지혜가 담긴 소중한 옛 기록!', top: '65%', left: '15%' },
+        { icon: '🌟', name: '황금 보물', desc: '우리나라 역사를 빛낸 자랑스러운 문화유산!', top: '22%', right: '14%' },
+        { icon: '🏰', name: '옛 궁궐과 터', desc: '선조들이 터를 잡고 문화를 꽃피운 역사 현장!', top: '68%', right: '15%' }
+      ]
+    };
   }
 
   openHistoryModal(epId) {
     const ep = window.EDU_DATA.historyEpisodes.find(e => e.id === epId);
     if (!ep) return;
 
-    this.stopDadStory();
+    this.stopStorybookAudio();
     this.playTimeMachine();
     this.activeEpisode = ep;
     this.activeStep = 0;
+    this.isAutoPageTurn = true;
 
     const modal = document.getElementById('historyModal');
-    const header = document.getElementById('histModalTitle');
-    const body = document.getElementById('histModalBody');
+    if (!modal) return;
 
-    header.innerHTML = `${ep.icon} ${ep.title}`;
-    this.renderHistoryStep(body);
+    document.getElementById('bookTitle').textContent = ep.title;
+    document.getElementById('bookPeriod').textContent = ep.period;
+
+    // 모달 활성화 및 첫 페이지 렌더링
+    this.renderStorybookPage();
     modal.classList.add('active');
 
-    this.logChildActivity('history', ep.icon, `100 위인: ${ep.title}`, `${ep.period} 모험 입장`, 'history', 60);
-  }
+    // 20대 여성 구연동화 목소리로 첫 페이지 자동 읽기 시작
+    setTimeout(() => {
+      this.readCurrentPageStory();
+    }, 450);
 
-  renderHistoryStep(container) {
-    this.stopDadStory();
-    const ep = this.activeEpisode;
-    const stepData = ep.storyCards[this.activeStep];
-
-    if (!stepData) {
-      this.renderMissionScreen(container);
-      return;
-    }
-
-    container.innerHTML = `
-      <div style="text-align: center; margin-bottom: 20px;">
-        <span class="hist-step-badge">
-          📖 아빠의 옛날이야기 [${this.activeStep + 1} / ${ep.storyCards.length}]
-        </span>
-        <h4 class="hist-step-title">${stepData.title}</h4>
-        <div id="histStoryTextBox" class="hist-story-box">
-          ${stepData.text}
-        </div>
-        <button id="btnDadVoice" class="btn-bubble primary btn-dad-voice" onclick="app.toggleDadStory()">
-          <span>🔊 아빠 목소리로 동화 듣기</span>
-        </button>
-      </div>
-
-      <div class="hist-quiz-box">
-        <div class="quiz-title-tag">❓ 은찬이를 위한 아빠의 깜짝 퀴즈!</div>
-        <div class="quiz-question">${stepData.question}</div>
-        <div class="quiz-choices-list">
-          ${stepData.choices.map((c, idx) => `
-            <button class="btn-bubble quiz-choice-btn" onclick="app.checkHistoryQuiz(${idx})">
-              <span>👉 ${c}</span>
-            </button>
-          `).join('')}
-        </div>
-        <div id="quizFeedbackBox" class="quiz-feedback-box" style="display: none;"></div>
-      </div>
-    `;
-  }
-
-  toggleDadStory() {
-    if (this.isDadStorySpeaking) {
-      this.stopDadStory();
-    } else {
-      this.startDadStory();
-    }
-  }
-
-  startDadStory() {
-    if (!('speechSynthesis' in window)) {
-      alert("브라우저에서 음성 읽기를 지원하지 않습니다.");
-      return;
-    }
-
-    this.stopDadStory();
-    this.isDadStorySpeaking = true;
-
-    const btn = document.getElementById('btnDadVoice');
-    if (btn) {
-      btn.classList.add('btn-speaking');
-      btn.innerHTML = '<span class="speaking-pulse">⏹️ 아빠 목소리 멈추기</span>';
-    }
-
-    const textBox = document.getElementById('histStoryTextBox');
-    if (textBox) {
-      textBox.classList.add('story-reading-active');
-    }
-
-    const ep = this.activeEpisode;
-    const stepData = ep.storyCards[this.activeStep];
-    const fullSpeech = `은찬아, 아빠가 재미있는 옛날이야기 들려줄게. 잘 들어봐~ ${stepData.text}`;
-
-    const utter = new SpeechSynthesisUtterance(fullSpeech);
-    utter.lang = 'ko-KR';
-
-    const koVoices = (this.voices || []).filter(v => v.lang.startsWith('ko') || v.lang.includes('KO'));
-    const maleVoice = koVoices.find(v => /male|injoon|인준|남/i.test(v.name));
-    if (maleVoice) {
-      utter.voice = maleVoice;
-    } else if (koVoices.length > 0) {
-      utter.voice = koVoices[0];
-    }
-
-    utter.pitch = 0.95;
-    utter.rate = 0.88;
-    utter.volume = 1.0;
-
-    utter.onend = () => {
-      this.stopDadStoryUI();
-      setTimeout(() => {
-        if (this.activeEpisode && document.getElementById('historyModal')?.classList.contains('active')) {
-          this.speakDadReaction("이야기 재미있었지? 이제 아래 아빠의 깜짝 퀴즈를 맞춰볼까?");
-        }
-      }, 500);
-    };
-
-    utter.onerror = () => {
-      this.stopDadStoryUI();
-    };
-
-    window.speechSynthesis.speak(utter);
-    this.logChildActivity('history', '🔊', `동화 청취: ${stepData.title}`, `아빠 AI 목소리로 동화 듣기`, 'history', 90);
-  }
-
-  stopDadStory() {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    this.stopDadStoryUI();
-  }
-
-  stopDadStoryUI() {
-    this.isDadStorySpeaking = false;
-    const btn = document.getElementById('btnDadVoice');
-    if (btn) {
-      btn.classList.remove('btn-speaking');
-      btn.innerHTML = '<span>🔊 아빠 목소리로 동화 듣기</span>';
-    }
-    const textBox = document.getElementById('histStoryTextBox');
-    if (textBox) {
-      textBox.classList.remove('story-reading-active');
-    }
-  }
-
-  speakDadReaction(text) {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'ko-KR';
-
-    const koVoices = (this.voices || []).filter(v => v.lang.startsWith('ko') || v.lang.includes('KO'));
-    const maleVoice = koVoices.find(v => /male|injoon|인준|남/i.test(v.name));
-    if (maleVoice) utter.voice = maleVoice;
-
-    utter.pitch = 0.98;
-    utter.rate = 0.92;
-    window.speechSynthesis.speak(utter);
-  }
-
-  checkHistoryQuiz(choiceIdx) {
-    this.stopDadStory();
-    const ep = this.activeEpisode;
-    const stepData = ep.storyCards[this.activeStep];
-    const fbBox = document.getElementById('quizFeedbackBox');
-
-    if (choiceIdx === stepData.correct) {
-      this.playSuccess();
-      const isLastStep = (this.activeStep + 1) >= ep.storyCards.length;
-
-      if (fbBox) {
-        fbBox.innerHTML = `
-          <div class="feedback-card correct">
-            <div class="feedback-header">
-              <span class="feedback-icon">🎉</span>
-              <span class="feedback-title">정답이야 은찬아! 딩동댕!</span>
-            </div>
-            <p class="feedback-text"><strong>정연수 아빠:</strong> "${stepData.reaction}"</p>
-            <div class="feedback-actions">
-              <button class="btn-bubble primary" style="padding: 12px 24px; font-size: 15px;" onclick="app.advanceHistoryStep()">
-                <span>${isLastStep ? '🌟 마지막 미션 도전하기! ➡️' : '다음 이야기 보러 가기 ➡️'}</span>
-              </button>
-            </div>
-          </div>
-        `;
-        fbBox.style.display = 'block';
-      }
-
-      this.speakDadReaction(`딩동댕! 정답이야 은찬아! ${stepData.reaction}`);
-      this.logChildActivity('history', '❓', `위인 퀴즈 정답: ${stepData.title}`, `"${stepData.question}" 100점 만점`, 'history', 45);
-    } else {
-      this.playBeep(240, 'sine', 0.25, 0.25);
-      if (fbBox) {
-        fbBox.innerHTML = `
-          <div class="feedback-card incorrect">
-            <div class="feedback-header">
-              <span class="feedback-icon">💡</span>
-              <span class="feedback-title">아쉽다! 아빠랑 다시 생각해볼까?</span>
-            </div>
-            <p class="feedback-text">은찬아 괜찮아! 이야기를 다시 천천히 떠올려보고 다른 보기를 골라보자!</p>
-          </div>
-        `;
-        fbBox.style.display = 'block';
-      }
-
-      this.speakDadReaction("아쉽다! 은찬아, 아빠랑 다시 한번 생각해볼까? 다시 골라보자!");
-    }
-  }
-
-  advanceHistoryStep() {
-    this.stopDadStory();
-    this.activeStep++;
-    const body = document.getElementById('histModalBody');
-    this.renderHistoryStep(body);
-  }
-
-  renderMissionScreen(container) {
-    this.stopDadStory();
-    const ep = this.activeEpisode;
-    container.innerHTML = `
-      <div style="text-align: center; padding: 20px;">
-        <div style="font-size: 56px; margin-bottom: 12px;">🌟</div>
-        <h4 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">${ep.mission.title}</h4>
-        <p style="font-size: 15px; color: #64748b; margin-bottom: 24px;">${ep.mission.instruction}</p>
-
-        <div id="interactiveMissionArea" style="min-height: 140px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; background: #f1f5f9; padding: 24px; border-radius: 20px; border: 2px dashed #cbd5e1;">
-          <button class="btn-bubble primary" style="font-size: 18px; padding: 16px 28px;" onclick="app.completeMission()">
-            <span>🎯 화면 터치하여 미션 성공하기!</span>
-          </button>
-        </div>
-      </div>
-    `;
-    this.speakDadReaction("대단해 은찬아! 이제 마지막 터치 미션을 성공하고 황금 메달을 획득하자!");
-  }
-
-  completeMission() {
-    this.stopDadStory();
-    this.playSuccess();
-    const ep = this.activeEpisode;
-
-    if (!this.unlockedBadges.includes(ep.badge)) {
-      this.unlockedBadges.push(ep.badge);
-      localStorage.setItem('eunchan_badges', JSON.stringify(this.unlockedBadges));
-    }
-    this.addStamp(2);
-
-    alert(`🏆 축하합니다!\n\n은찬이가 [${ep.badge}]을(를) 획득했습니다!\n정연수 아빠의 참 잘했어요 도장 2개 쾅! 쾅!`);
-    this.closeHistoryModal();
-    this.renderStamps();
-    this.switchTab('treasure');
-    this.logChildActivity('history', '🎖️', `메달 획득: ${ep.badge}`, `도장 2개 획득 및 보물창고 보관`, 'history', 120);
+    this.logChildActivity('history', ep.icon, `100 위인 그림책: ${ep.title}`, `${ep.period} 그림책 펼침`, 'history', 60);
   }
 
   closeHistoryModal() {
-    this.stopDadStory();
     this.playPop();
-    document.getElementById('historyModal')?.classList.remove('active');
+    this.stopStorybookAudio();
+    const modal = document.getElementById('historyModal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  renderStorybookPage() {
+    const ep = this.activeEpisode;
+    if (!ep) return;
+
+    const stepData = ep.storyCards[this.activeStep];
+    if (!stepData) return;
+
+    const sceneData = this.getHistoricalSceneData(ep);
+
+    // 1. 좌측 페이지 (장면 디오라마 & 인터랙티브 오브젝트)
+    document.getElementById('sceneChapterBadge').textContent = `제 ${this.activeStep + 1} 장`;
+    document.getElementById('sceneTitle').textContent = stepData.title;
+
+    const diorama = document.getElementById('sceneDiorama');
+    if (diorama) diorama.style.background = sceneData.bg;
+
+    document.getElementById('sceneHeroAvatar').textContent = sceneData.heroAvatar;
+    document.getElementById('sceneHeroName').textContent = sceneData.heroName;
+
+    // 터치 오브젝트 배치
+    const itemsContainer = document.getElementById('sceneInteractiveItems');
+    if (itemsContainer) {
+      itemsContainer.innerHTML = sceneData.items.map((it, idx) => `
+        <div class="scene-touch-item" style="top: ${it.top}; ${it.left ? `left: ${it.left};` : `right: ${it.right};`}" onclick="app.touchSceneItem('${it.name}', '${it.desc}')">
+          <span class="touch-item-icon">${it.icon}</span>
+          <span class="touch-item-label">${it.name}</span>
+        </div>
+      `).join('');
+    }
+
+    const totalSteps = ep.storyCards.length;
+    document.getElementById('leftPageNum').textContent = `제 ${(this.activeStep * 2) + 1} 쪽`;
+    document.getElementById('rightPageNum').textContent = `제 ${(this.activeStep * 2) + 2} 쪽 (전체 ${totalSteps * 2}쪽 중)`;
+
+    // 2. 우측 페이지 (동화 텍스트 & 문장별 실시간 형광펜 하이라이트 준비)
+    const paragraphsContainer = document.getElementById('storyParagraphs');
+    if (paragraphsContainer) {
+      // 문장 분리 (. ! ? 기준)
+      const rawSentences = stepData.text.match(/[^.!?]+[.!?]+/g) || [stepData.text];
+      this.currentStorySentences = rawSentences.map(s => s.trim()).filter(Boolean);
+
+      paragraphsContainer.innerHTML = this.currentStorySentences.map((sentence, sIdx) => `
+        <span class="story-sentence" id="storySent_${sIdx}" onclick="app.playSingleStorySentence(${sIdx})">
+          ${sentence}&nbsp;
+        </span>
+      `).join('');
+    }
+
+    // 퀴즈 영역 초기화
+    const quizContainer = document.getElementById('storyQuizContainer');
+    if (quizContainer) {
+      quizContainer.style.display = 'none';
+      document.getElementById('storyQuizQuestion').textContent = stepData.question;
+      const choicesBox = document.getElementById('storyQuizChoices');
+      choicesBox.innerHTML = stepData.choices.map((choice, cIdx) => `
+        <button class="quiz-choice-book-btn" onclick="app.checkStoryQuiz(${cIdx})">
+          👉 ${choice}
+        </button>
+      `).join('');
+      document.getElementById('storyQuizResult').style.display = 'none';
+    }
+
+    // 3. 하단 네비게이션 버튼 활성화 여부
+    const prevBtn = document.getElementById('btnBookPrev');
+    const nextBtn = document.getElementById('btnBookNext');
+    if (prevBtn) prevBtn.disabled = (this.activeStep === 0);
+    if (nextBtn) nextBtn.disabled = (this.activeStep === totalSteps - 1);
+  }
+
+  touchSceneItem(name, desc) {
+    this.playPop();
+
+    // 토스트 알림 표시
+    const toast = document.getElementById('sceneSparkleToast');
+    if (toast) {
+      toast.innerHTML = `✨ <strong>${name}</strong>: ${desc}`;
+      toast.style.display = 'block';
+      if (this.sceneToastTimer) clearTimeout(this.sceneToastTimer);
+      this.sceneToastTimer = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // 20대 여성 구연동화 목소리로 다정하게 설명
+    this.speak(`${name}! ${desc}`, 'ko-KR');
+  }
+
+  toggleStorybookAudio() {
+    this.playPop();
+    if (this.isStorybookReading) {
+      this.stopStorybookAudio();
+    } else {
+      this.readCurrentPageStory();
+    }
+  }
+
+  readCurrentPageStory() {
+    this.stopStorybookAudio();
+    this.isStorybookReading = true;
+
+    const playBtn = document.getElementById('btnBookPlay');
+    const playLabel = document.getElementById('bookPlayLabel');
+    const syncIndicator = document.getElementById('storySyncIndicator');
+
+    if (playBtn) playBtn.classList.add('speaking');
+    if (playLabel) playLabel.textContent = '동화 멈추기';
+    if (syncIndicator) syncIndicator.classList.add('active');
+
+    const sentences = this.currentStorySentences || [];
+    let currentIdx = 0;
+
+    const readNextSentence = () => {
+      if (!this.isStorybookReading) return;
+
+      // 이전 문장 하이라이트 제거
+      sentences.forEach((_, i) => {
+        const span = document.getElementById(`storySent_${i}`);
+        if (span) span.classList.remove('active-highlight');
+      });
+
+      if (currentIdx < sentences.length) {
+        const curSpan = document.getElementById(`storySent_${currentIdx}`);
+        if (curSpan) {
+          curSpan.classList.add('active-highlight');
+          curSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        const sentenceText = sentences[currentIdx];
+        this.speak(sentenceText, 'ko-KR', () => {
+          currentIdx++;
+          setTimeout(readNextSentence, 400);
+        });
+      } else {
+        // 현재 쪽 완독!
+        if (playBtn) playBtn.classList.remove('speaking');
+        if (playLabel) playLabel.textContent = '이 쪽 동화 듣기';
+        if (syncIndicator) syncIndicator.classList.remove('active');
+        this.isStorybookReading = false;
+
+        const ep = this.activeEpisode;
+        const isLastPage = (this.activeStep + 1) >= ep.storyCards.length;
+
+        if (this.isAutoPageTurn && !isLastPage) {
+          // 1.5초 후 다음 장으로 자동 넘김
+          setTimeout(() => {
+            this.nextHistoryPage();
+          }, 1500);
+        } else {
+          // 마지막 장이면 퀴즈 자동 펼침
+          this.toggleStoryQuiz(true);
+          this.speak("이야기를 다 읽었어요! 아래 아빠·엄마의 깜짝 퀴즈를 풀어볼까요?", 'ko-KR');
+        }
+      }
+    };
+
+    readNextSentence();
+  }
+
+  playSingleStorySentence(sIdx) {
+    this.playPop();
+    const sentences = this.currentStorySentences || [];
+    if (!sentences[sIdx]) return;
+
+    // 해당 문장만 하이라이트
+    sentences.forEach((_, i) => {
+      const span = document.getElementById(`storySent_${i}`);
+      if (span) span.classList.toggle('active-highlight', i === sIdx);
+    });
+
+    this.speak(sentences[sIdx], 'ko-KR', () => {
+      const span = document.getElementById(`storySent_${sIdx}`);
+      if (span) span.classList.remove('active-highlight');
+    });
+  }
+
+  stopStorybookAudio() {
+    this.isStorybookReading = false;
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    const playBtn = document.getElementById('btnBookPlay');
+    const playLabel = document.getElementById('bookPlayLabel');
+    const syncIndicator = document.getElementById('storySyncIndicator');
+
+    if (playBtn) playBtn.classList.remove('speaking');
+    if (playLabel) playLabel.textContent = '이 쪽 동화 듣기';
+    if (syncIndicator) syncIndicator.classList.remove('active');
+
+    // 하이라이트 제거
+    const sentences = this.currentStorySentences || [];
+    sentences.forEach((_, i) => {
+      const span = document.getElementById(`storySent_${i}`);
+      if (span) span.classList.remove('active-highlight');
+    });
+  }
+
+  prevHistoryPage() {
+    if (this.activeStep > 0) {
+      this.playPop();
+      this.stopStorybookAudio();
+      this.activeStep--;
+      this.renderStorybookPage();
+      setTimeout(() => this.readCurrentPageStory(), 300);
+    }
+  }
+
+  nextHistoryPage() {
+    const ep = this.activeEpisode;
+    if (ep && (this.activeStep + 1) < ep.storyCards.length) {
+      this.playPop();
+      this.stopStorybookAudio();
+      this.activeStep++;
+      this.renderStorybookPage();
+      setTimeout(() => this.readCurrentPageStory(), 300);
+    }
+  }
+
+  toggleAutoPageTurn() {
+    this.playPop();
+    this.isAutoPageTurn = !this.isAutoPageTurn;
+    const btn = document.getElementById('btnBookAuto');
+    const label = document.getElementById('bookAutoLabel');
+
+    if (btn) btn.classList.toggle('active', this.isAutoPageTurn);
+    if (label) {
+      label.textContent = this.isAutoPageTurn ? '🔄 자동 연속 넘김 ON' : '⏸️ 수동 넘김 모드';
+    }
+    this.showToast(this.isAutoPageTurn ? '📖 한 쪽을 다 읽으면 다음 장으로 자동 넘겨요!' : '📖 손으로 직접 넘겨 읽어요!');
+  }
+
+  toggleStoryQuiz(forceOpen = null) {
+    this.playPop();
+    const quizContainer = document.getElementById('storyQuizContainer');
+    if (!quizContainer) return;
+
+    const willOpen = (forceOpen !== null) ? forceOpen : (quizContainer.style.display === 'none');
+    quizContainer.style.display = willOpen ? 'block' : 'none';
+    if (willOpen) {
+      quizContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  checkStoryQuiz(choiceIdx) {
+    this.playPop();
+    const ep = this.activeEpisode;
+    const stepData = ep.storyCards[this.activeStep];
+    const resultBox = document.getElementById('storyQuizResult');
+
+    if (choiceIdx === stepData.correct) {
+      this.playSuccess();
+      this.triggerConfetti();
+
+      if (resultBox) {
+        resultBox.style.display = 'block';
+        resultBox.style.color = '#047857';
+        resultBox.style.background = '#ecfdf5';
+        resultBox.style.border = '2px solid #10b981';
+        resultBox.innerHTML = `
+          🎉 <strong>딩동댕! 완벽한 정답!</strong><br>
+          "${stepData.reaction}"<br>
+          <span style="display: inline-block; margin-top: 6px; font-size: 14px; color: #b45309;">
+            🏆 황금 칭찬 도장 +1 획득!
+          </span>
+        `;
+      }
+
+      this.addStamp(1);
+      this.speak(`딩동댕! 정답이야! ${stepData.reaction}`, 'ko-KR');
+      this.logChildActivity('history', '⭐', `역사 그림책 퀴즈 만점: ${stepData.title}`, `"${stepData.question}" 100점 정답 완료`, 'history', 60);
+    } else {
+      this.playBeep(240, 'sine', 0.25, 0.25);
+      if (resultBox) {
+        resultBox.style.display = 'block';
+        resultBox.style.color = '#b91c1c';
+        resultBox.style.background = '#fef2f2';
+        resultBox.style.border = '2px solid #ef4444';
+        resultBox.innerHTML = `
+          💡 <strong>아쉽다! 다시 한번 천천히 생각해볼까?</strong><br>
+          동화책 이야기와 왼쪽 그림을 떠올리며 다시 골라보자!
+        `;
+      }
+      this.speak("아쉬워요! 왼쪽 그림을 떠올려보며 다른 보기를 골라보자!", 'ko-KR');
+    }
   }
 
   // =========================================================================

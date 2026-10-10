@@ -14,7 +14,7 @@
         "세종대왕 한글 메달",
         "충무공 이순신 메달"
       ],
-      "lastActive": "2026-10-11 08:13"
+      "lastActive": "2026-10-11 08:29"
     },
     "eunwoo": {
       "id": "eunwoo",
@@ -145,6 +145,45 @@
     }
   ],
   "activities": [
+    {
+      "id": "act_1791674953800",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인 그림책: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:29:13",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791674917819",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인 그림책: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:28:37",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791674903296",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인 그림책: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 08:28:23",
+      "date": "2026-10-11"
+    },
     {
       "id": "act_1791674031990",
       "childId": "eunchan",

@@ -925,16 +925,115 @@
 
   </main>
 
-  <!-- 역사 모험 인터랙티브 모달 -->
+    <!-- 📖 100 위인 역사 타임머신: 3D 양면 펼침형 인터랙티브 그림책 모달 -->
   <div id="historyModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 id="histModalTitle">타임머신 모험</h3>
-        <button class="modal-close" onclick="app.closeHistoryModal()">✕</button>
+    <div class="modal-box history-storybook-modal" style="max-width: 1020px; width: 96%;">
+      <div class="storybook-wrapper">
+        <!-- 상단 책 제목 & 컨트롤 바 -->
+        <div class="storybook-top-bar">
+          <div class="book-title-tag">
+            <span class="book-badge">📜 100 위인 역사 그림책</span>
+            <h3 class="book-main-title" id="bookTitle">단군 할아버지와 쑥·마늘 미션</h3>
+            <span class="book-period-pill" id="bookPeriod">고조선 건국 (기원전 2333년)</span>
+          </div>
+          <div class="book-top-actions">
+            <button class="btn-voice-persona" id="btnVoicePersonaToggle" onclick="app.toggleVoicePersona()" title="목소리 전환">
+              <span id="voicePersonaLabel">👩‍🏫 20대 밝은 구연동화 선생님</span>
+            </button>
+            <button class="modal-close-book" onclick="app.closeHistoryModal()" title="책 덮기">✕</button>
+          </div>
+        </div>
+
+        <!-- 📖 3D 양면 펼침 동화책 본체 -->
+        <div class="storybook-open-book" id="storybookBook">
+          <div class="book-spine-line"></div>
+          <div class="book-ribbon-bookmark">🔖</div>
+
+          <!-- 좌측 페이지: 생생한 역사 장면 일러스트 & 오브젝트 터치 -->
+          <div class="book-page page-left" id="bookPageLeft">
+            <div class="scene-header">
+              <span class="scene-chapter-badge" id="sceneChapterBadge">제 1 장</span>
+              <h4 class="scene-title" id="sceneTitle">하늘에서 내려온 환웅님</h4>
+            </div>
+
+            <!-- 장면 연상 디오라마 캔버스 -->
+            <div class="scene-diorama" id="sceneDiorama">
+              <div class="scene-bg-gradient" id="sceneBgGradient"></div>
+              <div class="scene-illustration-center">
+                <div class="hero-character-avatar" id="sceneHeroAvatar">🐻</div>
+                <div class="scene-hero-name" id="sceneHeroName">환웅님과 곰·호랑이</div>
+              </div>
+
+              <!-- 🌟 아이가 직접 터치하는 인터랙티브 오브젝트들 -->
+              <div class="scene-interactive-items" id="sceneInteractiveItems"></div>
+
+              <!-- 터치 반응 툴팁 / 말풍선 -->
+              <div class="scene-sparkle-toast" id="sceneSparkleToast" style="display: none;"></div>
+            </div>
+
+            <div class="scene-touch-hint">
+              <span>✨ 그림 속 물건들을 톡톡 터치해보세요! 쏙쏙 반응해요!</span>
+            </div>
+            <div class="page-num left-page-num" id="leftPageNum">1 쪽</div>
+          </div>
+
+          <!-- 우측 페이지: 동화 텍스트 & 실시간 음성 싱크 형광펜 하이라이트 -->
+          <div class="book-page page-right" id="bookPageRight">
+            <div class="story-text-container">
+              <div class="story-read-badge">
+                <span id="storyVoiceBadge">🎧 20대 선생님 목소리 구연동화</span>
+                <span class="story-sync-indicator" id="storySyncIndicator">읽는 중...</span>
+              </div>
+
+              <!-- 실시간 형광펜 하이라이트되는 본문 문장들 -->
+              <div class="story-paragraphs" id="storyParagraphs"></div>
+
+              <!-- 깜짝 퀴즈 접이식 카드 -->
+              <div class="story-quiz-container" id="storyQuizContainer" style="display: none;">
+                <div class="story-quiz-box">
+                  <div class="quiz-badge">⭐ 아빠·엄마의 깜짝 퀴즈!</div>
+                  <h5 class="quiz-q" id="storyQuizQuestion">사람이 되고 싶어 찾아온 두 동물은?</h5>
+                  <div class="quiz-options-grid" id="storyQuizChoices"></div>
+                  <div class="quiz-result-msg" id="storyQuizResult" style="display: none;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="page-num right-page-num" id="rightPageNum">2 쪽</div>
+          </div>
+        </div>
+
+        <!-- 하단 독서 컨트롤 바 -->
+        <div class="storybook-bottom-bar">
+          <button class="btn-book-nav prev" id="btnBookPrev" onclick="app.prevHistoryPage()">
+            <span>◀ 이전 장</span>
+          </button>
+
+          <div class="book-audio-controls">
+            <button class="btn-book-play" id="btnBookPlay" onclick="app.toggleStorybookAudio()">
+              <span class="play-icon">▶️</span>
+              <span class="play-label" id="bookPlayLabel">이 쪽 동화 듣기</span>
+            </button>
+
+            <button class="btn-book-auto active" id="btnBookAuto" onclick="app.toggleAutoPageTurn()">
+              <span id="bookAutoLabel">🔄 자동 연속 넘김 ON</span>
+            </button>
+
+            <button class="btn-book-quiz" id="btnBookQuiz" onclick="app.toggleStoryQuiz()">
+              <span>⭐ 퀴즈 도전</span>
+            </button>
+          </div>
+
+          <button class="btn-book-nav next" id="btnBookNext" onclick="app.nextHistoryPage()">
+            <span>다음 장 ▶</span>
+          </button>
+        </div>
       </div>
-      <div id="histModalBody" class="modal-body"></div>
     </div>
   </div>
+
+
+
 
   <!-- 자바스크립트 로드 -->
   <script src="content_data.js"></script>
