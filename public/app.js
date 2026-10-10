@@ -4572,6 +4572,94 @@ this.activeAesopTheme = 'all';
       this.speak(`아쉬워요! 정답은 ${quiz.options[quiz.answer]}예요! 다시 도전해볼까요?`, 'ko-KR');
     }
   }
+
+  // =========================================================================
+  // 📷 스마트폰 QR코드 및 크롬(Chrome) 바로열기 컨트롤러
+  // =========================================================================
+  openMobileModal() {
+    this.playPop();
+    const modal = document.getElementById('mobileAccessModal');
+    if (modal) modal.classList.add('active');
+    this.switchQrChannel(this.activeQrChannel || 'cloud');
+  }
+
+  closeMobileModal() {
+    this.playPop();
+    const modal = document.getElementById('mobileAccessModal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  switchQrChannel(channel = 'cloud') {
+    this.playPop();
+    this.activeQrChannel = channel;
+
+    const urls = {
+      cloud: 'https://dark-bar-directive-gale.trycloudflare.com/?pin=7979',
+      github: 'https://jungyeonsu0330.github.io/eunchan-family-studio/?pin=7979',
+      local: 'http://172.30.1.27:8800/?pin=7979'
+    };
+
+    const imgs = {
+      cloud: 'images/qr_cloud.png',
+      github: 'images/qr_github.png',
+      local: 'images/qr_local.png'
+    };
+
+    const labels = {
+      cloud: '⚡ 24H 클라우드 터널 (비밀번호 7979 자동 인증)',
+      github: '🐙 깃허브 공식 배포 사이트 (영구 보존)',
+      local: '🏠 집 안 Wi-Fi 초고속 로컬 접속'
+    };
+
+    const imgElem = document.getElementById('qrCodeImgDisplay');
+    const urlElem = document.getElementById('qrUrlStringDisplay');
+    const badgeElem = document.getElementById('qrChannelBadge');
+
+    if (imgElem) imgElem.src = imgs[channel] || imgs.cloud;
+    if (urlElem) urlElem.textContent = urls[channel] || urls.cloud;
+    if (badgeElem) badgeElem.textContent = labels[channel] || labels.cloud;
+
+    document.querySelectorAll('.btn-qr-tab').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.getElementById(channel === 'cloud' ? 'btnQrCloud' : (channel === 'github' ? 'btnQrGithub' : 'btnQrLocal'));
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+
+  openInChrome() {
+    this.playPop();
+    const urls = {
+      cloud: 'https://dark-bar-directive-gale.trycloudflare.com/?pin=7979',
+      github: 'https://jungyeonsu0330.github.io/eunchan-family-studio/?pin=7979',
+      local: 'http://172.30.1.27:8800/?pin=7979'
+    };
+    const targetUrl = urls[this.activeQrChannel || 'cloud'] || urls.cloud;
+
+    // 안드로이드 기기일 경우 크롬 패키지 인텐트로 강제 열기 시도
+    if (/android/i.test(navigator.userAgent)) {
+      const cleanUrl = targetUrl.replace(/^https?:\/\//, '');
+      const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+      window.location.href = intentUrl;
+    } else {
+      window.open(targetUrl, '_blank');
+    }
+  }
+
+  copyQrUrl() {
+    this.playPop();
+    const urls = {
+      cloud: 'https://dark-bar-directive-gale.trycloudflare.com/?pin=7979',
+      github: 'https://jungyeonsu0330.github.io/eunchan-family-studio/?pin=7979',
+      local: 'http://172.30.1.27:8800/?pin=7979'
+    };
+    const targetUrl = urls[this.activeQrChannel || 'cloud'] || urls.cloud;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(targetUrl).then(() => {
+        this.showToast('📋 링크 주소가 복사되었습니다!');
+      });
+    } else {
+      alert("📋 링크 주소: " + targetUrl);
+    }
+  }
+
 }
 
 // 앱 실행 인스턴스

@@ -38,7 +38,7 @@
       </div>
 
       <button class="mobile-access-pill" onclick="app.openMobileModal()">
-        <span>📱 스마트폰 접속 주소</span>
+        <span>📷 스마트폰 QR코드 & 크롬 바로열기</span>
       </button>
     </div>
   </div>
@@ -1082,41 +1082,65 @@
     </div>
   </div>
 
-  <!-- 스마트폰 접속 안내 모달 -->
-  <div id="mobileAccessModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 580px;">
-      <div class="modal-header">
-        <h3>📱 스마트폰 & 태블릿 접속 안내</h3>
-        <button class="modal-close" onclick="app.closeMobileModal()">✕</button>
+    <!-- 스마트폰 접속 및 QR코드 모달 -->
+  <div id="mobileAccessModal" class="modal-overlay" style="z-index: 3000;">
+    <div class="modal-box" style="max-width: 600px; border-radius: 28px; overflow: hidden; border: 4px solid #3b82f6;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 18px 24px;">
+        <h3 style="color: #ffffff; font-size: 19px; display: flex; align-items: center; gap: 8px;">
+          <span>📷</span>
+          <span>스마트폰 QR코드 스캔 & 크롬 바로열기</span>
+        </h3>
+        <button class="modal-close" style="color: #ffffff;" onclick="app.closeMobileModal()">✕</button>
       </div>
-      <div class="modal-body" style="padding: 24px;">
-        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 20px;">
-          <div style="font-size: 14px; font-weight: 800; color: #15803d; margin-bottom: 6px;">🌐 같은 집 Wi-Fi에 연결된 스마트폰 주소창에 입력하세요!</div>
-          <div id="mobileUrlDisplay" style="font-size: 24px; font-weight: 900; color: #1e3a8a; letter-spacing: 0.5px; margin: 10px 0; padding: 12px; background: #ffffff; border-radius: 12px; border: 2px dashed #3b82f6; user-select: all;">
-            http://172.30.1.27:8800
-          </div>
-          <p style="font-size: 13.5px; color: #475569; margin: 0;">스마트폰 사파리(Safari)나 크롬(Chrome)을 켜고 위 주소만 넣으면 끝!</p>
+
+      <div class="modal-body" style="padding: 24px; text-align: center; background: #f8fafc;">
+        <!-- 접속 채널 탭 선택 -->
+        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap;">
+          <button id="btnQrCloud" class="btn-qr-tab active" onclick="app.switchQrChannel('cloud')">
+            🌐 24H 클라우드 (어디서나)
+          </button>
+          <button id="btnQrGithub" class="btn-qr-tab" onclick="app.switchQrChannel('github')">
+            🐙 깃허브 페이지 (영구보존)
+          </button>
+          <button id="btnQrLocal" class="btn-qr-tab" onclick="app.switchQrChannel('local')">
+            🏠 집 안 Wi-Fi (초고속)
+          </button>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="display: flex; align-items: flex-start; gap: 12px; background: #f8fafc; padding: 14px; border-radius: 14px;">
-            <span style="font-size: 24px;">👨</span>
-            <div>
-              <strong style="color: #0f172a; font-size: 15px;">아빠의 스마트폰:</strong>
-              <p style="font-size: 13.5px; color: #64748b; margin-top: 2px;">상단에서 <strong>[👨 정연수 아빠]</strong> 프로필을 누르면 은찬이/은우의 실시간 타임라인을 보면서 소파에서 칭찬 도장을 보낼 수 있습니다.</p>
-            </div>
-          </div>
-          <div style="display: flex; align-items: flex-start; gap: 12px; background: #f8fafc; padding: 14px; border-radius: 14px;">
-            <span style="font-size: 24px;">👩</span>
-            <div>
-              <strong style="color: #0f172a; font-size: 15px;">엄마의 스마트폰:</strong>
-              <p style="font-size: 13.5px; color: #64748b; margin-top: 2px;"><strong>[👩 엄마]</strong> 프로필로 입장하여 따뜻한 하트 칭찬 도장과 응원 메시지를 실시간으로 전송할 수 있습니다.</p>
-            </div>
+        <!-- QR 코드 프레임 -->
+        <div style="background: #ffffff; border: 3px dashed #3b82f6; border-radius: 24px; padding: 20px; display: inline-block; box-shadow: 0 12px 30px rgba(59, 130, 246, 0.15); margin-bottom: 16px;">
+          <img id="qrCodeImgDisplay" src="images/qr_cloud.png" alt="스마트폰 접속 QR코드" style="width: 250px; height: 250px; display: block; border-radius: 12px; margin: 0 auto;" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fdark-bar-directive-gale.trycloudflare.com%2F%3Fpin%3D7979'">
+          <div id="qrChannelBadge" style="margin-top: 10px; font-size: 13px; font-weight: 800; color: #1e40af; background: #dbeafe; padding: 4px 14px; border-radius: 999px; display: inline-block;">
+            ⚡ 비밀번호(7979) 자동 인증 링크 탑재
           </div>
         </div>
 
-        <button class="btn-bubble primary" style="width: 100%; margin-top: 20px; padding: 14px;" onclick="app.closeMobileModal()">
-          <span>확인했어요!</span>
+        <!-- 접속 주소 안내 -->
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 14px; padding: 10px 16px; margin-bottom: 16px;">
+          <div style="font-size: 12px; color: #64748b; font-weight: 700; margin-bottom: 2px;">스마트폰 접속 링크 주소:</div>
+          <div id="qrUrlStringDisplay" style="font-size: 14px; font-weight: 800; color: #0284c7; word-break: break-all; user-select: all;">
+            https://dark-bar-directive-gale.trycloudflare.com/?pin=7979
+          </div>
+        </div>
+
+        <!-- 원클릭 실행 버튼 그룹 -->
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+          <button class="btn-bubble primary" style="padding: 12px 22px; font-size: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="app.openInChrome()">
+            <span>🌐 크롬(Chrome)으로 바로 열기</span>
+          </button>
+          <button class="btn-bubble" style="padding: 12px 18px; font-size: 14px; background: #f1f5f9; color: #334155;" onclick="app.copyQrUrl()">
+            <span>📋 주소 복사</span>
+          </button>
+        </div>
+
+        <!-- 안내 문구 -->
+        <div style="background: #eff6ff; border-radius: 16px; padding: 14px 18px; text-align: left; font-size: 13.5px; color: #1e3a8a; line-height: 1.55; border: 1px solid #bfdbfe;">
+          💡 <strong>카메라로 1초 만에 스마트폰 연결하는 법:</strong><br>
+          스마트폰 기본 <strong>카메라 앱</strong>을 켜서 위 QR코드를 화면에 비추면 노란색 링크가 나타납니다. 링크를 터치하면 <strong>크롬(Chrome) 브라우저로 비밀번호 입력 없이 즉시 입장</strong>합니다!
+        </div>
+
+        <button class="btn-bubble primary" style="width: 100%; margin-top: 16px; padding: 12px;" onclick="app.closeMobileModal()">
+          <span>확인 완료</span>
         </button>
       </div>
     </div>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>은찬이와 아빠의 모험 스튜디오 - 스마트폰 QR코드 및 크롬 실행</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #fef3c7 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+      max-width: 620px;
+      width: 100%;
+      padding: 36px;
+      text-align: center;
+      border: 3px solid #e2e8f0;
+    }
+    .badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    p.sub {
+      font-size: 15px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    .qr-frame {
+      background: #ffffff;
+      border: 3px dashed #3b82f6;
+      border-radius: 22px;
+      padding: 16px;
+      display: inline-block;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+      margin-bottom: 20px;
+    }
+    .qr-frame img {
+      width: 260px;
+      height: 260px;
+      display: block;
+      border-radius: 12px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .btn {
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-chrome {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(16, 185, 129, 0.35);
+    }
+    .btn-chrome:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(16, 185, 129, 0.45); }
+    .btn-copy {
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .btn-copy:hover { background: #e2e8f0; }
+    .guide-box {
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 18px;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    .guide-box strong { color: #0f172a; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">📷 스마트폰 즉시 스캔 입장</span>
+    <h1>은찬이와 아빠의 모험 스튜디오</h1>
+    <p class="sub">스마트폰 기본 카메라로 아래 QR코드를 비추면 크롬 브라우저로 비밀번호(7979) 입력 없이 바로 열립니다!</p>
+
+    <div class="qr-frame">
+      <img src="스마트폰_접속_QR코드.png" alt="스마트폰 접속 QR코드" onerror="this.src='images/qr_cloud.png'">
+    </div>
+
+    <div class="btn-row">
+      <a href="http://localhost:8800/?pin=7979" class="btn btn-chrome">
+        <span>🌐 PC에서 크롬(Chrome)으로 바로 열기</span>
+      </a>
+      <button class="btn btn-copy" onclick="copyLink()">
+        <span>📋 클라우드 주소 복사</span>
+      </button>
+    </div>
+
+    <div class="guide-box">
+      <strong>📱 스마트폰(아이폰 / 갤럭시) 이용 안내:</strong><br>
+      1. 스마트폰 카메라를 켜고 화면의 QR코드를 비춥니다.<br>
+      2. 노란색/파란색으로 뜨는 웹사이트 링크를 터치하면 <strong>크롬(Chrome) 브라우저</strong>로 자동 연결됩니다.<br>
+      3. 비밀번호(7979)가 자동 입력되어 엄마·아빠 모두 소파에서 실시간 스티커를 보낼 수 있습니다!
+    </div>
+  </div>
+
+  <script>
+    function copyLink() {
+      const url = "https://dark-bar-directive-gale.trycloudflare.com/?pin=7979";
+      navigator.clipboard.writeText(url).then(() => {
+        alert("📋 클라우드 접속 주소가 복사되었습니다!
+
+" + url);
+      });
+    }
+  </script>
+</body>
+</html>
