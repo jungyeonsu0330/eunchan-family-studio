@@ -14,7 +14,7 @@
         "세종대왕 한글 메달",
         "충무공 이순신 메달"
       ],
-      "lastActive": "2026-10-11 08:42"
+      "lastActive": "2026-10-11 09:23"
     },
     "eunwoo": {
       "id": "eunwoo",
@@ -145,6 +145,58 @@
     }
   ],
   "activities": [
+    {
+      "id": "act_1791678230250",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "story",
+      "icon": "📖",
+      "title": "이솝우화 제1화 [토끼와 거북이] 탐독",
+      "detail": "아무리 뛰어난 재주가 있어도 방심하면 실패하고, 비록 느려도 쉬지 않고 꾸준히 노력하면 끝내 승리합니다.",
+      "category": "story",
+      "timeSpentSec": 90,
+      "timestamp": "2026-10-11 09:23:50",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791678226513",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인 그림책: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 09:23:46",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791677742039",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "story",
+      "icon": "📖",
+      "title": "이솝우화 제1화 [토끼와 거북이] 탐독",
+      "detail": "아무리 뛰어난 재주가 있어도 방심하면 실패하고, 비록 느려도 쉬지 않고 꾸준히 노력하면 끝내 승리합니다.",
+      "category": "story",
+      "timeSpentSec": 90,
+      "timestamp": "2026-10-11 09:15:42",
+      "date": "2026-10-11"
+    },
+    {
+      "id": "act_1791677736017",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐻",
+      "title": "100 위인 그림책: 단군 할아버지와 쑥·마늘 미션",
+      "detail": "고조선 건국 (기원전 2333년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-11 09:15:36",
+      "date": "2026-10-11"
+    },
     {
       "id": "act_1791675764604",
       "childId": "eunchan",

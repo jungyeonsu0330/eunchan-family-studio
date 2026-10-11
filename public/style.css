@@ -7469,3 +7469,326 @@ body {
     font-size: 18px;
   }
 }
+
+
+/* ==========================================================================
+   📱 스마트폰 좌우 글씨체 행렬(줄바꿈·정렬·여백·행렬배치) 완벽 최적화
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 1. 전체 한글 텍스트 단어 단위 줄바꿈 및 행렬 균형 */
+  body, h1, h2, h3, h4, h5, h6, p, span, div, button {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  /* 2. 메인 컨테이너 좌우 대칭 여백 맞춤 */
+  .app-main {
+    padding: 14px 14px 95px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. 섹션 헤드라인 좌우 행렬: 좁은 화면에서 가로 찌그러짐 방지하고 세로 정렬 */
+  .section-headline {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    margin-bottom: 14px !important;
+    width: 100% !important;
+  }
+  .section-headline > span:first-child {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+    letter-spacing: -0.3px !important;
+    word-break: keep-all !important;
+  }
+  .section-headline > span:last-child {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    line-height: 1.4 !important;
+    word-break: keep-all !important;
+  }
+
+  /* 4. 4개국어 놀이터: 컨트롤 패널 좌우 행렬 정돈 */
+  .lang-control-panel {
+    padding: 12px 14px !important;
+    gap: 10px !important;
+  }
+  .lang-mode-toggle-group, .lang-settings-group {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .control-label {
+    width: 100% !important;
+    margin-bottom: 2px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #1e40af !important;
+  }
+  .btn-control-toggle, .btn-setting-pill {
+    flex: 1 1 auto !important;
+    font-size: 12px !important;
+    padding: 7px 12px !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+  }
+
+  /* 5. 4개국어 언어별 스트립 카드 좌우 글씨체 행렬 */
+  .word-card {
+    padding: 14px !important;
+  }
+  .wcard-header {
+    gap: 10px !important;
+  }
+  .wcard-icon {
+    font-size: 32px !important;
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 14px !important;
+    flex-shrink: 0 !important;
+  }
+  .wcard-ko-title-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .wcard-ko {
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    word-break: keep-all !important;
+    margin: 0 !important;
+  }
+  .btn-listen.ko {
+    flex-shrink: 0 !important;
+    padding: 5px 9px !important;
+    font-size: 11.5px !important;
+    white-space: nowrap !important;
+  }
+  .wcard-tip {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+    margin-top: 4px !important;
+    word-break: keep-all !important;
+  }
+
+  /* 언어 스트립: 깃발 뱃지, 외국어 문장, 발음, 듣기 버튼 정렬 */
+  .lang-strip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+  }
+  .l-flag-badge {
+    min-width: 50px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+  }
+  .l-flag-badge .l-name {
+    font-size: 11px !important;
+  }
+  .l-text-box {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  .l-primary {
+    font-size: 13.5px !important;
+    line-height: 1.35 !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+  .l-phonetic {
+    font-size: 11.5px !important;
+    line-height: 1.35 !important;
+    color: #2563eb !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    margin-top: 2px !important;
+  }
+  .l-kor-pron {
+    font-size: 11px !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+  .btn-listen {
+    flex-shrink: 0 !important;
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+    white-space: nowrap !important;
+    margin-left: 4px !important;
+  }
+
+  /* 6. 자동차 대백과 헤더 & 세대 카드 좌우 행렬 */
+  .car-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+  .car-card-header h3 {
+    font-size: 17px !important;
+    line-height: 1.35 !important;
+    word-break: keep-all !important;
+  }
+  .car-card-header .car-badge-pill {
+    align-self: flex-start !important;
+  }
+  .car-desc {
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    word-break: keep-all !important;
+  }
+
+  /* 7. 이솝우화 30편 모달 헤더 & 오디오 플레이어 버튼 행렬 */
+  .aesop-modal-header {
+    padding: 12px 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .aesop-modal-title {
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    word-break: keep-all !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  .aesop-player-bar {
+    padding: 10px 12px !important;
+  }
+  .player-main-btns {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .btn-player-play, .btn-player-restart, .btn-player-voice {
+    flex: 1 1 auto !important;
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  .btn-modal-home {
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    padding: 5px 11px !important;
+    border-radius: 999px !important;
+    flex-shrink: 0 !important;
+  }
+  .story-paragraphs p {
+    font-size: 15.5px !important;
+    line-height: 1.8 !important;
+    letter-spacing: -0.2px !important;
+    word-break: keep-all !important;
+  }
+
+  /* 8. 100 위인 역사 그림책 모달 헤더 & 하단 바 행렬 */
+  .storybook-top-bar {
+    padding: 8px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+  }
+  .book-title-tag {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+  .book-badge {
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+  }
+  .book-main-title {
+    font-size: 14.5px !important;
+    line-height: 1.3 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 2px 0 !important;
+  }
+  .book-period-pill {
+    font-size: 10.5px !important;
+    padding: 1px 6px !important;
+  }
+  .book-top-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    flex-shrink: 0 !important;
+  }
+  .btn-voice-persona {
+    padding: 4px 7px !important;
+    font-size: 10.5px !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
+  }
+  .storybook-bottom-bar {
+    padding: 8px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .book-audio-controls {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .btn-book-play, .btn-book-auto, .btn-book-quiz {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    padding: 8px 6px !important;
+    font-size: 11.5px !important;
+    white-space: nowrap !important;
+    justify-content: center !important;
+    text-align: center !important;
+    border-radius: 10px !important;
+  }
+  .storybook-bottom-bar .btn-book-nav {
+    display: none !important; /* 모바일 오디오 컨트롤러 공간 극대화 */
+  }
+
+  /* 9. 국가별 대백과 상세 모달 좌우 행렬 */
+  .country-info-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .c-info-item {
+    padding: 8px 10px !important;
+  }
+  .c-info-label {
+    font-size: 11px !important;
+  }
+  .c-info-val {
+    font-size: 13px !important;
+    word-break: keep-all !important;
+  }
+
+  /* 10. 상단 네비게이션 좌우 패딩 */
+  .app-header {
+    padding: 8px 12px !important;
+  }
+  .nav-tabs {
+    padding: 4px !important;
+    gap: 4px !important;
+  }
+  .nav-tab-btn {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+}
