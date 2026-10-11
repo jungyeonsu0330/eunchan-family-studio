@@ -791,20 +791,57 @@ this.activeAesopTheme = 'all';
   selectBestVoices() {
     if (!this.voices || this.voices.length === 0) return;
 
-    // 1. 한국어 20대 여성 최우선 후보군 (SunHi Natural, Yuna Natural, Google 한국어)
-    const koCandidatePredicates = [
+    // 1. [20대 구연동화 선생님 최우선] Edge SunHi(선희) Neural, Google 한국어
+    const teacherPredicates = [
       v => /SunHi.*Natural/i.test(v.name),
       v => /SunHi/i.test(v.name),
-      v => /Yuna.*Natural/i.test(v.name),
+      v => /선희/i.test(v.name),
       v => /Google.*한국/i.test(v.name),
+      v => (v.lang === 'ko-KR' || v.lang === 'ko_KR') && /female|여성/i.test(v.name) && !/desktop|heami/i.test(v.name),
       v => (v.lang === 'ko-KR' || v.lang === 'ko_KR') && /natural|online|neural/i.test(v.name),
-      v => v.lang.startsWith('ko') && !/desktop|heami/i.test(v.name),
-      v => v.lang.startsWith('ko')
+      v => v.lang.startsWith('ko') && !/desktop|heami/i.test(v.name)
     ];
-    for (const test of koCandidatePredicates) {
+    for (const test of teacherPredicates) {
       const match = this.voices.find(test);
       if (match) {
+        this.preferredVoices['ko-KR-teacher'] = match;
         this.preferredVoices['ko-KR'] = match;
+        break;
+      }
+    }
+
+    // 2. [정연수 아빠 최우선] Edge InJoon(인준) Neural, 남두, 봉진 등 남성 성우 음성
+    const dadPredicates = [
+      v => /InJoon.*Natural/i.test(v.name),
+      v => /InJoon/i.test(v.name),
+      v => /인준/i.test(v.name),
+      v => /NamDu/i.test(v.name),
+      v => /BongJin/i.test(v.name),
+      v => /GookMin/i.test(v.name),
+      v => (v.lang === 'ko-KR' || v.lang === 'ko_KR') && /male|남성/i.test(v.name) && !/desktop|heami/i.test(v.name),
+      v => v.lang.startsWith('ko') && !/desktop|heami/i.test(v.name)
+    ];
+    for (const test of dadPredicates) {
+      const match = this.voices.find(test);
+      if (match) {
+        this.preferredVoices['ko-KR-dad'] = match;
+        break;
+      }
+    }
+
+    // 3. [상냥한 엄마 최우선] Edge Yuna/SunHi Neural, Google 한국어
+    const momPredicates = [
+      v => /Yuna.*Natural/i.test(v.name),
+      v => /Yuna/i.test(v.name),
+      v => /유나/i.test(v.name),
+      v => /SunHi.*Natural/i.test(v.name),
+      v => /Google.*한국/i.test(v.name),
+      v => v.lang.startsWith('ko') && !/desktop|heami/i.test(v.name)
+    ];
+    for (const test of momPredicates) {
+      const match = this.voices.find(test);
+      if (match) {
+        this.preferredVoices['ko-KR-mom'] = match;
         break;
       }
     }
@@ -856,17 +893,28 @@ this.activeAesopTheme = 'all';
 
   toggleVoicePersona() {
     this.playPop();
-    this.voicePersona = (this.voicePersona === 'teacher') ? 'mom' : 'teacher';
+    // 3가지 목소리 모드 순환: 20대 선생님 -> 아빠 -> 엄마 -> 20대 선생님
+    if (this.voicePersona === 'teacher') {
+      this.voicePersona = 'dad';
+    } else if (this.voicePersona === 'dad') {
+      this.voicePersona = 'mom';
+    } else {
+      this.voicePersona = 'teacher';
+    }
 
     const label = document.getElementById('voicePersonaLabel');
     const badge = document.getElementById('storyVoiceBadge');
 
-    if (this.voicePersona === 'mom') {
+    if (this.voicePersona === 'dad') {
+      if (label) label.textContent = '👨 정연수 아빠 목소리';
+      if (badge) badge.textContent = '🎧 정연수 아빠 목소리 구연동화';
+      this.speak("은찬아, 아빠야! 아빠가 재미있는 이야기 들려줄게!", 'ko-KR');
+    } else if (this.voicePersona === 'mom') {
       if (label) label.textContent = '🌸 상냥한 엄마 목소리';
       if (badge) badge.textContent = '🎧 다정한 엄마 목소리 구연동화';
       this.speak("은찬아, 은우야 사랑해! 엄마 목소리로 따뜻하게 읽어줄게요!", 'ko-KR');
     } else {
-      if (label) label.textContent = '👩‍🏫 20대 밝은 구연동화 선생님';
+      if (label) label.textContent = '👩‍🏫 20대 맑은 구연동화 선생님';
       if (badge) badge.textContent = '🎧 20대 선생님 목소리 구연동화';
       this.speak("안녕하세요! 20대 구연동화 선생님 목소리로 재미있게 읽어줄게요!", 'ko-KR');
     }
@@ -897,14 +945,19 @@ this.activeAesopTheme = 'all';
 
       // 🌟 20대 여성 구연동화 밝고 상냥한 목소리 톤 정밀 조율 (기계음 탈피)
       if (lang === 'ko-KR') {
-        if (this.voicePersona === 'mom') {
-          // 엄마 목소리: 다정하고 부드러운 톤
-          utter.pitch = 1.08;
-          utter.rate = (this.speechRate || 0.90) * 0.95;
+        if (this.voicePersona === 'dad') {
+          utter.voice = this.preferredVoices['ko-KR-dad'] || this.preferredVoices['ko-KR'];
+          utter.pitch = 1.0; // 🌟 성우 원음 피치 유지 (갈라짐/쇳소리 왜곡 원인 1.18 제거)
+          utter.rate = this.speechRate || 0.95;
+        } else if (this.voicePersona === 'mom') {
+          utter.voice = this.preferredVoices['ko-KR-mom'] || this.preferredVoices['ko-KR'];
+          utter.pitch = 1.0; // 🌟 성우 원음 피치 유지
+          utter.rate = (this.speechRate || 0.95) * 0.94;
         } else {
-          // 20대 밝은 구연동화 선생님: 맑고 톡톡 튀는 경쾌한 톤
-          utter.pitch = 1.18;
-          utter.rate = this.speechRate || 0.91;
+          // teacher: 20대 맑은 구연동화 선생님
+          utter.voice = this.preferredVoices['ko-KR-teacher'] || this.preferredVoices['ko-KR'];
+          utter.pitch = 1.0; // 🌟 1.18 강제 피치 변조로 인한 찢어짐/갈라짐 해결! 성우 본래 맑은 미성(1.0) 복원
+          utter.rate = this.speechRate || 0.96;
         }
       } else if (lang === 'en-US') {
         utter.pitch = 1.10;
@@ -2912,7 +2965,7 @@ this.activeAesopTheme = 'all';
       const utter = new SpeechSynthesisUtterance(item.text);
       utter.lang = 'ko-KR';
       utter.rate = this.aesopRate || 0.92;
-      utter.pitch = (this.aesopVoiceType === 'dad') ? 0.92 : 1.18;
+      utter.pitch = 1.0;
 
       if (!this.voices || this.voices.length === 0) {
         this.voices = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
@@ -2948,7 +3001,7 @@ this.activeAesopTheme = 'all';
           utter.voice = bestVoice;
           // 인공지능 신경망/자연어 음성은 본래 성우 음색(피치 0.96~1.06)일 때 가장 사람처럼 자연스럽습니다
           if (/natural|online|neural|google/i.test(bestVoice.name)) {
-            utter.pitch = (this.aesopVoiceType === 'dad') ? 0.96 : 1.06;
+            utter.pitch = 1.0;
           }
         }
       }
