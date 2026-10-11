@@ -8262,3 +8262,101 @@ body {
   border: 3px solid #f59e0b !important;
   border-radius: 20px !important;
 }
+
+/* ========================================================================== */
+/* CAR ENHANCEMENTS - LIGHTBOX & GEN SWITCHING */
+/* ========================================================================== */
+
+@keyframes genSwitchedPulse {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 22px 6px rgba(37, 99, 235, 0.3); transform: scale(1.008); border-color: #3b82f6; }
+  100% { box-shadow: var(--shadow-sm); transform: scale(1); }
+}
+
+.car-card.gen-switched-highlight {
+  animation: genSwitchedPulse 0.45s ease-out;
+}
+
+.car-photos-preview .photo-box {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  position: relative;
+}
+
+.car-photos-preview .photo-box:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  filter: brightness(1.05);
+}
+
+.car-photos-preview .photo-box:active {
+  transform: scale(0.98);
+}
+
+.photo-lightbox-box {
+  width: 95vw !important;
+  max-width: 920px !important;
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45) !important;
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.lightbox-stage {
+  user-select: none;
+}
+
+#carCountryFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+#carCountryFilters .subnav-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  border-radius: 24px;
+  padding: 8px 16px;
+}
+
+#carCountryFilters .subnav-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+#carCountryFilters .subnav-btn.active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.gen-pill-btn {
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.gen-pill-btn:hover {
+  transform: translateY(-1px);
+  border-color: #3b82f6;
+}
+
+.gen-pill-btn.active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  border-color: #1e40af !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35) !important;
+}

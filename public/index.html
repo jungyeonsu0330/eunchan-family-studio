@@ -460,12 +460,12 @@
       </div>
 
       <div id="carCountryFilters" class="lang-subnav">
-        <button class="subnav-btn active" onclick="app.filterCars('all')">🌐 전체 보기 (인기 8종)</button>
-        <button class="subnav-btn" onclick="app.filterCars('hyundai')">🇰🇷 현대자동차 (그랜저·쏘나타·아반떼)</button>
-        <button class="subnav-btn" onclick="app.filterCars('kia')">🇰🇷 기아 (카니발·쏘렌토)</button>
-        <button class="subnav-btn" onclick="app.filterCars('genesis')">👑 제네시스 (G80 럭셔리)</button>
-        <button class="subnav-btn" onclick="app.filterCars('honda')">🇯🇵 혼다 (어코드)</button>
-        <button class="subnav-btn" onclick="app.filterCars('toyota')">🇯🇵 토요타 (캠리)</button>
+        <button type="button" class="subnav-btn active" data-brand="all" onclick="app.filterCars('all')">🌐 전체 보기 (전 차종 8선)</button>
+        <button type="button" class="subnav-btn" data-brand="hyundai" onclick="app.filterCars('hyundai')">🇰🇷 현대자동차 (그랜저·쏘나타·아반떼)</button>
+        <button type="button" class="subnav-btn" data-brand="kia" onclick="app.filterCars('kia')">🇰🇷 기아 (카니발·쏘렌토)</button>
+        <button type="button" class="subnav-btn" data-brand="genesis" onclick="app.filterCars('genesis')">👑 제네시스 (G80 럭셔리)</button>
+        <button type="button" class="subnav-btn" data-brand="honda" onclick="app.filterCars('honda')">🇯🇵 혼다 (어코드 월드베스트)</button>
+        <button type="button" class="subnav-btn" data-brand="toyota" onclick="app.filterCars('toyota')">🇯🇵 토요타 (캠리 글로벌 세단)</button>
       </div>
 
       <!-- 자동차 카드 그리드 -->
@@ -1132,14 +1132,17 @@
 
 
   <!-- 자동차 실제 사진 전면/후면/측면 고화질 돋보기 뷰어 모달 -->
-  <div id="photoLightboxModal" class="modal-overlay" style="z-index: 2500;">
+  <div id="photoLightboxModal" class="modal-overlay" style="z-index: 2500;" onclick="if(event.target===this) app.closePhotoLightbox()">
     <div class="modal-box photo-lightbox-box">
-      <div class="modal-header">
-        <h3 id="lightboxTitle">🔍 실제 사진 고화질 관찰관</h3>
-        <button class="modal-close" onclick="app.closePhotoLightbox()">✕</button>
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a, #0f172a); color: #fff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-radius: 20px 20px 0 0;">
+        <h3 id="lightboxTitle" style="margin: 0; font-size: 17px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+          🔍 실제 사진 고화질 돋보기 관찰관
+        </h3>
+        <button type="button" class="modal-close" onclick="app.closePhotoLightbox()" title="닫기 (ESC)" style="color: #cbd5e1; font-size: 22px; cursor: pointer; background: transparent; border: none; padding: 4px 8px; line-height: 1;">✕</button>
       </div>
-      <div id="lightboxBody" class="modal-body photo-lightbox-body"></div>
+      <div id="lightboxBody" class="modal-body photo-lightbox-body" style="padding: 18px; max-height: 85vh; overflow-y: auto;"></div>
     </div>
+  </div>
   </div>
 
 

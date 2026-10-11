@@ -343,6 +343,14 @@ this.activeAesopTheme = 'all';
     this.renderCountries();
 
     this.setupTypingListeners();
+
+    // 전역 ESC 키 모달 닫기
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        app.closePhotoLightbox();
+        app.closeCarModal();
+      }
+    });
     this.renderStamps();
     this.setupSpeechRecognition();
 
@@ -2324,18 +2332,29 @@ this.activeAesopTheme = 'all';
   // =========================================================================
   // 8. 대한민국 인기 자동차 대백과 & 세대별 연혁관
   // =========================================================================
-  filterCars(brandGroup) {
-    this.activeCarBrand = brandGroup;
+  // 8. 대한민국 인기 자동차 대백과 & 세대별 연혁관
+  // =========================================================================
+  filterCars(brandGroup, shouldScroll = true) {
+    this.activeCarBrand = brandGroup || 'all';
     this.playPop();
 
     document.querySelectorAll('#carCountryFilters .subnav-btn').forEach(btn => {
-      const match = brandGroup === 'all'
-        ? btn.textContent.includes('전체')
-        : btn.getAttribute('onclick').includes(brandGroup);
-      btn.classList.toggle('active', match);
+      const brand = btn.getAttribute('data-brand');
+      const match = (brandGroup === 'all')
+        ? (brand === 'all' || btn.textContent.includes('전체'))
+        : (brand === brandGroup || btn.getAttribute('onclick')?.includes(brandGroup));
+      btn.classList.toggle('active', !!match);
     });
 
     this.renderCars();
+
+    if (shouldScroll) {
+      const grid = document.getElementById('carsGrid');
+      if (grid) {
+        const topPos = grid.getBoundingClientRect().top + window.pageYOffset - 90;
+        window.scrollTo({ top: topPos, behavior: 'smooth' });
+      }
+    }
   }
 
   renderCars() {
@@ -2343,194 +2362,348 @@ this.activeAesopTheme = 'all';
     if (!grid) return;
 
     let list = window.EDU_DATA.cars || [];
-    if (this.activeCarBrand !== 'all') {
+    if (this.activeCarBrand && this.activeCarBrand !== 'all') {
       list = list.filter(c => c.brandGroup === this.activeCarBrand);
     }
 
-    grid.innerHTML = list.map(car => {
-      const activeIdx = this.activeCarGenIndex[car.id] || 0;
-      const currentGen = car.generations[activeIdx] || car.generations[0];
+    const brandNames = {
+      all: '🌐 대한민국 & 글로벌 전설의 명차 8선 (총 38개 세대 · 120장 실물 사진)',
+      hyundai: '🇰🇷 현대자동차 역사관 (그랜저·쏘나타·아반떼 총 22개 세대)',
+      kia: '🇰🇷 기아 역사관 (카니발·쏘렌토 총 8개 세대)',
+      genesis: '👑 제네시스 럭셔리 역사관 (G80 총 3개 세대)',
+      honda: '🇯🇵 혼다 역사관 (어코드 월드베스트 총 4개 세대)',
+      toyota: '🇯🇵 토요타 역사관 (캠리 글로벌 세단 총 3개 세대)'
+    };
+    const titleText = brandNames[this.activeCarBrand] || brandNames.all;
 
-      return `
-        <div class="car-card">
-          <div class="car-card-header">
-            <div class="car-title-box">
-              <span class="car-brand-tag">${car.brand} · ${car.country}</span>
-              <h3 class="car-name-text">${car.name}</h3>
-              <p class="car-hero-catchphrase">${car.catchphrase}</p>
-            </div>
-            <span class="car-type-badge">${car.categoryName || car.type || "인기 승용차"}</span>
-          </div>
-
-          <!-- 세대 선택 탭 -->
-          <div class="car-gen-nav">
-            ${car.generations.map((g, idx) => `
-              <button class="gen-pill-btn ${idx === activeIdx ? 'active' : ''}" onclick="app.switchCarGen('${car.id}', ${idx})">
-                ${g.gen}
-              </button>
-            `).join('')}
-          </div>
-
-          <!-- 실제 3각 사진 뷰어 -->
-          <div class="car-photos-preview" onclick="app.openPhotoLightbox('${car.id}', ${activeIdx})">
-            <div class="photo-box main">
-              <img src="${currentGen.photos.front}" alt="${currentGen.name} 전면" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800'">
-              <span class="photo-angle-tag">전면 (앞모습)</span>
-            </div>
-            <div class="photo-sub-col">
-              <div class="photo-box sub">
-                <img src="${currentGen.photos.rear}" alt="${currentGen.name} 후면" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800'">
-                <span class="photo-angle-tag">후면 (뒷모습)</span>
-              </div>
-              <div class="photo-box sub">
-                <img src="${currentGen.photos.side}" alt="${currentGen.name} 측면" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800'">
-                <span class="photo-angle-tag">측면 (옆모습)</span>
-              </div>
-            </div>
-          </div>
-          <p class="photo-click-hint">🔍 사진을 터치하면 전면·후면·측면 고화질 돋보기로 볼 수 있어요!</p>
-
-          <!-- 현재 세대 상세 정보 -->
-          <div class="gen-detail-card">
-            <div class="gen-detail-header">
-              <span class="gen-name-badge">${currentGen.name}</span>
-              <span class="gen-years-tag">출시: ${currentGen.years} (${currentGen.status})</span>
-            </div>
-            <p class="gen-feature-text">${currentGen.feature}</p>
-
-            <div class="car-specs-grid">
-              <div class="spec-cell">
-                <span class="s-label">💰 신차 가격</span>
-                <strong class="s-val">${currentGen.price}</strong>
-              </div>
-              <div class="spec-cell">
-                <span class="s-label">⚙️ 엔진/배기량</span>
-                <strong class="s-val">${currentGen.specs.engine}</strong>
-              </div>
-              <div class="spec-cell">
-                <span class="s-label">🐎 최고 출력</span>
-                <strong class="s-val">${currentGen.specs.power}</strong>
-              </div>
-              <div class="spec-cell">
-                <span class="s-label">⛽ 연비</span>
-                <strong class="s-val">${currentGen.specs.fuelEconomy}</strong>
-              </div>
-            </div>
-
-            <!-- 장단점 -->
-            <div class="pros-cons-box">
-              <div class="pro-row">
-                <span class="pc-badge pro">👍 장점</span>
-                <span>${currentGen.pros}</span>
-              </div>
-              <div class="con-row">
-                <span class="pc-badge con">💡 단점</span>
-                <span>${currentGen.cons}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 연혁 요약 -->
-          <div class="car-timeline-box">
-            <div class="timeline-title">📜 ${car.name}의 역사 연혁 요약</div>
-            <p class="timeline-summary">${car.timelineSummary}</p>
-          </div>
-
-          <div class="car-card-actions">
-            <button class="btn-bubble primary" onclick="app.openCarModal('${car.id}')">
-              <span>🏎️ 4개국어 대화 & 상세 제원</span>
-            </button>
+    grid.innerHTML = `
+      <div class="cars-filter-banner" style="grid-column: 1 / -1; background: linear-gradient(135deg, #eff6ff, #f8fafc); border: 1.5px solid #bfdbfe; border-radius: 16px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(37,99,235,0.08);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 22px;">🏎️</span>
+          <div>
+            <strong style="font-size: 15.5px; color: #1e3a8a;">${titleText}</strong>
+            <span style="font-size: 13px; color: #64748b; margin-left: 8px;">(${list.length}개 대표 차종 수록)</span>
           </div>
         </div>
-      `;
-    }).join('');
+        <span style="font-size: 12.5px; font-weight: 700; color: #2563eb; background: #dbeafe; padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;">
+          ⚡ 1~8세대 및 사진 터치 가능
+        </span>
+      </div>
+      ${list.map(car => this.renderCarCardHTML(car)).join('')}
+    `;
   }
 
+  renderCarCardHTML(car) {
+    const activeIdx = this.activeCarGenIndex[car.id] || 0;
+    return `
+      <div class="car-card" id="carCard_${car.id}">
+        ${this.renderCarCardInner(car, activeIdx)}
+      </div>
+    `;
+  }
+
+  renderCarCardInner(car, activeIdx) {
+    const currentGen = car.generations[activeIdx] || car.generations[0];
+    return `
+      <div class="car-card-header">
+        <div class="car-title-box">
+          <span class="car-brand-tag">${car.brand} · ${car.country}</span>
+          <h3 class="car-name-text">${car.name}</h3>
+          <p class="car-hero-catchphrase">${car.catchphrase}</p>
+        </div>
+        <span class="car-type-badge">${car.categoryName || car.type || "인기 승용차"}</span>
+      </div>
+
+      <!-- 세대 선택 탭 (1세대, 2세대, 3세대... 다 선택 가능) -->
+      <div class="car-gen-nav" style="display:flex; flex-wrap:wrap; gap:6px; margin: 12px 0 14px 0;">
+        ${car.generations.map((g, idx) => `
+          <button type="button" class="gen-pill-btn ${idx === activeIdx ? 'active' : ''}" onclick="app.switchCarGen('${car.id}', ${idx})" title="${g.name} (${g.years})">
+            ${g.gen}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- 실제 3각 사진 뷰어 (전면, 후면, 측면 각각 터치 시 해당 각도로 즉시 고화질 확대) -->
+      <div class="car-photos-preview">
+        <div class="photo-box main" onclick="app.openPhotoLightbox('${car.id}', ${activeIdx}, 'front')" title="클릭하여 전면 고화질 확대">
+          <img src="${currentGen.photos.front}" alt="${currentGen.name} 전면" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800'">
+          <span class="photo-angle-tag">전면 (앞모습) 🔍 터치 확대</span>
+        </div>
+        <div class="photo-sub-col">
+          <div class="photo-box sub" onclick="app.openPhotoLightbox('${car.id}', ${activeIdx}, 'rear')" title="클릭하여 후면 고화질 확대">
+            <img src="${currentGen.photos.rear}" alt="${currentGen.name} 후면" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800'">
+            <span class="photo-angle-tag">후면 (뒷모습) 🔍</span>
+          </div>
+          <div class="photo-box sub" onclick="app.openPhotoLightbox('${car.id}', ${activeIdx}, 'side')" title="클릭하여 측면 고화질 확대">
+            <img src="${currentGen.photos.side}" alt="${currentGen.name} 측면" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800'">
+            <span class="photo-angle-tag">측면 (옆모습) 🔍</span>
+          </div>
+        </div>
+      </div>
+      <p class="photo-click-hint" style="cursor:pointer;" onclick="app.openPhotoLightbox('${car.id}', ${activeIdx}, 'front')">
+        🔍 사진을 터치하면 전면·후면·측면 고화질 돋보기로 볼 수 있어요!
+      </p>
+
+      <!-- 현재 세대 상세 정보 -->
+      <div class="gen-detail-card">
+        <div class="gen-detail-header">
+          <span class="gen-name-badge">${currentGen.name}</span>
+          <span class="gen-years-tag">출시: ${currentGen.years} (${currentGen.status})</span>
+        </div>
+        <p class="gen-feature-text">${currentGen.feature}</p>
+
+        <div class="car-specs-grid">
+          <div class="spec-cell">
+            <span class="s-label">💰 신차 가격</span>
+            <strong class="s-val">${currentGen.price}</strong>
+          </div>
+          <div class="spec-cell">
+            <span class="s-label">⚙️ 엔진/배기량</span>
+            <strong class="s-val">${currentGen.specs.engine}</strong>
+          </div>
+          <div class="spec-cell">
+            <span class="s-label">🐎 최고 출력</span>
+            <strong class="s-val">${currentGen.specs.power}</strong>
+          </div>
+          <div class="spec-cell">
+            <span class="s-label">⛽ 연비</span>
+            <strong class="s-val">${currentGen.specs.fuelEconomy}</strong>
+          </div>
+        </div>
+
+        <!-- 장단점 -->
+        <div class="pros-cons-box">
+          <div class="pro-row">
+            <span class="pc-badge pro">👍 장점</span>
+            <span>${currentGen.pros}</span>
+          </div>
+          <div class="con-row">
+            <span class="pc-badge con">💡 단점</span>
+            <span>${currentGen.cons}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 연혁 요약 -->
+      <div class="car-timeline-box">
+        <div class="timeline-title">📜 ${car.name}의 역사 연혁 요약</div>
+        <p class="timeline-summary">${car.timelineSummary}</p>
+      </div>
+
+      <div class="car-card-actions">
+        <button class="btn-bubble primary" onclick="app.openCarModal('${car.id}')">
+          <span>🏎️ 4개국어 대화 & 브랜드 역사</span>
+        </button>
+      </div>
+    `;
+  }
+
+  // 세대 즉각 전환 (스크롤 안 튀고 해당 카드만 부드럽게 업데이트)
   switchCarGen(carId, genIndex) {
     this.playPop();
     this.activeCarGenIndex[carId] = genIndex;
-    this.renderCars();
 
+    const cardEl = document.getElementById('carCard_' + carId);
     const car = window.EDU_DATA.cars.find(c => c.id === carId);
+
+    if (cardEl && car) {
+      cardEl.innerHTML = this.renderCarCardInner(car, genIndex);
+      cardEl.classList.add('gen-switched-highlight');
+      setTimeout(() => cardEl.classList.remove('gen-switched-highlight'), 500);
+    } else {
+      this.renderCars();
+    }
+
     if (car && car.generations[genIndex]) {
       this.logChildActivity('car', '🚗', `자동차 연혁: ${car.name} ${car.generations[genIndex].gen}`, `${car.generations[genIndex].name} 탐구`, 'car', 45);
     }
   }
 
-  openPhotoLightbox(carId, genIndex) {
+  // ==================== 실제 사진 고화질 돋보기 라이트박스 ====================
+  openPhotoLightbox(carId, genIndex, initialAngle = 'front') {
     const car = window.EDU_DATA.cars.find(c => c.id === carId);
     if (!car) return;
-    const genData = car.generations[genIndex];
+    this.activeCarGenIndex[carId] = genIndex;
+    this.currentLightboxCarId = carId;
+    this.currentLightboxGenIdx = genIndex;
+    this.currentLightboxAngle = initialAngle;
 
-    const modal = document.getElementById('carDetailModal');
-    const header = document.getElementById('carModalTitle');
-    const body = document.getElementById('carModalBody');
+    const modal = document.getElementById('photoLightboxModal');
+    if (!modal) return;
 
     this.playPop();
-    header.innerHTML = `📸 ${car.name} ${genData.name} 실물 사진관 (3각 뷰)`;
+    this.renderLightboxContent();
+    modal.classList.add('active');
+
+    const genData = car.generations[genIndex];
+    if (genData && genData.angleHints && genData.angleHints[initialAngle]) {
+      this.speak(genData.angleHints[initialAngle], 'ko-KR');
+    }
+    this.logChildActivity('car', '🔍', `고화질 사진 탐구: ${car.name}`, `${genData.name} 실물 관찰`, 'car', 60);
+  }
+
+  renderLightboxContent() {
+    const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+    if (!car) return;
+    const genIndex = this.currentLightboxGenIdx || 0;
+    const genData = car.generations[genIndex] || car.generations[0];
+    const angle = this.currentLightboxAngle || 'front';
+
+    const header = document.getElementById('lightboxTitle');
+    if (header) {
+      header.innerHTML = `📸 ${car.name} <span style="color:#2563eb; font-weight:800;">[${genData.gen} - ${genData.name}]</span> 고화질 돋보기 관찰관`;
+    }
+
+    const body = document.getElementById('lightboxBody');
+    if (!body) return;
+
+    const angleMap = { front: '전면 (앞모습)', rear: '후면 (뒷모습)', side: '측면 (옆모습)' };
+    const currentPhoto = genData.photos[angle] || genData.photos.front;
+    const currentTip = genData.angleHints[angle] || genData.angleHints.front;
 
     body.innerHTML = `
-      <div style="padding: 10px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h4 style="font-size:18px; font-weight:800; color:#1e3a8a; margin:0;">${car.name} - ${genData.name} (${genData.years})</h4>
-          <span style="font-size:13px; font-weight:700; background:#dbeafe; color:#1d4ed8; padding:4px 10px; border-radius:12px;">${genData.status}</span>
+      <div class="photo-lightbox-inner" style="display:flex; flex-direction:column; gap:14px;">
+        
+        <!-- 1. 세대 원클릭 전환 탭 (뷰어 안에서도 1세대, 2세대, 3세대... 자유 이동) -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:10px 14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:13px; font-weight:800; color:#334155;">✨ 세대 선택 (터치하면 바로 해당 세대 사진으로 전환):</span>
+            <span style="font-size:12px; font-weight:700; background:#e0f2fe; color:#0369a1; padding:3px 10px; border-radius:12px;">
+              ${genData.years} (${genData.status})
+            </span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            ${car.generations.map((g, idx) => `
+              <button type="button" class="gen-pill-btn ${idx === genIndex ? 'active' : ''}" 
+                onclick="app.switchLightboxGen(${idx})" style="font-size:12.5px; padding:6px 14px;">
+                ${g.gen}
+              </button>
+            `).join('')}
+          </div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:16px;">
-          <button class="subnav-btn active" id="lbBtn_front" onclick="app.switchLightboxAngle('front', '${genData.photos.front}', '${genData.angleHints.front.replace(/'/g, "")}')">
+        <!-- 2. 각도 선택 탭 (전면 / 후면 / 측면) -->
+        <div style="display:flex; gap:10px; align-items:center; justify-content:center;">
+          <button type="button" class="subnav-btn ${angle === 'front' ? 'active' : ''}" id="lbBtn_front" onclick="app.switchLightboxAngle('front')" style="padding:8px 18px; font-weight:700;">
             🚗 전면 (앞모습)
           </button>
-          <button class="subnav-btn" id="lbBtn_rear" onclick="app.switchLightboxAngle('rear', '${genData.photos.rear}', '${genData.angleHints.rear.replace(/'/g, "")}')">
+          <button type="button" class="subnav-btn ${angle === 'rear' ? 'active' : ''}" id="lbBtn_rear" onclick="app.switchLightboxAngle('rear')" style="padding:8px 18px; font-weight:700;">
             🚙 후면 (뒷모습)
           </button>
-          <button class="subnav-btn" id="lbBtn_side" onclick="app.switchLightboxAngle('side', '${genData.photos.side}', '${genData.angleHints.side.replace(/'/g, "")}')">
+          <button type="button" class="subnav-btn ${angle === 'side' ? 'active' : ''}" id="lbBtn_side" onclick="app.switchLightboxAngle('side')" style="padding:8px 18px; font-weight:700;">
             🏎️ 측면 (옆모습)
           </button>
         </div>
 
-        <div style="background:#0f172a; border-radius:18px; overflow:hidden; position:relative; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center;">
-          <img id="lightboxMainImg" src="${genData.photos.front}" alt="${genData.name} 전면" style="width:100%; height:100%; object-fit:cover;">
-          <div id="lightboxAngleTag" style="position:absolute; top:12px; left:12px; background:rgba(0,0,0,0.7); color:#fff; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700;">
-            전면 (앞모습)
+        <!-- 3. 고화질 대형 이미지 스테이지 (클릭 시 돋보기 확대) -->
+        <div class="lightbox-stage" style="background:#090d16; border-radius:18px; position:relative; min-height:360px; max-height:500px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px solid #1e293b; box-shadow: inset 0 0 40px rgba(0,0,0,0.8);">
+          <img id="lightboxMainImg" src="${currentPhoto}" alt="${genData.name} ${angleMap[angle]}" 
+            style="width:100%; max-height:480px; object-fit:contain; cursor:zoom-in; transition:transform 0.25s ease;"
+            onclick="this.style.transform = this.style.transform === 'scale(1.4)' ? 'scale(1)' : 'scale(1.4)'"
+            title="사진을 누르면 더 크게 확대(Zoom)됩니다!">
+
+          <!-- 이전/다음 각도 이동 버튼 -->
+          <button type="button" onclick="app.stepLightboxAngle(-1)" title="이전 각도 사진"
+            style="position:absolute; left:12px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.65); color:#fff; border:none; border-radius:50%; width:44px; height:44px; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:0.2s;" onmouseover="this.style.background='rgba(37,99,235,0.85)'" onmouseout="this.style.background='rgba(0,0,0,0.65)'">◀</button>
+
+          <button type="button" onclick="app.stepLightboxAngle(1)" title="다음 각도 사진"
+            style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.65); color:#fff; border:none; border-radius:50%; width:44px; height:44px; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:0.2s;" onmouseover="this.style.background='rgba(37,99,235,0.85)'" onmouseout="this.style.background='rgba(0,0,0,0.65)'">▶</button>
+
+          <!-- 상단 뱃지 -->
+          <div id="lightboxAngleTag" style="position:absolute; top:12px; left:14px; background:rgba(15,23,42,0.85); color:#ffffff; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:800; border:1px solid rgba(255,255,255,0.2); backdrop-filter:blur(4px);">
+            ${angleMap[angle]}
+          </div>
+
+          <div style="position:absolute; bottom:12px; right:14px; background:rgba(0,0,0,0.7); color:#cbd5e1; padding:5px 12px; border-radius:12px; font-size:12px; font-weight:600;">
+            🔍 터치하여 줌 확대 / 축소
           </div>
         </div>
 
-        <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:14px; padding:14px; margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
-          <p id="lightboxDadText" style="margin:0; font-size:14.5px; font-weight:700; color:#78350f;">
-            👨 정연수 아빠: "${genData.angleHints.front}"
-          </p>
-          <button class="btn-bubble primary" style="font-size:13px; padding:6px 14px;" onclick="app.speak(document.getElementById('lightboxDadText').innerText, 'ko-KR')">
-            🔊 듣기
+        <!-- 4. 아빠의 가이드 스토리 및 음성 낭독 -->
+        <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:24px;">👨‍👦</span>
+            <p id="lightboxDadText" style="margin:0; font-size:14.5px; font-weight:700; color:#78350f; line-height:1.5;">
+              정연수 아빠: "${currentTip}"
+            </p>
+          </div>
+          <button type="button" class="btn-bubble primary" style="font-size:13px; padding:8px 16px; white-space:nowrap; flex-shrink:0;" 
+            onclick="app.speak(document.getElementById('lightboxDadText').innerText, 'ko-KR')">
+            🔊 아빠 목소리로 듣기
           </button>
         </div>
+
+        <!-- 5. 핵심 제원 빠른 요약 바 -->
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; background:#f1f5f9; border-radius:12px; padding:12px;">
+          <div style="text-align:center;">
+            <span style="font-size:11px; color:#64748b; font-weight:700;">신차가격</span>
+            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:2px;">${genData.price}</div>
+          </div>
+          <div style="text-align:center;">
+            <span style="font-size:11px; color:#64748b; font-weight:700;">엔진/배기량</span>
+            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:2px;">${genData.specs.engine}</div>
+          </div>
+          <div style="text-align:center;">
+            <span style="font-size:11px; color:#64748b; font-weight:700;">최고출력</span>
+            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:2px;">${genData.specs.power}</div>
+          </div>
+          <div style="text-align:center;">
+            <span style="font-size:11px; color:#64748b; font-weight:700;">공인연비</span>
+            <div style="font-size:13px; font-weight:800; color:#1e293b; margin-top:2px;">${genData.specs.fuelEconomy}</div>
+          </div>
+        </div>
+
       </div>
     `;
-
-    modal.classList.add('active');
-    this.speak(genData.angleHints.front, 'ko-KR');
-    this.logChildActivity('car', '🔍', `고화질 사진 탐구: ${car.name}`, `${genData.name} 3각 사진 관찰`, 'car', 60);
   }
 
-  switchLightboxAngle(angle, photoUrl, tip) {
+  switchLightboxGen(newGenIdx) {
     this.playPop();
-    const img = document.getElementById('lightboxMainImg');
-    const tag = document.getElementById('lightboxAngleTag');
-    const dadText = document.getElementById('lightboxDadText');
-
-    ['front', 'rear', 'side'].forEach(a => {
-      const btn = document.getElementById(`lbBtn_${a}`);
-      if (btn) btn.classList.toggle('active', a === angle);
-    });
-
-    const angleMap = { front: '전면 (앞모습)', rear: '후면 (뒷모습)', side: '측면 (옆모습)' };
-
-    if (img) img.src = photoUrl;
-    if (tag) tag.textContent = angleMap[angle];
-    if (dadText) dadText.textContent = `👨 정연수 아빠: "${tip}"`;
-
-    this.speak(tip, 'ko-KR');
+    this.currentLightboxGenIdx = newGenIdx;
+    if (this.currentLightboxCarId) {
+      this.activeCarGenIndex[this.currentLightboxCarId] = newGenIdx;
+      // 카드도 백그라운드에서 동기화
+      const cardEl = document.getElementById('carCard_' + this.currentLightboxCarId);
+      const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+      if (cardEl && car) {
+        cardEl.innerHTML = this.renderCarCardInner(car, newGenIdx);
+      }
+    }
+    this.renderLightboxContent();
+    const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+    const genData = car?.generations[newGenIdx];
+    if (genData && genData.angleHints && genData.angleHints[this.currentLightboxAngle]) {
+      this.speak(genData.angleHints[this.currentLightboxAngle], 'ko-KR');
+    }
   }
 
+  switchLightboxAngle(angle) {
+    this.playPop();
+    this.currentLightboxAngle = angle;
+    this.renderLightboxContent();
+    const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+    const genData = car?.generations[this.currentLightboxGenIdx || 0];
+    if (genData && genData.angleHints && genData.angleHints[angle]) {
+      this.speak(genData.angleHints[angle], 'ko-KR');
+    }
+  }
+
+  stepLightboxAngle(delta) {
+    const angles = ['front', 'rear', 'side'];
+    let idx = angles.indexOf(this.currentLightboxAngle);
+    if (idx === -1) idx = 0;
+    idx = (idx + delta + angles.length) % angles.length;
+    this.switchLightboxAngle(angles[idx]);
+  }
+
+  closePhotoLightbox() {
+    this.playPop();
+    const modal = document.getElementById('photoLightboxModal');
+    if (modal) modal.classList.remove('active');
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  }
+
+  // ==================== 4개국어 대화 & 브랜드 역사 모달 ====================
   openCarModal(carId) {
     const car = window.EDU_DATA.cars.find(c => c.id === carId);
     if (!car) return;
@@ -2540,45 +2713,49 @@ this.activeAesopTheme = 'all';
     const header = document.getElementById('carModalTitle');
     const body = document.getElementById('carModalBody');
 
-    header.innerHTML = `🏎️ ${car.name} 대백과 & 4개국어 대화`;
+    if (header) header.innerHTML = `🏎️ ${car.name} 대백과 & 4개국어 대화`;
 
-    body.innerHTML = `
-      <div style="padding: 10px;">
-        <div style="background: #f1f5f9; padding: 18px; border-radius: 16px; margin-bottom: 20px;">
-          <h4 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">📜 ${car.brand}의 브랜드 역사</h4>
-          <p style="font-size: 14.5px; line-height: 1.6; color: #334155; margin: 0;">${car.brandHistory}</p>
-        </div>
+    if (body) {
+      body.innerHTML = `
+        <div style="padding: 10px;">
+          <div style="background: #f1f5f9; padding: 18px; border-radius: 16px; margin-bottom: 20px;">
+            <h4 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">📜 ${car.brand}의 브랜드 역사</h4>
+            <p style="font-size: 14.5px; line-height: 1.6; color: #334155; margin: 0;">${car.brandHistory}</p>
+          </div>
 
-        <h4 style="font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">🌍 4개국어 자동차 대화 놀이</h4>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          ${Object.entries(car.languages).map(([langKey, langData]) => {
-            const flagMap = { ko: '🇰🇷 한국어', en: '🇺🇸 English', zh: '🇨🇳 中文', ja: '🇯🇵 日本語' };
-            const langTagMap = { ko: 'ko-KR', en: 'en-US', zh: 'zh-CN', ja: 'ja-JP' };
-            return `
-              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <span style="font-size: 12px; font-weight: 800; color: #64748b;">${flagMap[langKey]}</span>
-                  <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 3px 0;">${langData.title}</div>
-                  <div style="font-size: 13.5px; color: #475569;">${langData.desc}</div>
+          <h4 style="font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">🌍 4개국어 자동차 대화 놀이</h4>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${Object.entries(car.languages).map(([langKey, langData]) => {
+              const flagMap = { ko: '🇰🇷 한국어', en: '🇺🇸 English', zh: '🇨🇳 中文', ja: '🇯🇵 日本語' };
+              const langTagMap = { ko: 'ko-KR', en: 'en-US', zh: 'zh-CN', ja: 'ja-JP' };
+              return `
+                <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span style="font-size: 12px; font-weight: 800; color: #64748b;">${flagMap[langKey]}</span>
+                    <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 3px 0;">${langData.title}</div>
+                    <div style="font-size: 13.5px; color: #475569;">${langData.desc}</div>
+                  </div>
+                  <button type="button" class="btn-listen" onclick="app.speak('${langData.desc.replace(/'/g, "")}', '${langTagMap[langKey]}')">
+                    🔊 듣기
+                  </button>
                 </div>
-                <button class="btn-listen" onclick="app.speak('${langData.desc.replace(/'/g, "")}', '${langTagMap[langKey]}')">
-                  🔊 듣기
-                </button>
-              </div>
-            `;
-          }).join('')}
+              `;
+            }).join('')}
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
 
-    modal.classList.add('active');
+    if (modal) modal.classList.add('active');
     this.logChildActivity('car', '🏎️', `4개국어 자동차 탐험: ${car.name}`, `${car.brand} 역사 및 회화`, 'car', 60);
   }
 
   closeCarModal() {
     this.playPop();
     document.getElementById('carDetailModal')?.classList.remove('active');
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
+  
 
   // =========================================================================
   // 8-1. 이솝우화 30편 동화 나라 & 아빠 AI 구연동화 듣기 엔진
