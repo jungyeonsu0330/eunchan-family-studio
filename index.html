@@ -1151,7 +1151,7 @@
     <div class="modal-box aesop-modal-box">
       <div class="modal-header">
         <h3 id="aesopModalTitle">📖 이솝우화 이야기 듣기</h3>
-        <button class="modal-close" onclick="app.closeAesopModal()">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;"><button class="btn-modal-home" onclick="app.goHome()"><span>🏠 홈으로</span></button><button class="modal-close" onclick="app.closeAesopModal()">✕</button></div>
       </div>
       <div id="aesopModalBody" class="modal-body aesop-modal-body"></div>
     </div>
@@ -1182,7 +1182,7 @@
           <span class="quiz-header-badge">🎯 국기 & 지리 퀴즈 아레나</span>
           <h3 id="quizArenaTitle">세계 국기·수도·특산물 퀴즈</h3>
         </div>
-        <button class="modal-close" onclick="app.closeCountryQuiz()">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;"><button class="btn-modal-home" onclick="app.goHome()"><span>🏠 홈으로</span></button><button class="modal-close" onclick="app.closeCountryQuiz()">✕</button></div>
       </div>
       <div id="countryQuizBody" class="modal-body country-quiz-body"></div>
     </div>
@@ -1198,7 +1198,7 @@
           <span class="voice-challenge-badge">🎤 4개국어 말하기 챌린지</span>
           <h3 id="voiceModalTitle">큰 소리로 따라 해봐요!</h3>
         </div>
-        <button class="modal-close" onclick="app.closeVoiceChallenge()">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;"><button class="btn-modal-home" onclick="app.goHome()"><span>🏠 홈으로</span></button><button class="modal-close" onclick="app.closeVoiceChallenge()">✕</button></div>
       </div>
 
       <div class="modal-body voice-modal-body">
@@ -1298,5 +1298,11 @@
     </div>
   </div>
 
+
+  <!-- 🏠 스마트폰 전용 어느 페이지든 나타나는 '홈으로 돌아가기' 플로팅 버튼 -->
+  <button id="floatingHomeBtn" class="floating-home-btn" onclick="app.goHome()" title="홈(아빠의 거실)으로 돌아가기">
+    <span class="home-btn-icon">🏠</span>
+    <span class="home-btn-text">홈으로</span>
+  </button>
 </body>
 </html>

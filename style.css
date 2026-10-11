@@ -7365,3 +7365,107 @@ body {
   border-color: #2563eb;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
+
+
+/* ==========================================================================
+   🏠 스마트폰 전용 전 페이지 '홈으로 돌아가기' 플로팅 버튼
+   ========================================================================== */
+.floating-home-btn {
+  position: fixed;
+  bottom: 22px;
+  right: 18px;
+  z-index: 99998;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 2.5px solid #ffffff;
+  border-radius: 999px;
+  padding: 11px 20px;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.45), 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+}
+
+.floating-home-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(217, 119, 6, 0.6);
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+}
+
+.floating-home-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.floating-home-btn .home-btn-icon {
+  font-size: 20px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.floating-home-btn .home-btn-text {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* 홈 탭이 아닐 때 부드러운 펄스 애니메이션으로 안내 */
+.floating-home-btn.pulse-attract {
+  animation: homePulseGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes homePulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(217, 119, 6, 0.45);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.7);
+  }
+}
+
+/* 모달 헤더용 홈 버튼 스타일 */
+.btn-modal-home {
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-home:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.04);
+}
+
+
+/* 스마트폰 화면 최적화 (하단 여백 및 터치 크기) */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 95px !important;
+  }
+  .floating-home-btn {
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    padding: 10px 18px;
+    font-size: 14.5px;
+  }
+  .floating-home-btn .home-btn-icon {
+    font-size: 18px;
+  }
+}

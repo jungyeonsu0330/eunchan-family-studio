@@ -1089,6 +1089,10 @@ this.activeAesopTheme = 'all';
     if (targetSec) targetSec.classList.add('active');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    const floatingBtn = document.getElementById('floatingHomeBtn');
+    if (floatingBtn) {
+      floatingBtn.classList.toggle('pulse-attract', tabId !== 'home');
+    }
 
         if (tabId === 'countries') {
       this.renderCountries();
@@ -4658,6 +4662,45 @@ this.activeAesopTheme = 'all';
     } else {
       alert("📋 링크 주소: " + targetUrl);
     }
+  }
+
+
+  // =========================================================================
+  // 🏠 스마트폰 및 전 페이지 '홈으로 돌아가기' 컨트롤러
+  // =========================================================================
+  goHome() {
+    this.playPop();
+
+    // 1. 열려있는 모든 모달 닫기
+    const modalIds = [
+      'historyModal', 'carDetailModal', 'photoLightboxModal',
+      'stickerCelebrationModal', 'mobileAccessModal', 'aesopStoryModal',
+      'countryDetailModal', 'countryQuizModal', 'voicePracticeModal'
+    ];
+    modalIds.forEach(id => {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('active');
+    });
+
+    // 2. 음성/동화 읽기 정지
+    if (typeof this.stopStorybookAudio === 'function') this.stopStorybookAudio();
+    if (typeof this.stopAesopStory === 'function') this.stopAesopStory();
+    if (this.countryQuizAutoTimer) {
+      clearTimeout(this.countryQuizAutoTimer);
+      this.countryQuizAutoTimer = null;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    // 3. 홈 탭으로 전환
+    this.switchTab('home');
+
+    // 4. 최상단으로 스크롤 이동
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 5. 토스트 피드백
+    this.showToast('🏠 아빠의 거실(홈)으로 돌아왔어요!');
   }
 
 }
