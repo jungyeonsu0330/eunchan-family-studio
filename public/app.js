@@ -3727,16 +3727,17 @@ this.activeAesopTheme = 'all';
       if (parentTabBtn) parentTabBtn.style.display = 'none';
       if (this.currentTab === 'parent') this.switchTab('home');
 
-      if (profileId === 'eunwoo') {
-        if (brandTitle) brandTitle.textContent = '🌟 은우와 엄마·아빠의 꿈나무 놀이터';
-        if (brandDesc) brandDesc.textContent = '귀여운 동물·탈것 4개국어 & 신비한 옛날이야기';
-      } else {
-        if (brandTitle) brandTitle.textContent = '🌟 은찬이와 아빠의 모험 스튜디오';
-        if (brandDesc) brandDesc.textContent = '7·8·9세 글로벌 4개국어(한·영·중·일) & 역사 타임머신';
-      }
+      if (brandTitle) brandTitle.textContent = '☀️ 은찬, 은우 스튜디오';
+      if (brandDesc) brandDesc.textContent = '';
 
       this.startStickerPolling();
     }
+
+    // 좌우 여백 은찬이 / 은우 사진 활성 테두리 동기화
+    const leftWing = document.getElementById('sideWingEunchan');
+    const rightWing = document.getElementById('sideWingEunwoo');
+    if (leftWing) leftWing.classList.toggle('active-child', profileId === 'eunchan' || (this.isParentProfile(profileId) && this.parentTargetChild === 'eunchan'));
+    if (rightWing) rightWing.classList.toggle('active-child', profileId === 'eunwoo' || (this.isParentProfile(profileId) && this.parentTargetChild === 'eunwoo'));
   }
 
   selectParentTargetChild(childId) {
@@ -3747,6 +3748,11 @@ this.activeAesopTheme = 'all';
     const btn2 = document.getElementById('pChildBtn_eunwoo');
     if (btn1) btn1.classList.toggle('active', childId === 'eunchan');
     if (btn2) btn2.classList.toggle('active', childId === 'eunwoo');
+
+    const leftWing = document.getElementById('sideWingEunchan');
+    const rightWing = document.getElementById('sideWingEunwoo');
+    if (leftWing) leftWing.classList.toggle('active-child', childId === 'eunchan');
+    if (rightWing) rightWing.classList.toggle('active-child', childId === 'eunwoo');
 
     this.updateStickerButtonLabel();
     if (this.familyDb) {
