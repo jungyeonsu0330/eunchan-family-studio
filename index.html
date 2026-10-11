@@ -890,13 +890,60 @@
           </div>
         </div>
 
-        <!-- 카드 3: 실시간 아이 활동 타임라인 -->
+                <!-- 카드 3: 실시간 아이 행동 타임라인 -->
         <div class="parent-card timeline-card">
           <div class="pcard-header">
-            <h3>⏱️ 아이의 실시간 행동 타임라인</h3>
-            <span class="pcard-badge" id="timelineCountBadge">최근 활동</span>
+            <h3>⏱ 아이의 실시간 행동 타임라인</h3>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button type="button" class="btn-bubble primary" style="padding: 6px 12px; font-size: 13px;" onclick="app.toggleManualActivityForm()">
+                <span>✏️ 행동 기록 직접 쓰기</span>
+              </button>
+              <span class="pcard-badge" id="timelineCountBadge">최근 활동</span>
+            </div>
           </div>
-          <p class="pcard-desc">아이가 학습하고 누른 모든 과정이 시간대별로 기록됩니다.</p>
+          <p class="pcard-desc">아이가 학습한 과정과 부모님이 칭찬한 모든 행동이 시간대별로 기록됩니다.</p>
+
+          <!-- ✏️ 행동 기록 직접 작성 폼 (토글) -->
+          <div id="manualActivityBox" class="manual-activity-box" style="display:none; margin: 12px 0 16px; background: #fffdf5; border: 2px dashed #f59e0b; border-radius: 16px; padding: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <strong style="font-size:15px; color:#92400e;">✏️ <span id="manualTargetChildName">은우</span>의 새로운 행동 기록하기</strong>
+              <button type="button" class="btn-bubble" style="padding:3px 8px; font-size:12px; background:#fed7aa; color:#78350f;" onclick="app.toggleManualActivityForm(false)">닫기 ✕</button>
+            </div>
+            
+            <!-- 카테고리 태그 선택 -->
+            <div style="margin-bottom:10px;">
+              <span style="font-size:12px; color:#92400e; font-weight:700; display:block; margin-bottom:6px;">1. 활동 분야 선택:</span>
+              <div class="manual-cat-chips" style="display:flex; flex-wrap:wrap; gap:6px;">
+                <button type="button" class="chip-btn active" data-cat="habit" data-icon="🌟" onclick="app.selectManualCategory(this)">🌟 착한 행동·양보</button>
+                <button type="button" class="chip-btn" data-cat="life" data-icon="🥣" onclick="app.selectManualCategory(this)">🥣 식사·정리정돈</button>
+                <button type="button" class="chip-btn" data-cat="study" data-icon="📖" onclick="app.selectManualCategory(this)">📖 독서·언어공부</button>
+                <button type="button" class="chip-btn" data-cat="play" data-icon="🎨" onclick="app.selectManualCategory(this)">🎨 놀이·창의력</button>
+                <button type="button" class="chip-btn" data-cat="mission" data-icon="🏆" onclick="app.selectManualCategory(this)">🏆 스스로 미션 완수</button>
+              </div>
+            </div>
+
+            <!-- 빠른 추천 제목 칩 -->
+            <div style="margin-bottom:10px;">
+              <span style="font-size:12px; color:#92400e; font-weight:700; display:block; margin-bottom:6px;">2. 빠른 칭찬 제목 선택 (또는 직접 입력):</span>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                <button type="button" class="quick-chip" onclick="app.fillManualTitle('동생에게 장난감을 양보하고 다정하게 안아줌')">🧸 장난감 양보 & 배려</button>
+                <button type="button" class="quick-chip" onclick="app.fillManualTitle('편식하지 않고 밥 한 그릇을 씩씩하게 다 비움')">🍚 식사 골고루 완밥</button>
+                <button type="button" class="quick-chip" onclick="app.fillManualTitle('혼자서 양치질과 잠자리 정리를 스스로 척척 끝냄')">🪥 스스로 양치 & 정리</button>
+                <button type="button" class="quick-chip" onclick="app.fillManualTitle('엄마, 아빠 말씀에 밝게 대답하고 심부름 성공')">✨ 밝은 대답 & 심부름</button>
+                <button type="button" class="quick-chip" onclick="app.fillManualTitle('책 한 권을 끝까지 호기심 가득하게 집중해서 읽음')">📚 집중 독서 완료</button>
+              </div>
+            </div>
+
+            <!-- 제목 및 상세 입력 -->
+            <input type="text" id="manualActivityTitle" placeholder="칭찬할 행동 제목을 적어주세요 (예: 동생에게 장난감 양보)" style="width:100%; padding:10px 14px; border:2px solid #fbd38d; border-radius:10px; font-size:14px; margin-bottom:8px; box-sizing:border-box; background:#fff;">
+            <textarea id="manualActivityDetail" placeholder="칭찬 메모나 아이의 반응을 적어주세요 (예: 엄마의 칭찬에 환하게 웃으며 뿌듯해함)" style="width:100%; height:60px; padding:10px 14px; border:2px solid #fbd38d; border-radius:10px; font-size:13px; resize:none; margin-bottom:12px; box-sizing:border-box; background:#fff; font-family:inherit;"></textarea>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+              <button type="button" class="btn-bubble primary" style="padding:10px 22px; font-size:14px;" onclick="app.submitManualActivity()">
+                <span>💾 타임라인에 등록하기 (실시간 반영) ➔</span>
+              </button>
+            </div>
+          </div>
           <div id="parentTimelineList" class="parent-timeline-feed"></div>
         </div>
 
@@ -1305,5 +1352,67 @@
     <span class="home-btn-icon">🏠</span>
     <span class="home-btn-text">홈으로</span>
   </button>
+
+  <!-- 🏆 엄마·아빠 공동 서명 황금 상장 인쇄 모달 -->
+  <div id="certificateModal" class="modal-overlay certificate-modal-overlay">
+    <div class="modal-box certificate-modal-box">
+      <div class="certificate-top-bar no-print">
+        <button type="button" class="btn-bubble primary btn-print-cert" onclick="app.printCertificateDoc()">
+          <span>🖨️ 지금 바로 인쇄하기 (A4 출력 / PDF 저장)</span>
+        </button>
+        <button type="button" class="modal-close" onclick="app.closeCertificateModal()" title="닫기">✕</button>
+      </div>
+
+      <!-- 실제 인쇄되는 고품격 황금 상장 영역 -->
+      <div class="printable-certificate-sheet" id="printableCertificateSheet">
+        <div class="cert-outer-border">
+          <div class="cert-inner-border">
+            <div class="cert-corner tl"></div>
+            <div class="cert-corner tr"></div>
+            <div class="cert-corner bl"></div>
+            <div class="cert-corner br"></div>
+
+            <div class="cert-header">
+              <div class="cert-medal-icon">🏆</div>
+              <div class="cert-award-ribbon">GOLDEN AWARD OF EXCELLENCE</div>
+              <h1 class="cert-title">황 금 칭 찬 상 장</h1>
+              <p class="cert-subtitle">세상에서 가장 성실하고 사랑스러운 우리 아이</p>
+            </div>
+
+            <div class="cert-recipient-box">
+              <span class="cert-recipient-name" id="certChildName">정은우 어린이</span>
+            </div>
+
+            <div class="cert-body">
+              <p class="cert-reason" id="certReasonText">
+                위 어린이는 글로벌 4개국어(한·영·중·일) 학습과 한국을 빛낸 100명의 위인 역사,<br>
+                그리고 이솝우화 지혜 탐구에 성실하게 참여하여 엄마·아빠의 사랑이 가득 담긴<br>
+                <strong>칭찬 도장 10개를 훌륭하게 완주</strong>하였으므로 온 가족의 넘치는 축복과<br>
+                자랑스러운 마음을 담아 이 황금 상장을 수여합니다.
+              </p>
+            </div>
+
+            <div class="cert-date" id="certDateText">2026년 10월 12일</div>
+
+            <div class="cert-signatures">
+              <div class="sign-block dad-sign">
+                <span class="sign-role">사랑하는 아빠</span>
+                <span class="sign-name">정 연 수</span>
+                <span class="sign-stamp gold-dad-stamp">印</span>
+              </div>
+              <div class="sign-block mom-sign">
+                <span class="sign-role">따뜻한 사랑 엄마</span>
+                <span class="sign-name">엄 마</span>
+                <span class="sign-stamp rose-mom-stamp">印</span>
+              </div>
+            </div>
+
+            <div class="cert-bottom-family">은찬이와 은우의 사랑이 가득한 패밀리 스튜디오</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

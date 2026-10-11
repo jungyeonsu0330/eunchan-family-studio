@@ -516,7 +516,20 @@ this.activeAesopTheme = 'all';
   getLocalFamilyDb() {
     try {
       const saved = localStorage.getItem('eunchan_family_db_v1');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // 은우 활동 데이터가 비어있으면 초기 3개 활동 보강
+        if (!parsed.activities || parsed.activities.filter(a => a.childId === 'eunwoo').length === 0) {
+          parsed.activities = parsed.activities || [];
+          parsed.activities.push(
+            { id: 'act_ew1', childId: 'eunwoo', childName: '정은우', icon: '🦖', title: '백악기 공룡 화석 발굴', detail: '화면을 터치하여 트리케라톱스 뿔 화석 발굴 성공!', category: 'dino', timestamp: '2026-10-12 07:10:00' },
+            { id: 'act_ew2', childId: 'eunwoo', childName: '정은우', icon: '🐶', title: '동물 친구들 4개국어 소리 듣기', detail: '강아지, 고양이, 곰, 사자 울음소리와 이름 또박또박 듣기', category: 'language', timestamp: '2026-10-12 07:25:00' },
+            { id: 'act_ew3', childId: 'eunwoo', childName: '정은우', icon: '🎨', title: '나만의 알록달록 자동차 색칠', detail: '빨강, 파랑 무지개 바퀴 3D 자동차 완성!', category: 'car', timestamp: '2026-10-12 07:30:00' }
+          );
+          this.saveLocalFamilyDb(parsed);
+        }
+        return parsed;
+      }
     } catch(e) {}
 
     const defaultDb = {
@@ -526,12 +539,18 @@ this.activeAesopTheme = 'all';
       },
       stickers: [
         { id: 'stk_init1', targetChild: 'eunchan', giver: 'dad', giverName: '정연수 아빠', stickerType: 'gold_trophy', icon: '🏆', title: '황금 트로피 칭찬 도장', reason: '초등 실생활 문장 3회 따라 말하기 완료!', timestamp: '2026-10-10 18:30:00' },
-        { id: 'stk_init2', targetChild: 'eunchan', giver: 'mom', giverName: '엄마', stickerType: 'heart_sparkle', icon: '💖', title: '사랑 듬뿍 하트 도장', reason: '이솝우화 생각 키우기 퀴즈 100점!', timestamp: '2026-10-10 19:15:00' }
+        { id: 'stk_init2', targetChild: 'eunchan', giver: 'mom', giverName: '엄마', stickerType: 'heart_sparkle', icon: '💖', title: '사랑 듬뿍 하트 도장', reason: '이솝우화 생각 키우기 퀴즈 100점!', timestamp: '2026-10-10 19:15:00' },
+        { id: 'stk_ew1', targetChild: 'eunwoo', giver: 'dad', giverName: '정연수 아빠', stickerType: 'gold_trophy', icon: '🏆', title: '황금 트로피 칭찬 도장', reason: '혼자서 신발 정리 스스로 척척 완료!', timestamp: '2026-10-12 07:15:00' },
+        { id: 'stk_ew2', targetChild: 'eunwoo', giver: 'mom', giverName: '엄마', stickerType: 'heart_sparkle', icon: '💖', title: '사랑 듬뿍 하트 도장', reason: '동생 챙겨주기 & 예쁜 대답 칭찬', timestamp: '2026-10-12 07:20:00' },
+        { id: 'stk_ew3', targetChild: 'eunwoo', giver: 'dad', giverName: '정연수 아빠', stickerType: 'star_smile', icon: '⭐', title: '반짝반짝 별 도장', reason: '동물 낱말 씩씩하게 말하기 성공', timestamp: '2026-10-12 07:28:00' }
       ],
       activities: [
-        { id: 'act_1', childId: 'eunchan', childName: '정은찬', icon: '🌍', title: '4개국어 단어 탐험', detail: '한국어·영어·중국어·일본어 발음 청취', category: 'language', timestamp: '2026-10-10 18:20:00' },
-        { id: 'act_2', childId: 'eunchan', childName: '정은찬', icon: '🚗', title: '자동차 세대별 탐구', detail: '그랜저 1세대~7세대 연혁과 실제 사진 관찰', category: 'car', timestamp: '2026-10-10 18:45:00' },
-        { id: 'act_3', childId: 'eunchan', childName: '정은찬', icon: '📖', title: '이솝우화 제1화 [토끼와 거북이]', detail: '아빠 AI 구연동화 듣기 및 교훈 생각하기', category: 'story', timestamp: '2026-10-10 19:00:00' }
+        { id: 'act_1', childId: 'eunchan', childName: '정은찬', icon: '🌍', title: '4개국어 단어 탐험', detail: '한국어·영어·중국어·일본어 발음 청취 완료', category: 'language', timestamp: '2026-10-11 18:20:00' },
+        { id: 'act_2', childId: 'eunchan', childName: '정은찬', icon: '🚗', title: '자동차 세대별 탐구', detail: '그랜저 1세대~7세대 연혁과 실제 사진 관찰', category: 'car', timestamp: '2026-10-11 18:45:00' },
+        { id: 'act_3', childId: 'eunchan', childName: '정은찬', icon: '📖', title: '이솝우화 제1화 [토끼와 거북이]', detail: '아빠 AI 구연동화 듣기 및 교훈 생각하기', category: 'story', timestamp: '2026-10-11 19:00:00' },
+        { id: 'act_ew1', childId: 'eunwoo', childName: '정은우', icon: '🦖', title: '백악기 공룡 화석 발굴', detail: '화면을 터치하여 트리케라톱스 뿔 화석 발굴 성공!', category: 'dino', timestamp: '2026-10-12 07:10:00' },
+        { id: 'act_ew2', childId: 'eunwoo', childName: '정은우', icon: '🐶', title: '동물 친구들 4개국어 소리 듣기', detail: '강아지, 고양이, 곰, 사자 울음소리와 이름 또박또박 듣기', category: 'language', timestamp: '2026-10-12 07:25:00' },
+        { id: 'act_ew3', childId: 'eunwoo', childName: '정은우', icon: '🎨', title: '나만의 알록달록 자동차 색칠', detail: '빨강, 파랑 무지개 바퀴 3D 자동차 완성!', category: 'car', timestamp: '2026-10-12 07:30:00' }
       ],
       unreadForChild: { eunchan: [], eunwoo: [] },
       analytics: {
@@ -542,8 +561,8 @@ this.activeAesopTheme = 'all';
           coachingTip: '💡 아빠 팁: 길을 건널 때 지나가는 자동차의 세대나 특징을 함께 이야기해보세요! 아이의 눈빛이 반짝거릴 거예요.'
         },
         eunwoo: {
-          totalActivities: 2,
-          categoryPercentages: { car: 40, language: 40, history: 20 },
+          totalActivities: 3,
+          categoryPercentages: { car: 35, language: 35, dino: 30 },
           aiDiagnosis: '은우는 소리와 그림에 대한 반응이 활발하고 새로운 자극을 빠르게 흡수합니다!',
           coachingTip: '💡 부모 팁: 다양한 색채와 동물 이야기로 즐거운 놀이 시간을 만들어주세요.'
         }
@@ -3666,51 +3685,7 @@ this.activeAesopTheme = 'all';
     }
   }
 
-  printCertificate() {
-    this.playSuccess();
-    const childName = this.parentTargetChild === 'eunwoo' ? '정은우' : '정은찬';
-    const win = window.open('', '_blank');
-    win.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${childName}의 황금 칭찬 상장</title>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #fffbeb; }
-          .certificate { border: 12px double #d97706; padding: 40px; width: 680px; text-align: center; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 20px; position: relative; }
-          h1 { font-size: 38px; color: #b45309; margin-bottom: 10px; letter-spacing: 4px; }
-          .sub { font-size: 18px; color: #78350f; font-weight: bold; margin-bottom: 30px; }
-          .name { font-size: 32px; font-weight: 900; color: #1e3a8a; border-bottom: 3px solid #3b82f6; display: inline-block; padding: 0 20px 6px 20px; margin-bottom: 25px; }
-          p { font-size: 18px; line-height: 1.8; color: #334155; word-break: keep-all; margin: 0 30px 35px 30px; }
-          .date { font-size: 16px; color: #64748b; margin-bottom: 25px; }
-          .signature-box { display: flex; justify-content: space-around; font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 20px; }
-          .gold-seal { font-size: 54px; }
-        </style>
-      </head>
-      <body>
-        <div class="certificate">
-          <div class="gold-seal">🏆</div>
-          <h1>황 금 칭 찬 상 장</h1>
-          <div class="sub">★ 탐구와 사랑이 가장 빛나는 자랑스러운 어린이 ★</div>
-          <div class="name">${childName} 어린이</div>
-          <p>
-            위 어린이는 글로벌 4개국어(한·영·중·일) 학습과 한국을 빛낸 100명의 위인 역사,
-            그리고 자동차 대백과 탐구에 적극적으로 참여하고 참 잘했어요 도장 10개를 모두 획득하였으므로,
-            온 가족의 넘치는 사랑과 자랑스러운 마음을 담아 이 상장을 수여합니다.
-          </p>
-          <div class="date">${new Date().getFullYear()}년 ${new Date().getMonth() + 1}월 ${new Date().getDate()}일</div>
-          <div class="signature-box">
-            <div>사랑하는 정연수 아빠 ✍️</div>
-            <div>따뜻한 사랑 엄마 ✍️</div>
-          </div>
-        </div>
-      </body>
-      </html>
-    `);
-    win.document.close();
-    setTimeout(() => win.print(), 500);
-  }
+  
 
   // =========================================================================
   // 10. 온 가족 패밀리 모드 & 스마트폰 실시간 칭찬 / AI 분석 엔진 (옵션 B)
@@ -3984,20 +3959,7 @@ this.activeAesopTheme = 'all';
       });
   }
 
-  resetChildStampsServer() {
-    if (!confirm(`${this.parentTargetChild === 'eunchan' ? '은찬이' : '은우'}의 도장판을 0개로 비우고 새 도전을 시작할까요?`)) return;
-
-    fetch('/api/reset_stamps', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ childId: this.parentTargetChild })
-    })
-      .then(res => res.json())
-      .then(data => {
-        this.playPop();
-        this.fetchFamilyData();
-      });
-  }
+  
 
   startStickerPolling() {
     if (this.stickerPollTimer) clearInterval(this.stickerPollTimer);
@@ -4788,6 +4750,180 @@ this.activeAesopTheme = 'all';
 
     // 5. 토스트 피드백
     this.showToast('🏠 아빠의 거실(홈)으로 돌아왔어요!');
+  }
+
+  // =========================================================================
+  // 실시간 행동 타임라인 직접 작성 & 황금 상장 인쇄 & 도장판 초기화
+  // =========================================================================
+  toggleManualActivityForm(forceState = null) {
+    this.playPop();
+    const box = document.getElementById('manualActivityBox');
+    if (!box) return;
+    const isShowing = forceState !== null ? forceState : (box.style.display !== 'none');
+    box.style.display = isShowing ? 'none' : 'block';
+
+    const childNameElem = document.getElementById('manualTargetChildName');
+    if (childNameElem) {
+      childNameElem.textContent = this.parentTargetChild === 'eunwoo' ? '은우' : '은찬이';
+    }
+
+    if (!isShowing) {
+      const titleInput = document.getElementById('manualActivityTitle');
+      if (titleInput) titleInput.focus();
+    }
+  }
+
+  selectManualCategory(btn) {
+    this.playPop();
+    document.querySelectorAll('.manual-cat-chips .chip-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    this.manualCategory = btn.dataset.cat || 'habit';
+    this.manualIcon = btn.dataset.icon || '🌟';
+  }
+
+  fillManualTitle(text) {
+    this.playPop();
+    const titleInput = document.getElementById('manualActivityTitle');
+    if (titleInput) {
+      titleInput.value = text;
+      const detailInput = document.getElementById('manualActivityDetail');
+      if (detailInput) detailInput.focus();
+    }
+  }
+
+  submitManualActivity() {
+    const titleInput = document.getElementById('manualActivityTitle');
+    const detailInput = document.getElementById('manualActivityDetail');
+    const title = titleInput ? titleInput.value.trim() : '';
+    const detail = detailInput ? detailInput.value.trim() : '';
+
+    if (!title) {
+      alert("칭찬할 행동의 제목을 입력해주세요!");
+      if (titleInput) titleInput.focus();
+      return;
+    }
+
+    const childId = this.parentTargetChild || 'eunwoo';
+    const childName = childId === 'eunwoo' ? '정은우' : '정은찬';
+    const cat = this.manualCategory || 'habit';
+    const icon = this.manualIcon || '🌟';
+
+    const now = new Date();
+    const timeStr = now.toISOString().replace('T', ' ').substring(0, 19);
+    const dateStr = now.toISOString().split('T')[0];
+
+    const newAct = {
+      id: 'act_manual_' + Date.now(),
+      childId: childId,
+      childName: childName,
+      type: cat,
+      icon: icon,
+      title: title,
+      detail: detail || '엄마, 아빠가 사랑을 담아 직접 기록한 멋진 행동이에요!',
+      category: cat,
+      timeSpentSec: 60,
+      timestamp: timeStr,
+      date: dateStr
+    };
+
+    // 1. 로컬 상태에 즉각 반영 (실시간 체감)
+    if (!this.familyDb) this.familyDb = this.getLocalFamilyDb();
+    if (!this.familyDb.activities) this.familyDb.activities = [];
+    this.familyDb.activities.unshift(newAct);
+    this.saveLocalFamilyDb(this.familyDb);
+
+    // 2. 서버 DB로 영구 전송
+    fetch('/api/activity', {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(newAct)
+    }).catch(() => {});
+
+    // 3. UI 즉시 갱신
+    this.playSuccess();
+    this.renderParentDashboard();
+
+    if (titleInput) titleInput.value = '';
+    if (detailInput) detailInput.value = '';
+    this.toggleManualActivityForm(false);
+
+    this.showToast(`✨ ${childName}의 타임라인에 새 행동이 실시간 기록되었습니다!`);
+  }
+
+  openCertificateModal() {
+    this.playSuccess();
+    const modal = document.getElementById('certificateModal');
+    if (!modal) return;
+
+    const childId = this.parentTargetChild || 'eunwoo';
+    const childName = childId === 'eunwoo' ? '정은우' : '정은찬';
+
+    const nameElem = document.getElementById('certChildName');
+    if (nameElem) nameElem.textContent = `${childName} 어린이`;
+
+    const now = new Date();
+    const dateElem = document.getElementById('certDateText');
+    if (dateElem) {
+      dateElem.textContent = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`;
+    }
+
+    modal.classList.add('active');
+  }
+
+  closeCertificateModal() {
+    this.playPop();
+    const modal = document.getElementById('certificateModal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  printCertificateDoc() {
+    window.print();
+  }
+
+  printCertificate() {
+    this.openCertificateModal();
+  }
+
+  resetChildStampsServer() {
+    const childId = this.parentTargetChild || 'eunwoo';
+    const childName = childId === 'eunwoo' ? '은우' : '은찬이';
+    if (!confirm(`${childName}의 도장판을 0개로 비우고 새 도전을 시작할까요?`)) return;
+
+    // 1. 로컬 상태 즉시 0개로 비우기 (오프라인/클라우드 어디서든 100% 즉시 반영)
+    if (!this.familyDb) this.familyDb = this.getLocalFamilyDb();
+    if (!this.familyDb.profiles) this.familyDb.profiles = {};
+    if (!this.familyDb.profiles[childId]) this.familyDb.profiles[childId] = {};
+    this.familyDb.profiles[childId].stampsCount = 0;
+
+    // 해당 아이의 도장 목록 초기화
+    if (this.familyDb.stickers) {
+      this.familyDb.stickers = this.familyDb.stickers.filter(s => s.targetChild !== childId);
+    }
+    this.saveLocalFamilyDb(this.familyDb);
+
+    if (this.currentProfile === childId) {
+      this.stampsCount = 0;
+      localStorage.setItem(childId === 'eunwoo' ? 'eunwoo_stamps' : 'eunchan_stamps', '0');
+      this.renderStamps();
+    }
+
+    // UI 즉각 갱신
+    this.playPop();
+    this.renderParentDashboard();
+
+    // 2. 서버 DB 도장판 0개 초기화 동기화
+    fetch('/api/reset_stamps', {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ childId: childId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      this.fetchFamilyData();
+    })
+    .catch(() => {});
+
+    this.showToast(`✨ ${childName}의 도장판이 0개로 비워졌습니다! 새 도전을 시작해보세요!`);
   }
 
 }

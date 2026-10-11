@@ -308,9 +308,14 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         if path == "/api/reset_stamps":
             db = load_db()
             child_id = req_data.get("childId", "eunchan")
-            if child_id in db.get("profiles", {}):
-                db["profiles"][child_id]["stampsCount"] = 0
-                save_db(db)
+            if "profiles" not in db:
+                db["profiles"] = {}
+            if child_id not in db["profiles"]:
+                db["profiles"][child_id] = {}
+            db["profiles"][child_id]["stampsCount"] = 0
+            # 해당 아이의 도장들도 초기화하여 새 도전 가능
+            db["stickers"] = [s for s in db.get("stickers", []) if s.get("targetChild") != child_id]
+            save_db(db)
 
             res = {"success": True, "stampsCount": 0}
             res_body = json.dumps(res, ensure_ascii=False).encode("utf-8")
