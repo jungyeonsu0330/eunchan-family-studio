@@ -3857,6 +3857,10 @@ this.activeAesopTheme = 'all';
     const stampsBadge = document.getElementById('parentStampsBadge');
     if (stampsBadge) stampsBadge.textContent = `${stampsCount} / 10`;
 
+    const stampsTitle = document.getElementById('parentStampsTitle');
+    const childTitleName = childId === 'eunchan' ? '첫째 은찬이' : '동생 은우';
+    if (stampsTitle) stampsTitle.innerHTML = `💮 <span style="color:#d97706; font-weight:800;">${childTitleName}</span> 도장판 진행 현황 & 황금 상장 수여`;
+
     const miniGrid = document.getElementById('parentStampsMiniGrid');
     if (miniGrid) {
       const childStickers = (this.familyDb.stickers || []).filter(s => s.targetChild === childId);
@@ -4930,6 +4934,64 @@ this.activeAesopTheme = 'all';
     .catch(() => {});
 
     this.showToast(`✨ ${childName}의 도장판이 0개로 비워졌습니다! 새 도전을 시작해보세요!`);
+  }
+  isParentProfile(pid) {
+    return pid === 'dad' || pid === 'mom';
+  }
+
+  // 1번(은찬), 2번(은우) 사진 클릭 시 3번 도장판 화면으로 이동
+  openChildStampBoard(childId) {
+    this.playPop();
+
+    // 1. 부모 분석관 탭 활성화 보장
+    const parentTabBtn = document.getElementById('tabBtnParent');
+    if (parentTabBtn) parentTabBtn.style.display = 'inline-flex';
+
+    // 2. 부모 모드로 프로필 전환
+    if (this.currentProfile !== 'dad' && this.currentProfile !== 'mom') {
+      this.currentProfile = 'dad';
+      localStorage.setItem('eunchan_family_profile', 'dad');
+      ['eunchan', 'eunwoo', 'dad', 'mom'].forEach(pid => {
+        const btn = document.getElementById(`profBtn_${pid}`);
+        if (btn) btn.classList.toggle('active', pid === 'dad');
+      });
+    }
+
+    // 3. 자녀 선택 (은찬 또는 은우)
+    this.parentTargetChild = childId;
+    const btn1 = document.getElementById('pChildBtn_eunchan');
+    const btn2 = document.getElementById('pChildBtn_eunwoo');
+    if (btn1) btn1.classList.toggle('active', childId === 'eunchan');
+    if (btn2) btn2.classList.toggle('active', childId === 'eunwoo');
+
+    // 4. 좌우 여백 사진 위젯 활성 테두리 동기화
+    const leftWing = document.getElementById('sideWingEunchan');
+    const rightWing = document.getElementById('sideWingEunwoo');
+    if (leftWing) leftWing.classList.toggle('active-child', childId === 'eunchan');
+    if (rightWing) rightWing.classList.toggle('active-child', childId === 'eunwoo');
+
+    // 5. 부모 분석·칭찬관 탭으로 전환
+    this.switchTab('parent');
+
+    // 6. 데이터 갱신 및 3번 도장판 화면 재렌더링
+    this.updateStickerButtonLabel();
+    if (this.familyDb) {
+      this.renderParentDashboard();
+    } else {
+      this.fetchFamilyData();
+    }
+
+    // 7. 3번 카드 ("도장판 진행 현황 & 황금 상장 수여")로 부드럽게 스크롤 & 황금빛 포커스 펄스
+    setTimeout(() => {
+      const stampCard = document.getElementById('parentStampsCard') || document.querySelector('.stamps-status-card');
+      if (stampCard) {
+        stampCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        stampCard.classList.remove('card-target-pulse');
+        void stampCard.offsetWidth; // trigger reflow
+        stampCard.classList.add('card-target-pulse');
+        setTimeout(() => stampCard.classList.remove('card-target-pulse'), 2600);
+      }
+    }, 220);
   }
 
 }

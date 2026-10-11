@@ -89,15 +89,15 @@
   </header>
 
   <!-- 좌우 여백 은찬이 & 은우 프로필 포토 프레임 (모든 탭 공통 노출) -->
-  <aside class="side-wing-photo left-wing active-child" id="sideWingEunchan" title="첫째 은찬이 프로필">
-    <div class="side-photo-card" onclick="app.switchProfile('eunchan')">
+  <aside class="side-wing-photo left-wing active-child" id="sideWingEunchan" title="첫째 은찬이 도장판 & 황금 상장 (3번 화면)">
+    <div class="side-photo-card" onclick="app.openChildStampBoard('eunchan')">
       <div class="side-photo-header">
         <span class="side-photo-badge badge-eunchan">👦 첫째 은찬이</span>
       </div>
       <div class="side-photo-img-wrap">
         <img src="images/eunchan_photo.jpg" alt="첫째 은찬이" class="side-photo-img">
         <div class="side-photo-overlay">
-          <span class="side-photo-zoom-hint">✨ 은찬이 홈으로</span>
+          <span class="side-photo-zoom-hint">💮 은찬이 도장판 보기</span>
         </div>
       </div>
       <div class="side-photo-footer">
@@ -107,15 +107,15 @@
     </div>
   </aside>
 
-  <aside class="side-wing-photo right-wing" id="sideWingEunwoo" title="동생 은우 프로필">
-    <div class="side-photo-card" onclick="app.switchProfile('eunwoo')">
+  <aside class="side-wing-photo right-wing" id="sideWingEunwoo" title="동생 은우 도장판 & 황금 상장 (3번 화면)">
+    <div class="side-photo-card" onclick="app.openChildStampBoard('eunwoo')">
       <div class="side-photo-header">
         <span class="side-photo-badge badge-eunwoo">👶 동생 은우</span>
       </div>
       <div class="side-photo-img-wrap">
         <img src="images/eunwoo_photo.jpg" alt="동생 은우" class="side-photo-img">
         <div class="side-photo-overlay">
-          <span class="side-photo-zoom-hint">✨ 은우 홈으로</span>
+          <span class="side-photo-zoom-hint">💮 은우 도장판 보기</span>
         </div>
       </div>
       <div class="side-photo-footer">
@@ -980,9 +980,9 @@
         </div>
 
         <!-- 카드 4: 도장판 현황 및 상장 수여 -->
-        <div class="parent-card stamps-status-card">
+        <div class="parent-card stamps-status-card" id="parentStampsCard">
           <div class="pcard-header">
-            <h3>💮 도장판 진행 현황 & 황금 상장 수여</h3>
+            <h3 id="parentStampsTitle">💮 도장판 진행 현황 & 황금 상장 수여</h3>
             <span class="pcard-badge" id="parentStampsBadge">0 / 10</span>
           </div>
           <p class="pcard-desc">도장 10개가 모이면 엄마·아빠의 공동 서명이 담긴 상장을 출력해 줄 수 있습니다.</p>
