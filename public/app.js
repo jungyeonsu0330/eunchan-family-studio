@@ -4584,7 +4584,7 @@ this.activeAesopTheme = 'all';
     this.playPop();
     const modal = document.getElementById('mobileAccessModal');
     if (modal) modal.classList.add('active');
-    this.switchQrChannel(this.activeQrChannel || 'cloud');
+    this.switchQrChannel(this.activeQrChannel || 'github');
   }
 
   closeMobileModal() {
@@ -4593,7 +4593,7 @@ this.activeAesopTheme = 'all';
     if (modal) modal.classList.remove('active');
   }
 
-  switchQrChannel(channel = 'cloud') {
+  switchQrChannel(channel = 'github') {
     this.playPop();
     this.activeQrChannel = channel;
 
@@ -4610,8 +4610,8 @@ this.activeAesopTheme = 'all';
     };
 
     const labels = {
-      cloud: '⚡ 24H 클라우드 터널 (비밀번호 7979 자동 인증)',
-      github: '🐙 깃허브 공식 배포 사이트 (영구 보존)',
+      cloud: '⚡ 실시간 터널 (비밀번호 7979 자동 인증)',
+      github: '🌟 24시간 상시 클라우드 (컴퓨터 OFF 가능·영구 보존)',
       local: '🏠 집 안 Wi-Fi 초고속 로컬 접속'
     };
 
