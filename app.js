@@ -2914,9 +2914,43 @@ this.activeAesopTheme = 'all';
       utter.rate = this.aesopRate || 0.92;
       utter.pitch = (this.aesopVoiceType === 'dad') ? 0.92 : 1.18;
 
+      if (!this.voices || this.voices.length === 0) {
+        this.voices = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
+      }
+
       if (this.voices && this.voices.length > 0) {
-        const koVoice = this.voices.find(v => v.lang.startsWith('ko'));
-        if (koVoice) utter.voice = koVoice;
+        let bestVoice = null;
+        if (this.aesopVoiceType === 'dad') {
+          // [정연수 아빠 목소리 1순위] 한국어 남성 AI 신경망 자연어 음성 (Edge InJoon/인준, 남두, 봉진, 국민 등)
+          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /injoon|인준|namdu|남두|bongjin|봉진|gookmin|국민|male|남성/i.test(v.name));
+          // [아빠 목소리 2순위] 자연어/구글 음성 중 기계음(Heami) 완전 배제
+          if (!bestVoice) {
+            bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural|google/i.test(v.name) && !/desktop|heami/i.test(v.name));
+          }
+        } else {
+          // [동화구연 선생님 1순위] 한국어 여성 AI 신경망 자연어 음성 (Edge SunHi/선희, Yuna/유나, 구글 한국어)
+          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /sunhi|선희|yuna|유나|female|여성|google.*한국/i.test(v.name));
+          // [선생님 목소리 2순위] 기타 자연어 음성
+          if (!bestVoice) {
+            bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural/i.test(v.name) && !/desktop|heami/i.test(v.name));
+          }
+        }
+        // [공통 3순위] 20년 전 구형 기계음(Heami/Desktop)이 아닌 일반 한국어 음성
+        if (!bestVoice) {
+          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && !/desktop|heami/i.test(v.name));
+        }
+        // [최후 대안]
+        if (!bestVoice) {
+          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko'));
+        }
+
+        if (bestVoice) {
+          utter.voice = bestVoice;
+          // 인공지능 신경망/자연어 음성은 본래 성우 음색(피치 0.96~1.06)일 때 가장 사람처럼 자연스럽습니다
+          if (/natural|online|neural|google/i.test(bestVoice.name)) {
+            utter.pitch = (this.aesopVoiceType === 'dad') ? 0.96 : 1.06;
+          }
+        }
       }
 
       utter.onend = () => {
