@@ -8923,3 +8923,32 @@ button, .nav-tab-btn, .subnav-btn, .verse-tab-btn, .key-btn, .card-bubble-btn {
     font-size: 10px !important;
   }
 }
+
+.bubble-text {
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.bubble-text:hover {
+  color: #2563eb;
+}
+
+@keyframes praisePop {
+  0% {
+    transform: scale(0.96) translateY(2px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.02) translateY(-2px);
+    opacity: 1;
+    color: #e11d48;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.praise-pop {
+  animation: praisePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
