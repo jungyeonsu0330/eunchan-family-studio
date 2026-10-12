@@ -3988,11 +3988,11 @@ this.activeAesopTheme = 'all';
       const bDesc = document.getElementById('parentBannerDesc');
       const giverBadge = document.getElementById('stickerGiverBadge');
 
-      if (bTitle) bTitle.textContent = isDad ? '👨 정연수 아빠의 자녀 교육 & 칭찬 센터' : '👩 엄마의 사랑 칭찬 & 교육 분석관';
+      if (bTitle) bTitle.textContent = isDad ? '👨‍👩‍👧‍👦 정연수 최은지의 자녀 교육 & 칭찬 센터' : '👩 최은지 엄마의 사랑 칭찬 & 교육 분석관';
       if (bDesc) bDesc.textContent = isDad
         ? '스마트폰과 PC에서 실시간으로 아이들의 학습 타임라인을 확인하고, AI 관심사 분석 리포트를 보며 칭찬 도장을 보낼 수 있습니다.'
         : '은찬이와 은우가 오늘 무엇에 몰입했는지 살펴보고, 따뜻한 하트 도장과 칭찬 메시지를 실시간으로 선물해주세요.';
-      if (giverBadge) giverBadge.textContent = isDad ? '정연수 아빠' : '엄마';
+      if (giverBadge) giverBadge.textContent = isDad ? '정연수 아빠' : '최은지 엄마';
 
       this.updateStickerButtonLabel();
       this.fetchFamilyData();
@@ -4187,7 +4187,7 @@ this.activeAesopTheme = 'all';
     const input = document.getElementById('customStickerReason');
     const reason = (input && input.value.trim()) ? input.value.trim() : '스스로 씩씩하게 멋지게 해냄!';
     const giver = this.currentProfile === 'mom' ? 'mom' : 'dad';
-    const giverName = giver === 'mom' ? '엄마' : '정연수 아빠';
+    const giverName = giver === 'mom' ? '최은지 엄마' : '정연수 아빠';
     const targetChild = this.parentTargetChild;
     const childName = targetChild === 'eunchan' ? '은찬이' : '은우';
 
