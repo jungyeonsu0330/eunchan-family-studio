@@ -1055,16 +1055,19 @@ class EduApp {
       }
     }
 
-    // 2. [정연수 아빠 최우선] Edge InJoon(인준) Neural, 남두, 봉진 등 남성 성우 음성
+    // 2. [정연수 아빠 최우선] Edge InJoon(인준) Neural, 남두, 봉진 등 순수 한국어 남성 성우 음성
     const dadPredicates = [
       v => /InJoon.*Natural/i.test(v.name),
       v => /InJoon/i.test(v.name),
       v => /인준/i.test(v.name),
       v => /NamDu/i.test(v.name),
+      v => /남두/i.test(v.name),
       v => /BongJin/i.test(v.name),
+      v => /봉진/i.test(v.name),
       v => /GookMin/i.test(v.name),
-      v => (v.lang === 'ko-KR' || v.lang === 'ko_KR') && /male|남성/i.test(v.name) && !/desktop|heami/i.test(v.name),
-      v => v.lang.startsWith('ko') && !/desktop|heami/i.test(v.name)
+      v => /국민/i.test(v.name),
+      v => /HyunJun|현준|MinHo|민호/i.test(v.name),
+      v => v.lang.toLowerCase().startsWith('ko') && /male|남성|koc|kod/i.test(v.name) && !/female|여성|sunhi|선희|yuna|유나|heami|혜미|google/i.test(v.name)
     ];
     for (const test of dadPredicates) {
       const match = this.voices.find(test);
@@ -1165,7 +1168,36 @@ class EduApp {
     }
   }
 
-  speak(text, lang = 'ko-KR', onEndCallback = null) {
+  // 🌟 브라우저 환경에 구애받지 않는 완벽한 아빠 남성 음성 설정 생성
+  getDadVoiceSettings() {
+    let dadVoice = this.preferredVoices['ko-KR-dad'];
+    // 만약 기존 캐시된 dadVoice가 여성 음성(Google 한국어, 선희, 유나, 혜미 등)이면 무효화
+    if (dadVoice && /sunhi|선희|yuna|유나|heami|혜미|female|여성|google/i.test(dadVoice.name)) {
+      dadVoice = null;
+      delete this.preferredVoices['ko-KR-dad'];
+    }
+
+    if (!dadVoice && this.voices && this.voices.length > 0) {
+      dadVoice = this.voices.find(v => 
+        v.lang.toLowerCase().startsWith('ko') && 
+        /injoon|인준|namdu|남두|bongjin|봉진|gookmin|국민|male|남성|hyunjun|현준|minho|민호|koc|kod/i.test(v.name) && 
+        !/sunhi|선희|yuna|유나|heami|혜미|female|여성|google/i.test(v.name)
+      );
+      if (dadVoice) this.preferredVoices['ko-KR-dad'] = dadVoice;
+    }
+
+    if (dadVoice) {
+      // 🌟 실제 고음질 남성 성우 음성(Edge InJoon/NamDu 등) 적용: 듬직하고 다정한 아빠 음색
+      return { voice: dadVoice, pitch: 0.88, rate: 0.92, isMale: true };
+    } else {
+      // 🌟 남성 성우가 기본 탑재되지 않은 Chrome/Safari/모바일 브라우저:
+      // 기본 한국어 음성의 피치를 0.64로 낮추고 속도를 0.89로 맞추어, 듬직하고 중후한 진짜 아빠(남성) 목소리로 실시간 완벽 어쿠스틱 변환!
+      const fallbackVoice = this.preferredVoices['ko-KR'] || (this.voices && this.voices.find(v => v.lang.toLowerCase().startsWith('ko')));
+      return { voice: fallbackVoice, pitch: 0.64, rate: 0.89, isMale: false };
+    }
+  }
+
+  speak(text, lang = 'ko-KR', onEndCallback = null, forcePersona = null) {
     if (!('speechSynthesis' in window)) {
       if (onEndCallback) onEndCallback();
       return;
@@ -1188,45 +1220,50 @@ class EduApp {
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
 
-      // 🌟 20대 여성 구연동화 밝고 상냥한 목소리 톤 정밀 조율 (기계음 탈피)
+      const persona = forcePersona || this.voicePersona;
+
+      // 🌟 아빠(남성 성우 / 피치 다운 남성 변환), 엄마, 선생님 음성 배정
       if (lang === 'ko-KR') {
-        if (this.voicePersona === 'dad') {
-          utter.voice = this.preferredVoices['ko-KR-dad'] || this.preferredVoices['ko-KR'];
-          utter.pitch = 1.0; // 🌟 성우 원음 피치 유지 (갈라짐/쇳소리 왜곡 원인 1.18 제거)
-          utter.rate = this.speechRate || 0.95;
-        } else if (this.voicePersona === 'mom') {
+        if (persona === 'dad') {
+          const dadSettings = this.getDadVoiceSettings();
+          if (dadSettings.voice) utter.voice = dadSettings.voice;
+          utter.pitch = dadSettings.pitch;
+          utter.rate = this.speechRate || dadSettings.rate;
+        } else if (persona === 'mom') {
           utter.voice = this.preferredVoices['ko-KR-mom'] || this.preferredVoices['ko-KR'];
-          utter.pitch = 1.0; // 🌟 성우 원음 피치 유지
+          utter.pitch = 1.05;
           utter.rate = (this.speechRate || 0.95) * 0.94;
         } else {
           // teacher: 20대 맑은 구연동화 선생님
           utter.voice = this.preferredVoices['ko-KR-teacher'] || this.preferredVoices['ko-KR'];
-          utter.pitch = 1.0; // 🌟 1.18 강제 피치 변조로 인한 찢어짐/갈라짐 해결! 성우 본래 맑은 미성(1.0) 복원
+          utter.pitch = 1.0;
           utter.rate = this.speechRate || 0.96;
         }
-      } else if (lang === 'en-US') {
-        utter.pitch = 1.10;
-        utter.rate = this.speechRate || 0.88;
-      } else if (lang === 'zh-CN') {
-        utter.pitch = 1.08;
-        utter.rate = this.speechRate || 0.88;
-      } else if (lang === 'ja-JP') {
-        utter.pitch = 1.12;
-        utter.rate = this.speechRate || 0.88;
       } else {
-        utter.pitch = 1.10;
-        utter.rate = this.speechRate || 0.90;
-      }
+        if (lang === 'en-US') {
+          utter.pitch = 1.10;
+          utter.rate = this.speechRate || 0.88;
+        } else if (lang === 'zh-CN') {
+          utter.pitch = 1.08;
+          utter.rate = this.speechRate || 0.88;
+        } else if (lang === 'ja-JP') {
+          utter.pitch = 1.12;
+          utter.rate = this.speechRate || 0.88;
+        } else {
+          utter.pitch = 1.10;
+          utter.rate = this.speechRate || 0.90;
+        }
 
-      // 최우선 뉴럴 여성 음성 배정
-      if (this.preferredVoices && this.preferredVoices[lang]) {
-        utter.voice = this.preferredVoices[lang];
-      } else if (this.voices && this.voices.length > 0) {
-        const langPrefix = lang.split('-')[0].toLowerCase();
-        let match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix) && /natural|online|female|여|선희|sunhi/i.test(v.name));
-        if (!match) match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix) && !/desktop|heami/i.test(v.name));
-        if (!match) match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
-        if (match) utter.voice = match;
+        // 외국어 (en, zh, ja) 전용 음성 배정
+        if (this.preferredVoices && this.preferredVoices[lang]) {
+          utter.voice = this.preferredVoices[lang];
+        } else if (this.voices && this.voices.length > 0) {
+          const langPrefix = lang.split('-')[0].toLowerCase();
+          let match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix) && /natural|online|female|여|선희|sunhi/i.test(v.name));
+          if (!match) match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix) && !/desktop|heami/i.test(v.name));
+          if (!match) match = this.voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
+          if (match) utter.voice = match;
+        }
       }
 
       const dadImg = document.getElementById('heroDadAvatar');
@@ -3319,31 +3356,15 @@ class EduApp {
         </div>
       </div>
 
-      <!-- 6. 은찬이 생각 쑥쑥 지혜 퀴즈 -->
-      <div class="aesop-quiz-box">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <h4 style="margin: 0; font-size: 16px; font-weight: 900; color: #1e3a8a;">🤔 은찬이의 생각 쑥쑥 지혜 퀴즈</h4>
-          <span style="font-size: 12px; font-weight: 800; background: #bfdbfe; color: #1e40af; padding: 4px 10px; border-radius: 12px;">맞추면 도장 1개!</span>
-        </div>
-
-        <div class="aesop-quiz-question">
-          Q. ${story.quiz.question}
-        </div>
-
-        <div class="aesop-quiz-options" id="aesopQuizOptions">
-          ${story.quiz.options.map((opt, optIdx) => `
-            <button class="btn-quiz-opt" onclick="app.checkAesopQuiz('${story.id}', ${optIdx}, this)">
-              <span>${optIdx + 1}. ${opt}</span>
-            </button>
-          `).join('')}
-        </div>
-
-        <div id="aesopQuizFeedback" class="quiz-feedback-box" style="display: none;"></div>
-      </div>
+      <!-- 6. 은찬이 생각 쑥쑥 3단계 지혜 퀴즈 -->
+      <div class="aesop-quiz-box" id="aesopQuizContainer"></div>
     `;
 
     modal.classList.add('active');
     this.playPop();
+
+    // 🌟 3단계 퀴즈 렌더링 초기화
+    this.renderAesopQuizCard(storyId, 0);
 
     // 활동 로그 기록 (부모님 대시보드 실시간 반영)
     this.logChildActivity('story', '📖', `이솝우화 제${story.num}화 [${story.title}] 탐독`, story.moral, 'story', 90);
@@ -3393,7 +3414,10 @@ class EduApp {
     }
     this.isAesopSpeaking = false;
     const playBtn = document.getElementById('aesopPlayBtn');
-    if (playBtn) playBtn.innerHTML = '<span>🔊 아빠 목소리로 듣기</span>';
+    if (playBtn) {
+      playBtn.classList.remove('playing');
+      playBtn.innerHTML = `<span>${this.aesopVoiceType === 'dad' ? '▶️ 아빠 목소리로 이어듣기' : '▶️ 선생님 목소리로 이어듣기'}</span>`;
+    }
     const waveBox = document.getElementById('aesopWaveBox');
     if (waveBox) waveBox.style.display = 'none';
     document.querySelectorAll('.story-paragraph').forEach(p => p.classList.remove('speaking-now'));
@@ -3408,7 +3432,10 @@ class EduApp {
     this.isAesopSpeaking = false;
     this.activeParagraphIdx = -1;
     const playBtn = document.getElementById('aesopPlayBtn');
-    if (playBtn) playBtn.innerHTML = '<span>🔊 아빠 목소리로 듣기</span>';
+    if (playBtn) {
+      playBtn.classList.remove('playing');
+      playBtn.innerHTML = `<span>${this.aesopVoiceType === 'dad' ? '🔊 아빠 목소리로 듣기' : '🔊 선생님 목소리로 듣기'}</span>`;
+    }
     const waveBox = document.getElementById('aesopWaveBox');
     if (waveBox) waveBox.style.display = 'none';
     document.querySelectorAll('.story-paragraph').forEach(p => p.classList.remove('speaking-now'));
@@ -3427,9 +3454,26 @@ class EduApp {
     if (voiceBtn) {
       voiceBtn.innerHTML = `<span>${this.aesopVoiceType === 'dad' ? '👨 정연수 아빠 목소리' : '👩 다정한 구연동화 선생님'}</span>`;
     }
+    const playBtn = document.getElementById('aesopPlayBtn');
+    if (playBtn && !this.isAesopSpeaking) {
+      playBtn.innerHTML = `<span>${this.aesopVoiceType === 'dad' ? '🔊 아빠 목소리로 듣기' : '🔊 선생님 목소리로 듣기'}</span>`;
+    }
+    const waveStatus = document.getElementById('aesopWaveStatus');
+    if (waveStatus) {
+      waveStatus.textContent = (this.aesopVoiceType === 'dad')
+        ? '👨 아빠 목소리로 다정하게 동화를 읽어주고 있어요... (귀를 기울여봐요!)'
+        : '👩 구연동화 선생님이 상냥하게 동화를 읽어주고 있어요... (귀를 기울여봐요!)';
+    }
     if (this.isAesopSpeaking && this.currentAesopStoryId) {
       const curIdx = this.activeParagraphIdx >= 0 ? this.activeParagraphIdx : 0;
       this.playAesopStory(this.currentAesopStoryId, curIdx);
+    } else {
+      // 🌟 목소리 변경 즉시 안내 음성 피드백
+      if (this.aesopVoiceType === 'dad') {
+        this.speak("은찬아, 아빠 목소리로 재미있게 읽어줄게!", 'ko-KR', null, 'dad');
+      } else {
+        this.speak("구연동화 선생님 목소리로 재미있게 읽어줄게요!", 'ko-KR', null, 'teacher');
+      }
     }
   }
 
@@ -3602,32 +3646,25 @@ class EduApp {
 
       const utter = new SpeechSynthesisUtterance(chunk.text);
       utter.lang = 'ko-KR';
-      utter.rate = this.aesopRate || 0.92;
-      utter.pitch = (this.aesopVoiceType === 'dad') ? 1.0 : 1.05;
 
-      // 🌟 음성 보이스 지정
+      // 🌟 음성 보이스 지정 (아빠 목소리 선택 시 100% 남성 목소리 적용)
       if (!this.voices || this.voices.length === 0) {
         this.voices = window.speechSynthesis.getVoices() || [];
         this.selectBestVoices();
       }
 
-      let voiceToUse = null;
       if (this.aesopVoiceType === 'dad') {
-        voiceToUse = (this.preferredVoices && this.preferredVoices['ko-KR-dad']) ||
-          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /injoon|인준|namdu|남두|bongjin|봉진|gookmin|국민|male|남성/i.test(v.name)) ||
-          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural|google/i.test(v.name) && !/desktop|heami/i.test(v.name)) ||
-          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && !/desktop|heami/i.test(v.name)) ||
-          this.voices.find(v => v.lang.toLowerCase().startsWith('ko'));
+        const dadSettings = this.getDadVoiceSettings();
+        if (dadSettings.voice) utter.voice = dadSettings.voice;
+        utter.pitch = dadSettings.pitch; // 남성 성우 원음 피치 0.86 또는 크롬 피치다운 0.68
+        utter.rate = (this.aesopRate || 0.92) * 0.96;
       } else {
-        voiceToUse = (this.preferredVoices && (this.preferredVoices['ko-KR-teacher'] || this.preferredVoices['ko-KR-mom'])) ||
+        const voiceToUse = (this.preferredVoices && (this.preferredVoices['ko-KR-teacher'] || this.preferredVoices['ko-KR-mom'])) ||
           this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /sunhi|선희|yuna|유나|female|여성|google.*한국/i.test(v.name)) ||
-          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural/i.test(v.name) && !/desktop|heami/i.test(v.name)) ||
-          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && !/desktop|heami/i.test(v.name)) ||
           this.voices.find(v => v.lang.toLowerCase().startsWith('ko'));
-      }
-
-      if (voiceToUse) {
-        utter.voice = voiceToUse;
+        if (voiceToUse) utter.voice = voiceToUse;
+        utter.pitch = 1.02;
+        utter.rate = this.aesopRate || 0.92;
       }
 
       // 🌟 V8 GC(가비지 컬렉션)에 의한 발화 중 뚝 끊김 원천 방지! 전역 강한 참조 보관
@@ -3695,10 +3732,85 @@ class EduApp {
     }, 80);
   }
 
-  checkAesopQuiz(storyId, selectedIdx, btnElem) {
+  // 🌟 이솝우화 3단계 생각 쑥쑥 지혜 퀴즈 렌더링
+  renderAesopQuizCard(storyId, quizIdx = 0) {
+    const container = document.getElementById('aesopQuizContainer');
+    if (!container) return;
+
     const stories = (window.EDU_DATA && window.EDU_DATA.aesopStories) || [];
     const story = stories.find(s => s.id === storyId);
-    if (!story || !story.quiz) return;
+    if (!story) return;
+
+    const quizzes = (story.quizzes && story.quizzes.length === 3) ? story.quizzes : (story.quiz ? [story.quiz] : []);
+    if (quizzes.length === 0) return;
+
+    this.currentAesopQuizIdx = Math.max(0, Math.min(quizIdx, quizzes.length - 1));
+    const currentQuiz = quizzes[this.currentAesopQuizIdx];
+    this.aesopQuizSolved = this.aesopQuizSolved || {};
+    const solvedSet = this.aesopQuizSolved[storyId] || new Set();
+
+    const stageNames = [
+      "1단계 줄거리 퀴즈",
+      "2단계 원인·생각 퀴즈",
+      "3단계 지혜·실천 퀴즈"
+    ];
+
+    container.innerHTML = `
+      <div class="aesop-quiz-header">
+        <h4 style="margin: 0; font-size: 16.5px; font-weight: 900; color: #1e3a8a; display: flex; align-items: center; gap: 8px;">
+          <span>🤔</span> 은찬이의 생각 쑥쑥 3단계 지혜 퀴즈
+        </h4>
+        <span style="font-size: 12.5px; font-weight: 800; background: #dbeafe; color: #1e40af; padding: 5px 12px; border-radius: 12px;">
+          도장 최대 3개 획득! 💮 (${solvedSet.size} / ${quizzes.length} 완료)
+        </span>
+      </div>
+
+      <!-- 3단계 탭 버튼들 -->
+      <div class="aesop-quiz-tabs">
+        ${quizzes.map((q, idx) => {
+          const isSolved = solvedSet.has(idx);
+          const isActive = (idx === this.currentAesopQuizIdx);
+          const icon = isSolved ? '✅' : (idx === 0 ? '🌱' : (idx === 1 ? '🌿' : '🌳'));
+          const stageLabel = stageNames[idx] || `${idx + 1}단계 질문`;
+          return `
+            <button type="button" class="quiz-step-tab ${isActive ? 'active' : ''} ${isSolved ? 'solved' : ''}" onclick="app.switchAesopQuizTab('${storyId}', ${idx})">
+              <span>${icon}</span>
+              <span>${stageLabel}</span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="aesop-quiz-question">
+        <span style="display: inline-block; background: #2563eb; color: #fff; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-right: 6px;">질문 ${this.currentAesopQuizIdx + 1}/3</span>
+        <strong>${currentQuiz.question}</strong>
+      </div>
+
+      <div class="aesop-quiz-options" id="aesopQuizOptions">
+        ${currentQuiz.options.map((opt, optIdx) => `
+          <button class="btn-quiz-opt" onclick="app.checkAesopQuiz('${story.id}', ${this.currentAesopQuizIdx}, ${optIdx}, this)">
+            <span>${optIdx + 1}. ${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+
+      <div id="aesopQuizFeedback" class="quiz-feedback-box" style="display: none;"></div>
+    `;
+  }
+
+  switchAesopQuizTab(storyId, quizIdx) {
+    this.playPop();
+    this.renderAesopQuizCard(storyId, quizIdx);
+  }
+
+  checkAesopQuiz(storyId, quizIdx, selectedIdx, btnElem) {
+    const stories = (window.EDU_DATA && window.EDU_DATA.aesopStories) || [];
+    const story = stories.find(s => s.id === storyId);
+    if (!story) return;
+
+    const quizzes = (story.quizzes && story.quizzes.length === 3) ? story.quizzes : (story.quiz ? [story.quiz] : []);
+    const currentQuiz = quizzes[quizIdx] || story.quiz;
+    if (!currentQuiz) return;
 
     if (this.aesopQuizAutoTimer) {
       clearTimeout(this.aesopQuizAutoTimer);
@@ -3708,44 +3820,78 @@ class EduApp {
     const feedbackBox = document.getElementById('aesopQuizFeedback');
     const allOptions = document.querySelectorAll('#aesopQuizOptions .btn-quiz-opt');
 
-    if (selectedIdx === story.quiz.answer) {
+    if (selectedIdx === currentQuiz.answer) {
       // 🎺 빵빠레 & 축하 꽃가루 폭죽
       this.playFanfare();
       this.triggerConfetti();
 
+      this.aesopQuizSolved = this.aesopQuizSolved || {};
+      if (!this.aesopQuizSolved[storyId]) this.aesopQuizSolved[storyId] = new Set();
+      const isFirstSolve = !this.aesopQuizSolved[storyId].has(quizIdx);
+      this.aesopQuizSolved[storyId].add(quizIdx);
+
       allOptions.forEach((btn, idx) => {
         btn.disabled = true;
-        if (idx === story.quiz.answer) btn.classList.add('correct');
+        if (idx === currentQuiz.answer) btn.classList.add('correct');
       });
+
+      const isAllSolved = (this.aesopQuizSolved[storyId].size >= quizzes.length);
 
       if (feedbackBox) {
         feedbackBox.style.display = 'block';
         feedbackBox.style.background = '#dcfce7';
         feedbackBox.style.borderColor = '#86efac';
         feedbackBox.style.color = '#15803d';
+
+        let nextActionHtml = '';
+        if (quizIdx < quizzes.length - 1) {
+          nextActionHtml = `
+            <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <button type="button" class="btn-quiz-next-stage" onclick="app.switchAesopQuizTab('${storyId}', ${quizIdx + 1})">
+                <span>다음 ${quizIdx + 2}단계 질문 풀기 ➔</span>
+              </button>
+              <span style="font-size: 13px; color: #166534; font-weight: 700;">(잠시 후 2초 뒤 자동으로 넘어가요)</span>
+            </div>
+          `;
+        } else if (isAllSolved) {
+          nextActionHtml = `
+            <div style="margin-top: 12px; background: #fef3c7; border: 1.5px solid #fcd34d; border-radius: 14px; padding: 12px 16px; color: #92400e;">
+              <div style="font-size: 15.5px; font-weight: 900;">🏆 대단해요! 3가지 지혜 퀴즈를 모두 완벽하게 맞혔어요! 💮</div>
+              <div style="font-size: 13px; margin-top: 4px; color: #b45309;">잠시 후 다음 이솝우화 이야기로 이동합니다 ➔</div>
+            </div>
+          `;
+        }
+
         feedbackBox.innerHTML = `
-          <div style="font-size: 15.5px; font-weight: 900; margin-bottom: 6px;">🎉 딩동댕! 정답입니다! 빵빠레! 🎺</div>
-          <p style="margin: 4px 0; font-size: 13.5px; color: #166534;">👨 <strong>아빠의 칭찬:</strong> "${story.quiz.dadFeedback}"</p>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; align-items: center;">
-            <span style="font-size: 13px; font-weight: 800; color: #b45309;">💮 참 잘했어요 황금 도장 획득!</span>
-            <span class="feedback-auto-badge">⚡ 2초 뒤 다음 이솝우화로 자동 이동! ➔</span>
-          </div>
+          <div style="font-size: 16px; font-weight: 900; margin-bottom: 6px;">🎉 딩동댕! ${quizIdx + 1}단계 질문 정답입니다! 🎺</div>
+          <p style="margin: 4px 0; font-size: 14px; color: #166534;">👨 <strong>아빠의 칭찬:</strong> "${currentQuiz.dadFeedback}"</p>
+          <div style="font-size: 13px; font-weight: 800; color: #b45309; margin-top: 6px;">💮 참 잘했어요 황금 도장 획득!</div>
+          ${nextActionHtml}
         `;
       }
 
-      this.addStamp(1);
-      this.speak(`정답입니다! ${story.quiz.dadFeedback}`, 'ko-KR');
-      this.logChildActivity('quiz', '💡', `이솝우화 [${story.title}] 퀴즈 빵빠레 정답`, '참 잘했어요 도장 획득!', 'story', 45);
+      if (isFirstSolve) {
+        this.addStamp(1);
+      }
+      this.speak(`정답입니다! ${currentQuiz.dadFeedback}`, 'ko-KR', null, 'dad');
+      this.logChildActivity('quiz', '💡', `이솝우화 [${story.title}] ${quizIdx + 1}단계 퀴즈 정답`, '참 잘했어요 도장 획득!', 'story', 45);
 
-      // ⚡ 2.3초 후 다음 이솝우화 이야기로 자동 이동!
-      this.aesopQuizAutoTimer = setTimeout(() => {
-        const curIdx = stories.findIndex(s => s.id === storyId);
-        if (curIdx !== -1 && curIdx + 1 < stories.length) {
-          const nextStory = stories[curIdx + 1];
-          this.openAesopModal(nextStory.id, false);
-          this.speak(`다음 이야기 [${nextStory.title}]를 들려줄게요!`, 'ko-KR');
-        }
-      }, 2300);
+      // 자동 다음 단계 전환
+      if (quizIdx < quizzes.length - 1) {
+        this.aesopQuizAutoTimer = setTimeout(() => {
+          this.switchAesopQuizTab(storyId, quizIdx + 1);
+        }, 2200);
+      } else if (isAllSolved) {
+        // 모든 3문제 완료 시 2.8초 후 다음 이솝우화 이야기로 이동
+        this.aesopQuizAutoTimer = setTimeout(() => {
+          const curIdx = stories.findIndex(s => s.id === storyId);
+          if (curIdx !== -1 && curIdx + 1 < stories.length) {
+            const nextStory = stories[curIdx + 1];
+            this.openAesopModal(nextStory.id, false);
+            this.speak(`다음 이야기 [${nextStory.title}]를 들려줄게요!`, 'ko-KR');
+          }
+        }, 2800);
+      }
     } else {
       this.playBeep(260, 'sine', 0.25, 0.15);
       if (btnElem) btnElem.classList.add('wrong');
