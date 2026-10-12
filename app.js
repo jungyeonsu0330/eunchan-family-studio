@@ -5034,7 +5034,7 @@ this.activeAesopTheme = 'all';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // 5. 토스트 피드백
-    this.showToast('🏠 아빠의 거실(홈)으로 돌아왔어요!');
+    this.showToast('🏠 홈으로 돌아왔어요!');
   }
 
   // =========================================================================
