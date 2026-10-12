@@ -3589,6 +3589,11 @@ body {
   padding: 8px 12px;
   border-radius: 12px;
   transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.story-paragraph:hover {
+  background: #f8fafc;
 }
 
 .story-paragraph.speaking-now {
@@ -4163,6 +4168,10 @@ body {
   font-weight: 900;
   letter-spacing: 4px;
   margin-bottom: 12px;
+}
+
+.word-text-display.word-shake {
+  animation: shake 0.3s ease;
 }
 
 .word-hint-text {
@@ -5818,11 +5827,103 @@ body {
 .auth-hint {
   font-size: 13px;
   color: #94a3b8;
+  line-height: 1.5;
 }
 
 .auth-hint strong {
   color: #2563eb;
   font-weight: 800;
+}
+
+/* 🔐 온스크린 터치 숫자 키패드 */
+.auth-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.auth-key-btn {
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 16px;
+  height: 52px;
+  font-size: 21px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.auth-key-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.auth-key-btn:active {
+  transform: scale(0.95);
+  background: #cbd5e1;
+}
+
+.auth-key-btn.action-clear {
+  color: #ef4444;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.auth-key-btn.action-back {
+  color: #64748b;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+/* 🔒 상단 잠금 버튼 스타일 */
+.lock-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #fee2e2;
+  border: 1.5px solid #fca5a5;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #b91c1c;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.12);
+}
+
+.lock-status-pill:hover {
+  background: #fecaca;
+  transform: scale(1.04);
+}
+
+/* 🔒 잠금 상태 시 배경 콘텐츠 흐림 및 비활성화 보호 */
+body.studio-locked .app-main,
+body.studio-locked .app-header,
+body.studio-locked .side-wing-photo,
+body.studio-locked .floating-home-btn,
+body.studio-locked .family-top-bar {
+  filter: blur(10px);
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes lockShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+
+.lock-shake {
+  animation: lockShake 0.4s ease-in-out;
 }
 
 

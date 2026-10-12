@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>은찬, 은우 스튜디오</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
-  <link rel="stylesheet" href="style.css?v=1.0">
+  <link rel="stylesheet" href="style.css?v=20261012_3">
 </head>
 <body>
 
@@ -17,7 +17,10 @@
   <!-- 최상단 온 가족 프로필 바 -->
   <div class="family-top-bar">
 <!-- 가족 프로필 선택 바 (은찬이, 은우, 아빠, 엄마) -->
-    <div class="family-profile-bar" style="justify-content: flex-end;">
+    <div class="family-profile-bar" style="justify-content: flex-end; gap: 8px;">
+      <button class="lock-status-pill" onclick="app.lockStudio()" title="스튜디오 잠그기 (비밀번호 화면으로 전환)">
+        <span>🔒 스튜디오 잠금</span>
+      </button>
       <button class="mobile-access-pill" onclick="app.openMobileModal()">
         <span>📷 스마트폰 QR코드 & 크롬 바로열기</span>
       </button>
@@ -600,14 +603,21 @@
             <div class="word-practice-header">
               <span class="sentence-cat-badge">🍎 초등 필수 낱말</span>
               <span class="sentence-source-info" id="wordIndexLabel">낱말 1 / 12</span>
-              <button class="btn-sentence-next" onclick="app.nextTypingWord()">
-                <span>다음 낱말 ➔</span>
+              <button class="btn-sentence-next" onclick="app.nextTypingWord()" title="엔터(Enter) 키를 누르면 바로 다음 낱말로 넘어가요!">
+                <span>다음 낱말 ➔ (Enter ↵)</span>
               </button>
             </div>
             <div class="word-practice-box">
               <div class="word-icon-display" id="wordIconDisplay">🍎</div>
               <div class="word-text-display" id="wordTargetBox"></div>
               <div class="word-hint-text" id="wordHintText">빨갛고 아삭아삭 맛있는 과일</div>
+            </div>
+            <!-- 낱말 입력 안내 가이드 & 엔터 안내 -->
+            <div class="typing-input-guide-bar" style="margin-top: 14px;">
+              <span class="guide-icon">👉</span>
+              <span class="guide-text" id="wordTypingGuideText">화면 키보드나 컴퓨터 자판으로 글자를 순서대로 쳐보세요!</span>
+              <span class="next-key-hint">다음 글쇠: <strong id="wordNextKeyChar">ㅅ</strong></span>
+              <span style="font-size: 13px; color: #64748b; font-weight: 700; margin-left: 8px;">(↵ 엔터를 누르면 다음 낱말로 넘어가요!)</span>
             </div>
           </div>
 
@@ -947,6 +957,37 @@
           </div>
         </div>
 
+        <!-- 카드 5: 🔐 스튜디오 가족 보안 & 비밀번호(PIN) 설정 -->
+        <div class="parent-card security-card" id="parentSecurityCard">
+          <div class="pcard-header">
+            <h3>🔐 스튜디오 가족 보안 & 비밀번호(PIN) 설정</h3>
+            <span class="pcard-badge" style="background:#fef3c7; color:#b45309;">보안 관리</span>
+          </div>
+          <p class="pcard-desc">외부인의 접속을 차단하고 오직 우리 가족만 스튜디오에 입장할 수 있도록 비밀번호(4자리 PIN)를 설정합니다.</p>
+          
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <span style="font-weight:700; color:#334155; font-size:14px;">현재 설정된 비밀번호:</span>
+              <span id="currentPinBadge" style="font-family:monospace; font-size:16px; font-weight:800; background:#e0e7ff; color:#3730a3; padding:4px 12px; border-radius:8px;">**** (0330)</span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input type="password" id="inputNewPin" maxlength="8" placeholder="새 비밀번호 입력 (4~8자리)" style="flex:1; min-width:180px; padding:10px 14px; border:2px solid #cbd5e1; border-radius:10px; font-size:14px;">
+              <button type="button" class="btn-bubble primary" style="padding:10px 18px; font-size:14px;" onclick="app.updateFamilyPin()">
+                <span>비밀번호 변경 저장 ➔</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn-bubble" style="background:#fee2e2; color:#b91c1c; border-color:#fca5a5; font-size:14px; padding:10px 18px;" onclick="app.lockStudio()">
+              <span>🔒 지금 바로 스튜디오 잠그기</span>
+            </button>
+            <button type="button" class="btn-bubble" style="font-size:14px; padding:10px 18px;" onclick="app.resetPinToDefault()">
+              <span>초기 비밀번호(0330)로 재설정</span>
+            </button>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -1064,8 +1105,8 @@
 
 
   <!-- 자바스크립트 로드 -->
-  <script src="content_data.js"></script>
-  <script src="app.js"></script>
+  <script src="content_data.js?v=20261012_3"></script>
+  <script src="app.js?v=20261012_3"></script>
 
   <!-- 자동차 전문가 상세 제원 및 4개국어 대화 모달 -->
   <div id="carDetailModal" class="modal-overlay">
@@ -1304,27 +1345,43 @@
   <div id="familyAuthGate" class="family-auth-overlay" style="display: none;">
     <div class="family-auth-box">
       <div class="auth-icon-badge">🔐</div>
-      <h2 class="auth-title">은찬이네 패밀리 스튜디오</h2>
+      <h2 class="auth-title">은찬 & 은우 패밀리 스튜디오</h2>
       <p class="auth-subtitle">엄마·아빠·은찬이·은우만 입장할 수 있는 전용 공간입니다.<br>가족 전용 비밀번호(PIN)를 입력해주세요.</p>
       
       <div class="pin-input-group">
-        <input type="password" id="familyPinInput" maxlength="8" placeholder="비밀번호 4자리 (기본: 7979)" autocomplete="current-password" inputmode="numeric" onkeyup="if(event.key==='Enter') app.verifyFamilyPin()">
+        <input type="password" id="familyPinInput" maxlength="8" placeholder="비밀번호 입력 (기본: 0330)" autocomplete="current-password" inputmode="numeric" onkeyup="if(event.key==='Enter') app.verifyFamilyPin()">
         <button id="familyPinSubmitBtn" class="btn-bubble primary auth-submit-btn" onclick="app.verifyFamilyPin()">
           <span>입장하기 🚀</span>
         </button>
       </div>
 
-      <div class="auth-options">
+      <!-- 터치 및 스마트폰/PC 공용 숫자 키패드 -->
+      <div class="auth-keypad-grid">
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('1')">1</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('2')">2</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('3')">3</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('4')">4</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('5')">5</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('6')">6</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('7')">7</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('8')">8</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('9')">9</button>
+        <button type="button" class="auth-key-btn action-clear" onclick="app.clearKeypadPin()" title="전체 지우기">C</button>
+        <button type="button" class="auth-key-btn" onclick="app.pressKeypadNum('0')">0</button>
+        <button type="button" class="auth-key-btn action-back" onclick="app.backspaceKeypadPin()" title="한 글자 지우기">⌫</button>
+      </div>
+
+      <div class="auth-options" style="margin-top: 14px;">
         <label class="remember-device-label">
           <input type="checkbox" id="rememberDeviceCheck" checked>
-          <span>이 스마트폰/태블릿 기억하기 (자동 로그인)</span>
+          <span>이 스마트폰/컴퓨터 기억하기 (자동 로그인)</span>
         </label>
       </div>
 
-      <p id="authErrorMsg" class="auth-error-msg" style="display: none;">❌ 비밀번호가 올바르지 않습니다. 다시 입력해주세요!</p>
+      <p id="authErrorMsg" class="auth-error-msg" style="display: none;">❌ 비밀번호가 올바르지 않습니다. 다시 확인해주세요!</p>
       
       <div class="auth-keypad-quick">
-        <span class="auth-hint">💡 힌트: 언제나 좋은 친구친구 (<strong>7979</strong>)</span>
+        <span class="auth-hint">💡 힌트: 초기 비밀번호는 <strong>0330</strong> (또는 <strong>7979</strong>) 입니다.<br><small style="color:#64748b;">(입장 후 학부모 센터에서 언제든 비밀번호를 변경할 수 있습니다.)</small></span>
       </div>
     </div>
   </div>

@@ -11,7 +11,7 @@ echo.
 netstat -ano | findstr :8800 > nul
 if %ERRORLEVEL% NEQ 0 (
     echo [1/2] 로컬 패밀리 서버(포트 8800)를 백그라운드에서 시작합니다...
-    start "" /b python "C:\Users\Admin\Desktop\정은찬\server.py"
+    start "" /b python "%~dp0server.py"
     timeout /t 2 > nul
 ) else (
     echo [1/2] 로컬 패밀리 서버가 이미 정상 작동 중입니다.

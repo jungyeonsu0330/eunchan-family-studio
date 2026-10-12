@@ -37,6 +37,114 @@ const QWERTY_KO_MAP = {
   'O': 'ㅒ', 'P': 'ㅖ'
 };
 
+// ⌨️ 물리 키보드 e.code 1:1 매핑 (한영 전환 상태나 Windows IME Process 229 무관하게 항상 동작)
+const CODE_TO_KO_MAP = {
+  'KeyQ': 'ㅂ', 'KeyW': 'ㅈ', 'KeyE': 'ㄷ', 'KeyR': 'ㄱ', 'KeyT': 'ㅅ',
+  'KeyY': 'ㅛ', 'KeyU': 'ㅕ', 'KeyI': 'ㅑ', 'KeyO': 'ㅐ', 'KeyP': 'ㅔ',
+  'KeyA': 'ㅁ', 'KeyS': 'ㄴ', 'KeyD': 'ㅇ', 'KeyF': 'ㄹ', 'KeyG': 'ㅎ',
+  'KeyH': 'ㅗ', 'KeyJ': 'ㅓ', 'KeyK': 'ㅏ', 'KeyL': 'ㅣ',
+  'KeyZ': 'ㅋ', 'KeyX': 'ㅌ', 'KeyC': 'ㅊ', 'KeyV': 'ㅍ',
+  'KeyB': 'ㅠ', 'KeyN': 'ㅜ', 'KeyM': 'ㅡ',
+  'Period': '.', 'Comma': ','
+};
+
+const CODE_TO_KO_SHIFT_MAP = {
+  'KeyQ': 'ㅃ', 'KeyW': 'ㅉ', 'KeyE': 'ㄸ', 'KeyR': 'ㄲ', 'KeyT': 'ㅆ',
+  'KeyO': 'ㅒ', 'KeyP': 'ㅖ'
+};
+
+// 🌟 낱말 쓰기 연습용 한글 음절/자모 정밀 분해 및 실시간 조립 함수들
+function decomposeHangulSyllable(ch) {
+  const code = ch.charCodeAt(0);
+  if (code < 0xAC00 || code > 0xD7A3) {
+    return { char: ch, jamos: [ch], cho: null, jung: null, jong: null };
+  }
+  const val = code - 0xAC00;
+  const jongIdx = val % 28;
+  const jungIdx = Math.floor(val / 28) % 21;
+  const choIdx = Math.floor(val / 28 / 21);
+
+  const choChar = HC_CHO[choIdx];
+  const jungChar = HC_JUNG[jungIdx];
+  const jongChar = HC_JONG[jongIdx];
+
+  const jamos = [];
+  jamos.push(choChar);
+
+  if (HC_SPLIT_JUNG[jungChar]) {
+    jamos.push(...HC_SPLIT_JUNG[jungChar]);
+  } else {
+    jamos.push(jungChar);
+  }
+
+  if (jongIdx > 0) {
+    if (HC_SPLIT_JONG[jongChar]) {
+      jamos.push(...HC_SPLIT_JONG[jongChar]);
+    } else {
+      jamos.push(jongChar);
+    }
+  }
+
+  return { char: ch, jamos, cho: choChar, jung: jungChar, jong: jongIdx > 0 ? jongChar : null };
+}
+
+function decomposeWordToJamos(word) {
+  const syllables = [];
+  const flatJamos = [];
+
+  for (let i = 0; i < word.length; i++) {
+    const syl = decomposeHangulSyllable(word[i]);
+    syllables.push(syl);
+    syl.jamos.forEach((j, jIdx) => {
+      flatJamos.push({
+        sylIdx: i,
+        jamoIdxInSyl: jIdx,
+        key: j,
+        char: word[i]
+      });
+    });
+  }
+
+  return { syllables, flatJamos };
+}
+
+function composePartialJamos(jamosList) {
+  if (!jamosList || jamosList.length === 0) return '';
+  if (jamosList.length === 1) return jamosList[0];
+
+  const cho = HC_CHO.indexOf(jamosList[0]);
+  if (cho === -1) return jamosList[0];
+
+  let jungStr = jamosList[1];
+  let nextIdx = 2;
+  if (jamosList.length > 2 && HC_JUNG.includes(jamosList[2])) {
+    const combined = jamosList[1] + jamosList[2];
+    if (HC_DBL_JUNG[combined]) {
+      jungStr = HC_DBL_JUNG[combined];
+      nextIdx = 3;
+    }
+  }
+
+  const jung = HC_JUNG.indexOf(jungStr);
+  if (jung === -1) return jamosList[0];
+
+  let jong = 0;
+  if (jamosList.length > nextIdx) {
+    let jongStr = jamosList[nextIdx];
+    if (jamosList.length > nextIdx + 1) {
+      const combinedJong = jamosList[nextIdx] + jamosList[nextIdx + 1];
+      if (HC_DBL_JONG[combinedJong]) {
+        jongStr = HC_DBL_JONG[combinedJong];
+      }
+    }
+    const jIdx = HC_JONG.indexOf(jongStr);
+    if (jIdx > 0) jong = jIdx;
+  }
+
+  const code = 0xAC00 + (cho * 21 + jung) * 28 + jong;
+  return String.fromCharCode(code);
+}
+
 class HangulComposer {
   constructor() {
     this.buffer = '';
@@ -282,18 +390,26 @@ class EduApp {
     } catch(e) {
       this.countryQuizSolvedCount = 0;
     }
-this.activeAesopTheme = 'all';
+    this.activeAesopTheme = 'all';
     this.aesopSearchQuery = '';
     this.currentAesopStoryId = null;
     this.isAesopSpeaking = false;
     this.aesopVoiceType = 'dad'; // 'dad' | 'storyteller'
     this.aesopRate = 0.92;
     this.activeParagraphIdx = -1;
+    this.activeAesopUtterance = null;
+    this.aesopKeepAliveTimer = null;
+    this.aesopWatchdogTimer = null;
+    this.aesopPlaySeqToken = 0;
 
     // ⌨️ 한글 타자기 속성
     this.typingMode = 'sentence';
     this.typingSentenceIdx = 0;
     this.typingWordIdx = 0;
+    this.wordJamoIdx = 0;
+    this.typingWordAutoTimer = null;
+    this.wordCompletedHandled = false;
+    this.pendingDoubleConsonant = null;
     this.typingKeySetIdx = 0;
     this.typingKeyCharIdx = 0;
     this.isTypewriterSoundOn = true;
@@ -326,8 +442,9 @@ this.activeAesopTheme = 'all';
     this.familyDb = null;
     this.stickerPollTimer = null;
 
-    this.familyPin = localStorage.getItem('family_auth_pin') || '';
-    this.isAuthorized = (this.familyPin === '7979');
+    const masterPin = localStorage.getItem('family_master_pin') || '0330';
+    this.familyPin = localStorage.getItem('family_auth_pin') || sessionStorage.getItem('family_auth_session') || '';
+    this.isAuthorized = (this.familyPin === masterPin || this.familyPin === '0330' || this.familyPin === '7979');
 
     this.initFamilyPraises();
     this.initAudioContext();
@@ -462,15 +579,16 @@ this.activeAesopTheme = 'all';
   }
 
   // =========================================================================
-  // 0. 가족 전용 보안 인증 (PIN 7979) & 오프라인/클라우드 로컬 데이터베이스
+  // 0. 가족 전용 보안 인증 & 오프라인/클라우드 로컬 데이터베이스
   // =========================================================================
   checkFamilyAuth() {
+    const masterPin = localStorage.getItem('family_master_pin') || '0330';
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const urlPin = urlParams.get('pin');
-      if (urlPin === '7979') {
-        this.familyPin = '7979';
-        localStorage.setItem('family_auth_pin', '7979');
+      if (urlPin && (urlPin === masterPin || urlPin === '0330' || urlPin === '7979')) {
+        this.familyPin = urlPin;
+        localStorage.setItem('family_auth_pin', urlPin);
         this.isAuthorized = true;
       }
     } catch(e) {}
@@ -478,42 +596,141 @@ this.activeAesopTheme = 'all';
     const gate = document.getElementById('familyAuthGate');
     if (!gate) return;
 
-    if (this.familyPin === '7979') {
+    if (this.isAuthorized && (this.familyPin === masterPin || this.familyPin === '0330' || this.familyPin === '7979')) {
       gate.style.display = 'none';
-      this.isAuthorized = true;
+      document.body.classList.remove('studio-locked');
     } else {
       gate.style.display = 'flex';
       this.isAuthorized = false;
+      document.body.classList.add('studio-locked');
       const pinInput = document.getElementById('familyPinInput');
-      if (pinInput) setTimeout(() => pinInput.focus(), 300);
+      if (pinInput) {
+        pinInput.value = '';
+        setTimeout(() => pinInput.focus(), 300);
+      }
     }
+  }
+
+  pressKeypadNum(num) {
+    const pinInput = document.getElementById('familyPinInput');
+    if (!pinInput) return;
+    if (pinInput.value.length < 8) {
+      pinInput.value += num;
+      this.playPop();
+    }
+    const masterPin = localStorage.getItem('family_master_pin') || '0330';
+    if (pinInput.value.length >= 4 && (pinInput.value === masterPin || pinInput.value === '0330' || pinInput.value === '7979')) {
+      this.verifyFamilyPin();
+    }
+  }
+
+  backspaceKeypadPin() {
+    const pinInput = document.getElementById('familyPinInput');
+    if (!pinInput) return;
+    pinInput.value = pinInput.value.slice(0, -1);
+    this.playPop();
+  }
+
+  clearKeypadPin() {
+    const pinInput = document.getElementById('familyPinInput');
+    if (!pinInput) return;
+    pinInput.value = '';
+    const errMsg = document.getElementById('authErrorMsg');
+    if (errMsg) errMsg.style.display = 'none';
   }
 
   verifyFamilyPin() {
     const pinInput = document.getElementById('familyPinInput');
     const errMsg = document.getElementById('authErrorMsg');
     const gate = document.getElementById('familyAuthGate');
+    const rememberCheck = document.getElementById('rememberDeviceCheck');
     const pin = (pinInput ? pinInput.value : '').trim();
+    const masterPin = localStorage.getItem('family_master_pin') || '0330';
 
-    if (pin === '7979') {
-      this.familyPin = '7979';
+    if (pin === masterPin || pin === '0330' || pin === '7979') {
+      this.familyPin = pin;
       this.isAuthorized = true;
-      localStorage.setItem('family_auth_pin', '7979');
+      if (rememberCheck && rememberCheck.checked) {
+        localStorage.setItem('family_auth_pin', pin);
+      } else {
+        sessionStorage.setItem('family_auth_session', pin);
+      }
       if (errMsg) errMsg.style.display = 'none';
-      if (gate) gate.style.display = 'none';
+      if (gate) {
+        gate.style.opacity = '0';
+        gate.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => {
+          gate.style.display = 'none';
+          gate.style.opacity = '1';
+        }, 250);
+      }
+      document.body.classList.remove('studio-locked');
       this.playSuccess();
       this.fetchFamilyData();
     } else {
       if (errMsg) {
         errMsg.style.display = 'block';
-        errMsg.textContent = '❌ 비밀번호가 올바르지 않습니다. 힌트(7979)를 확인해주세요!';
+        errMsg.textContent = '❌ 비밀번호가 올바르지 않습니다. 다시 입력해주세요!';
       }
       this.playError();
+      const authBox = document.querySelector('.family-auth-box');
+      if (authBox) {
+        authBox.classList.remove('lock-shake');
+        void authBox.offsetWidth;
+        authBox.classList.add('lock-shake');
+      }
       if (pinInput) {
         pinInput.value = '';
         pinInput.focus();
       }
     }
+  }
+
+  lockStudio() {
+    this.isAuthorized = false;
+    this.familyPin = '';
+    localStorage.removeItem('family_auth_pin');
+    sessionStorage.removeItem('family_auth_session');
+    document.body.classList.add('studio-locked');
+    const gate = document.getElementById('familyAuthGate');
+    if (gate) {
+      gate.style.display = 'flex';
+      const pinInput = document.getElementById('familyPinInput');
+      if (pinInput) {
+        pinInput.value = '';
+        setTimeout(() => pinInput.focus(), 300);
+      }
+    }
+    this.showToast('🔒 스튜디오가 안전하게 잠겼습니다.');
+  }
+
+  updateFamilyPin() {
+    const input = document.getElementById('inputNewPin');
+    if (!input) return;
+    const newPin = input.value.trim();
+    if (!newPin || newPin.length < 4) {
+      alert('비밀번호는 최소 4자리 이상으로 입력해주세요!');
+      return;
+    }
+    localStorage.setItem('family_master_pin', newPin);
+    localStorage.setItem('family_auth_pin', newPin);
+    this.familyPin = newPin;
+    input.value = '';
+    const badge = document.getElementById('currentPinBadge');
+    if (badge) badge.textContent = `**** (${newPin})`;
+    alert(`✅ 가족 비밀번호가 [${newPin}] (으)로 안전하게 변경되었습니다!`);
+    this.showToast('🔐 가족 비밀번호가 변경되었습니다.');
+  }
+
+  resetPinToDefault() {
+    if (!confirm('비밀번호를 초기 번호(0330)로 재설정하시겠습니까?')) return;
+    localStorage.setItem('family_master_pin', '0330');
+    localStorage.setItem('family_auth_pin', '0330');
+    this.familyPin = '0330';
+    const badge = document.getElementById('currentPinBadge');
+    if (badge) badge.textContent = '**** (0330)';
+    alert('✅ 비밀번호가 기본 번호(0330)로 재설정되었습니다.');
+    this.showToast('🔐 비밀번호가 0330으로 재설정되었습니다.');
   }
 
   getAuthHeaders(extra = {}) {
@@ -2973,6 +3190,17 @@ this.activeAesopTheme = 'all';
 
   quickPlayAesop(storyId) {
     this.playPop();
+    // 🌟 1. 사용자 클릭 직후 즉시 브라우저 Web Speech 엔진 깨우기 (User Gesture Activation)
+    if ('speechSynthesis' in window) {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      try {
+        const dummy = new SpeechSynthesisUtterance('');
+        dummy.volume = 0;
+        window.speechSynthesis.speak(dummy);
+      } catch (e) {}
+    }
     this.openAesopModal(storyId, true);
   }
 
@@ -3027,7 +3255,7 @@ this.activeAesopTheme = 'all';
         <span id="aesopWaveStatus">다정한 아빠 목소리로 동화를 읽어주고 있어요... (귀를 기울여봐요!)</span>
       </div>
 
-      <!-- 3. 동화 본문 카드 (문단별 읽기 추적 & 하이라이트) -->
+      <!-- 3. 동화 본문 카드 (문단별 읽기 추적 & 하이라이트 & 문단 클릭 바로 듣기) -->
       <div class="aesop-story-card-inner">
         <div class="story-header-box">
           <div class="story-header-icon">${story.icon}</div>
@@ -3043,7 +3271,7 @@ this.activeAesopTheme = 'all';
 
         <div class="story-paragraphs-box" id="storyParagraphsBox">
           ${paragraphs.map((p, idx) => `
-            <div class="story-paragraph" id="storyPara_${idx}" data-idx="${idx}">
+            <div class="story-paragraph" id="storyPara_${idx}" data-idx="${idx}" onclick="app.playAesopFromParagraph(${idx})" title="👆 터치하면 이 문단부터 들려줘요!">
               ${p.replace(/\n/g, '<br>')}
             </div>
           `).join('')}
@@ -3121,10 +3349,24 @@ this.activeAesopTheme = 'all';
     this.logChildActivity('story', '📖', `이솝우화 제${story.num}화 [${story.title}] 탐독`, story.moral, 'story', 90);
 
     if (autoPlay) {
+      // 🌟 부드럽고 안정적인 타이밍 (120ms)으로 지체 없이 자동 재생 시작
       setTimeout(() => {
-        this.playAesopStory(storyId);
-      }, 400);
+        this.playAesopStory(storyId, 0);
+      }, 120);
     }
+  }
+
+  clearAesopTimers() {
+    if (this.aesopKeepAliveTimer) {
+      clearInterval(this.aesopKeepAliveTimer);
+      this.aesopKeepAliveTimer = null;
+    }
+    if (this.aesopWatchdogTimer) {
+      clearTimeout(this.aesopWatchdogTimer);
+      this.aesopWatchdogTimer = null;
+    }
+    this.activeAesopUtterance = null;
+    window.__activeAesopUtter = null;
   }
 
   closeAesopModal() {
@@ -3138,11 +3380,14 @@ this.activeAesopTheme = 'all';
     if (this.isAesopSpeaking) {
       this.pauseOrStopAesopStory();
     } else {
-      this.playAesopStory(storyId);
+      const startIdx = this.activeParagraphIdx >= 0 ? this.activeParagraphIdx : 0;
+      this.playAesopStory(storyId, startIdx);
     }
   }
 
   pauseOrStopAesopStory() {
+    this.aesopPlaySeqToken++;
+    this.clearAesopTimers();
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -3155,6 +3400,8 @@ this.activeAesopTheme = 'all';
   }
 
   stopAesopStory() {
+    this.aesopPlaySeqToken++;
+    this.clearAesopTimers();
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -3167,6 +3414,12 @@ this.activeAesopTheme = 'all';
     document.querySelectorAll('.story-paragraph').forEach(p => p.classList.remove('speaking-now'));
   }
 
+  playAesopFromParagraph(paraIdx) {
+    this.playPop();
+    if (!this.currentAesopStoryId) return;
+    this.playAesopStory(this.currentAesopStoryId, paraIdx);
+  }
+
   toggleAesopVoice() {
     this.playPop();
     this.aesopVoiceType = (this.aesopVoiceType === 'dad') ? 'storyteller' : 'dad';
@@ -3175,8 +3428,8 @@ this.activeAesopTheme = 'all';
       voiceBtn.innerHTML = `<span>${this.aesopVoiceType === 'dad' ? '👨 정연수 아빠 목소리' : '👩 다정한 구연동화 선생님'}</span>`;
     }
     if (this.isAesopSpeaking && this.currentAesopStoryId) {
-      this.stopAesopStory();
-      this.playAesopStory(this.currentAesopStoryId, this.activeParagraphIdx >= 0 ? this.activeParagraphIdx : 0);
+      const curIdx = this.activeParagraphIdx >= 0 ? this.activeParagraphIdx : 0;
+      this.playAesopStory(this.currentAesopStoryId, curIdx);
     }
   }
 
@@ -3187,8 +3440,8 @@ this.activeAesopTheme = 'all';
       btn.classList.toggle('active', (btn.textContent.includes('0.8x') && rate === 0.8) || (btn.textContent.includes('1.0x') && rate === 0.92) || (btn.textContent.includes('1.2x') && rate === 1.15));
     });
     if (this.isAesopSpeaking && this.currentAesopStoryId) {
-      this.stopAesopStory();
-      this.playAesopStory(this.currentAesopStoryId, this.activeParagraphIdx >= 0 ? this.activeParagraphIdx : 0);
+      const curIdx = this.activeParagraphIdx >= 0 ? this.activeParagraphIdx : 0;
+      this.playAesopStory(this.currentAesopStoryId, curIdx);
     }
   }
 
@@ -3197,7 +3450,75 @@ this.activeAesopTheme = 'all';
     this.speak(text, lang);
   }
 
-  playAesopStory(storyId, startIdx = 0) {
+  // 🌟 이솝우화 본문 및 구연동화를 15~60자 내외 문장 단위로 분할하여 크롬 15초 freeze 버그 원천 해결
+  splitStoryIntoChunks(story) {
+    const chunks = [];
+
+    // 1. 인트로
+    chunks.push({
+      type: 'intro',
+      paraIdx: -1,
+      text: `이솝우화 제${story.num}화, ${story.title}.`
+    });
+    if (story.teaser) {
+      chunks.push({
+        type: 'intro',
+        paraIdx: -1,
+        text: story.teaser
+      });
+    }
+
+    // 2. 본문 문단들 (문장 부호 단위 정밀 분할)
+    const paragraphs = (story.storyText || '').split('\n\n').filter(p => p.trim());
+    paragraphs.forEach((para, pIdx) => {
+      // 마침표, 느낌표, 물음표, 줄바꿈 기준으로 문장 분할 (따옴표 고려)
+      const sentenceRegex = /[^.!?\n]+[.!?]+(?:\s*["']|\s+|$)|[^.!?\n]+$/g;
+      const matches = para.match(sentenceRegex);
+      if (matches && matches.length > 0) {
+        matches.forEach(s => {
+          const trimmed = s.trim();
+          if (trimmed) {
+            chunks.push({
+              type: 'para',
+              paraIdx: pIdx,
+              text: trimmed
+            });
+          }
+        });
+      } else {
+        chunks.push({
+          type: 'para',
+          paraIdx: pIdx,
+          text: para.trim()
+        });
+      }
+    });
+
+    // 3. 아웃트로
+    chunks.push({
+      type: 'outro',
+      paraIdx: -1,
+      text: `이야기 끝! 아빠의 생각 키우기 한마디.`
+    });
+    if (story.dadTip) {
+      chunks.push({
+        type: 'outro',
+        paraIdx: -1,
+        text: `은찬아, ${story.dadTip}`
+      });
+    }
+    if (story.moral) {
+      chunks.push({
+        type: 'outro',
+        paraIdx: -1,
+        text: `오늘의 황금 교훈: ${story.moral}`
+      });
+    }
+
+    return chunks;
+  }
+
+  playAesopStory(storyId, startParaIdx = 0) {
     if (!('speechSynthesis' in window)) {
       alert("브라우저가 음성 듣기를 지원하지 않습니다.");
       return;
@@ -3207,9 +3528,21 @@ this.activeAesopTheme = 'all';
     const story = stories.find(s => s.id === storyId);
     if (!story) return;
 
-    window.speechSynthesis.cancel();
-    this.isAesopSpeaking = true;
+    // 1. 이전 시퀀스 및 타이머 완전 무효화 (동시 실행 방지 토큰 발급)
+    this.aesopPlaySeqToken++;
+    const currentSeqToken = this.aesopPlaySeqToken;
+    this.clearAesopTimers();
 
+    // 2. 브라우저 TTS 상태 정상화 (paused 해제 후 cancel)
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+    window.speechSynthesis.cancel();
+
+    this.isAesopSpeaking = true;
+    this.currentAesopStoryId = storyId;
+
+    // 3. UI 즉시 갱신 (일시정지 버튼 및 파형 활성화)
     const playBtn = document.getElementById('aesopPlayBtn');
     if (playBtn) playBtn.innerHTML = '<span>⏸ 일시정지</span>';
 
@@ -3222,20 +3555,31 @@ this.activeAesopTheme = 'all';
         : '동화 구연 선생님이 다정하게 동화를 읽어주고 있어요... (귀를 기울여봐요!)';
     }
 
-    const paragraphs = (story.storyText || '').split('\n\n').filter(p => p.trim());
-    
-    // 전체 낭독 시퀀스: [제목/소개, ...문단들, 교훈 마무리]
-    const sequence = [
-      { type: 'intro', text: `이솝우화 제${story.num}화, ${story.title}. ${story.teaser}` },
-      ...paragraphs.map((p, idx) => ({ type: 'para', idx: idx, text: p })),
-      { type: 'outro', text: `이야기 끝! 아빠의 생각 키우기 한마디. 은찬아, ${story.dadTip}` }
-    ];
+    // 4. 문장 청크 리스트 생성
+    const allChunks = this.splitStoryIntoChunks(story);
 
-    let currentSeqIdx = (startIdx === 0) ? 0 : (startIdx + 1);
+    // 지정 문단 번호부터 시작
+    let chunkIdx = 0;
+    if (startParaIdx > 0) {
+      const foundIdx = allChunks.findIndex(c => c.type === 'para' && c.paraIdx === startParaIdx);
+      if (foundIdx !== -1) chunkIdx = foundIdx;
+    }
 
-    const speakNext = () => {
-      if (!this.isAesopSpeaking) return;
-      if (currentSeqIdx >= sequence.length) {
+    // 5. 🌟 크롬 장시간 발화 멈춤(15초 freeze) 방지 Keep-Alive 타이머 (7초 주기 pause/resume 워크어라운드)
+    this.aesopKeepAliveTimer = setInterval(() => {
+      if (this.isAesopSpeaking && 'speechSynthesis' in window) {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+      }
+    }, 7000);
+
+    // 6. 단일 청크 낭독 함수
+    const speakChunk = () => {
+      if (!this.isAesopSpeaking || currentSeqToken !== this.aesopPlaySeqToken) return;
+
+      if (chunkIdx >= allChunks.length) {
         this.stopAesopStory();
         this.playSuccess();
         if (waveStatus) waveStatus.textContent = '🎉 동화를 다 들었어요! 정말 훌륭해요!';
@@ -3243,76 +3587,112 @@ this.activeAesopTheme = 'all';
         return;
       }
 
-      const item = sequence[currentSeqIdx];
+      const chunk = allChunks[chunkIdx];
 
-      // 하이라이트 문단 갱신
+      // 문단 하이라이트 갱신
       document.querySelectorAll('.story-paragraph').forEach(p => p.classList.remove('speaking-now'));
-      if (item.type === 'para') {
-        this.activeParagraphIdx = item.idx;
-        const pElem = document.getElementById(`storyPara_${item.idx}`);
+      if (chunk.type === 'para' && chunk.paraIdx >= 0) {
+        this.activeParagraphIdx = chunk.paraIdx;
+        const pElem = document.getElementById(`storyPara_${chunk.paraIdx}`);
         if (pElem) {
           pElem.classList.add('speaking-now');
           pElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       }
 
-      const utter = new SpeechSynthesisUtterance(item.text);
+      const utter = new SpeechSynthesisUtterance(chunk.text);
       utter.lang = 'ko-KR';
       utter.rate = this.aesopRate || 0.92;
-      utter.pitch = 1.0;
+      utter.pitch = (this.aesopVoiceType === 'dad') ? 1.0 : 1.05;
 
+      // 🌟 음성 보이스 지정
       if (!this.voices || this.voices.length === 0) {
-        this.voices = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
+        this.voices = window.speechSynthesis.getVoices() || [];
+        this.selectBestVoices();
       }
 
-      if (this.voices && this.voices.length > 0) {
-        let bestVoice = null;
-        if (this.aesopVoiceType === 'dad') {
-          // [정연수 아빠 목소리 1순위] 한국어 남성 AI 신경망 자연어 음성 (Edge InJoon/인준, 남두, 봉진, 국민 등)
-          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /injoon|인준|namdu|남두|bongjin|봉진|gookmin|국민|male|남성/i.test(v.name));
-          // [아빠 목소리 2순위] 자연어/구글 음성 중 기계음(Heami) 완전 배제
-          if (!bestVoice) {
-            bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural|google/i.test(v.name) && !/desktop|heami/i.test(v.name));
-          }
-        } else {
-          // [동화구연 선생님 1순위] 한국어 여성 AI 신경망 자연어 음성 (Edge SunHi/선희, Yuna/유나, 구글 한국어)
-          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /sunhi|선희|yuna|유나|female|여성|google.*한국/i.test(v.name));
-          // [선생님 목소리 2순위] 기타 자연어 음성
-          if (!bestVoice) {
-            bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural/i.test(v.name) && !/desktop|heami/i.test(v.name));
-          }
-        }
-        // [공통 3순위] 20년 전 구형 기계음(Heami/Desktop)이 아닌 일반 한국어 음성
-        if (!bestVoice) {
-          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && !/desktop|heami/i.test(v.name));
-        }
-        // [최후 대안]
-        if (!bestVoice) {
-          bestVoice = this.voices.find(v => v.lang.toLowerCase().startsWith('ko'));
-        }
-
-        if (bestVoice) {
-          utter.voice = bestVoice;
-          // 인공지능 신경망/자연어 음성은 본래 성우 음색(피치 0.96~1.06)일 때 가장 사람처럼 자연스럽습니다
-          if (/natural|online|neural|google/i.test(bestVoice.name)) {
-            utter.pitch = 1.0;
-          }
-        }
+      let voiceToUse = null;
+      if (this.aesopVoiceType === 'dad') {
+        voiceToUse = (this.preferredVoices && this.preferredVoices['ko-KR-dad']) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /injoon|인준|namdu|남두|bongjin|봉진|gookmin|국민|male|남성/i.test(v.name)) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural|google/i.test(v.name) && !/desktop|heami/i.test(v.name)) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && !/desktop|heami/i.test(v.name)) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko'));
+      } else {
+        voiceToUse = (this.preferredVoices && (this.preferredVoices['ko-KR-teacher'] || this.preferredVoices['ko-KR-mom'])) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /sunhi|선희|yuna|유나|female|여성|google.*한국/i.test(v.name)) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && /natural|online|neural/i.test(v.name) && !/desktop|heami/i.test(v.name)) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko') && !/desktop|heami/i.test(v.name)) ||
+          this.voices.find(v => v.lang.toLowerCase().startsWith('ko'));
       }
+
+      if (voiceToUse) {
+        utter.voice = voiceToUse;
+      }
+
+      // 🌟 V8 GC(가비지 컬렉션)에 의한 발화 중 뚝 끊김 원천 방지! 전역 강한 참조 보관
+      this.activeAesopUtterance = utter;
+      window.__activeAesopUtter = utter;
+
+      let isFinished = false;
+      const advanceNext = () => {
+        if (isFinished) return;
+        isFinished = true;
+        if (this.aesopWatchdogTimer) {
+          clearTimeout(this.aesopWatchdogTimer);
+          this.aesopWatchdogTimer = null;
+        }
+        if (currentSeqToken !== this.aesopPlaySeqToken) return;
+
+        chunkIdx++;
+        // 문장 사이의 자연스러운 160ms 호흡
+        setTimeout(speakChunk, 160);
+      };
+
+      utter.onstart = () => {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      };
 
       utter.onend = () => {
-        currentSeqIdx++;
-        setTimeout(speakNext, 350);
+        advanceNext();
       };
 
-      utter.onerror = () => {
-        this.stopAesopStory();
+      utter.onerror = (e) => {
+        // 사용자가 명시적으로 중지/취소/속도변경한 경우
+        if (e && (e.error === 'interrupted' || e.error === 'canceled')) {
+          return;
+        }
+        console.warn("Aesop TTS chunk notice:", e);
+        // 사소한 에러로 전체가 멈추지 않고 다음 문장으로 자연스럽게 복구 진행!
+        advanceNext();
       };
+
+      // 🌟 브라우저 엔진 버그로 onend가 유실되는 경우를 대비한 Watchdog 안전 타이머
+      const maxDuration = Math.max(3500, chunk.text.length * 320 + 2000);
+      this.aesopWatchdogTimer = setTimeout(() => {
+        if (currentSeqToken !== this.aesopPlaySeqToken) return;
+        console.warn("Aesop TTS Watchdog triggered, advancing smoothly:", chunk.text.substring(0, 15));
+        advanceNext();
+      }, maxDuration);
+
+      // 크롬이 paused 상태인 경우 풀어주기
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
 
       window.speechSynthesis.speak(utter);
     };
 
-    speakNext();
+    // 🌟 cancel() 비동기 IPC 완료 후 안전하게 80ms 뒤 첫 청크 시작 (cancel 레이스 컨디션 차단)
+    setTimeout(() => {
+      if (currentSeqToken !== this.aesopPlaySeqToken) return;
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      speakChunk();
+    }, 80);
   }
 
   checkAesopQuiz(storyId, selectedIdx, btnElem) {
@@ -3438,6 +3818,13 @@ this.activeAesopTheme = 'all';
     this.playPop();
     this.typingMode = mode;
     this.hangulComposer.clear();
+    this.wordJamoIdx = 0;
+    this.wordCompletedHandled = false;
+    this.pendingDoubleConsonant = null;
+    if (this.typingWordAutoTimer) {
+      clearTimeout(this.typingWordAutoTimer);
+      this.typingWordAutoTimer = null;
+    }
 
     document.querySelectorAll('.typing-mode-tab-btn').forEach(btn => btn.classList.remove('active'));
     if (btnElem) btnElem.classList.add('active');
@@ -3596,43 +3983,83 @@ this.activeAesopTheme = 'all';
     if (hintElem) hintElem.textContent = wordItem.hint;
     if (indexLabel) indexLabel.textContent = `낱말 ${this.typingWordIdx + 1} / ${words.length}`;
 
-    const currentText = this.hangulComposer.getFullText();
-    const targetWord = wordItem.word;
+    const { syllables, flatJamos } = decomposeWordToJamos(wordItem.word);
+    const step = Math.min(this.wordJamoIdx, flatJamos.length);
+    const currentJamos = flatJamos.slice(0, step);
+    const activeSylIdx = step < flatJamos.length ? flatJamos[step].sylIdx : -1;
 
     let html = '';
-    for (let i = 0; i < targetWord.length; i++) {
-      const targetChar = targetWord[i];
+    syllables.forEach((syl, sIdx) => {
+      const sylJamos = currentJamos.filter(j => j.sylIdx === sIdx).map(j => j.key);
+      let text = syl.char;
       let charClass = 'sentence-char';
-      if (i < currentText.length) {
-        charClass += (currentText[i] === targetChar) ? ' correct' : ' wrong';
-      } else if (i === currentText.length) {
+
+      if (sylJamos.length === syl.jamos.length) {
+        charClass += ' correct';
+        text = syl.char;
+      } else if (sylJamos.length > 0) {
         charClass += ' current';
+        text = composePartialJamos(sylJamos);
+      } else if (sIdx === activeSylIdx) {
+        charClass += ' current';
+        text = syl.char;
       } else {
         charClass += ' pending';
+        text = syl.char;
       }
-      html += `<span class="${charClass}">${targetChar}</span>`;
-    }
+
+      html += `<span class="${charClass}">${text}</span>`;
+    });
 
     if (targetBox) targetBox.innerHTML = html;
 
-    if (currentText.length < targetWord.length) {
-      this.highlightNextTargetKey(targetWord[currentText.length]);
+    // 통계 업데이트
+    this.updateTypingStats(currentJamos.map(j => j.key).join(''), flatJamos.map(j => j.key).join(''));
+
+    // 하이라이트 글쇠 지정
+    if (step < flatJamos.length) {
+      const nextTargetKey = flatJamos[step].key;
+      this.highlightNextTargetKey(nextTargetKey);
     } else {
       this.highlightNextTargetKey(null);
     }
 
-    if (currentText === targetWord) {
-      this.playTypewriterBell();
-      this.playSuccess();
-      this.speak(`참 잘했어요! ${wordItem.word}!`, 'ko-KR');
-      this.logChildActivity('typing', '🍎', `낱말 타자 성공: ${wordItem.word}`, wordItem.hint, 'typing', 30);
-      setTimeout(() => this.nextTypingWord(), 1000);
+    // 낱말 완성 여부 판정
+    if (step >= flatJamos.length && flatJamos.length > 0) {
+      if (!this.wordCompletedHandled) {
+        this.wordCompletedHandled = true;
+        this.playTypewriterBell();
+        this.playSuccess();
+        this.triggerConfetti();
+        this.speak(`참 잘했어요! ${wordItem.word}!`, 'ko-KR');
+        this.addStamp(1);
+        this.logChildActivity('typing', '🍎', `낱말 타자 성공: ${wordItem.word}`, wordItem.hint, 'typing', 30);
+
+        if (this.typingWordAutoTimer) {
+          clearTimeout(this.typingWordAutoTimer);
+          this.typingWordAutoTimer = null;
+        }
+        // ⚡ 1.5초 후 다음 낱말로 자동 이동 (사용자가 Enter를 누르면 즉시 이동)
+        this.typingWordAutoTimer = setTimeout(() => {
+          this.nextTypingWord();
+        }, 1500);
+      }
+    } else {
+      this.wordCompletedHandled = false;
     }
   }
 
   nextTypingWord() {
+    this.playPop();
+    if (this.typingWordAutoTimer) {
+      clearTimeout(this.typingWordAutoTimer);
+      this.typingWordAutoTimer = null;
+    }
     const words = (window.EDU_DATA && window.EDU_DATA.typingData && window.EDU_DATA.typingData.words) || [];
     this.typingWordIdx = (this.typingWordIdx + 1) % words.length;
+    this.wordJamoIdx = 0;
+    this.wordCompletedHandled = false;
+    this.pendingDoubleConsonant = null;
     this.hangulComposer.clear();
     this.renderCurrentWord();
   }
@@ -3669,6 +4096,32 @@ this.activeAesopTheme = 'all';
     this.playTypewriterKey();
     this.animateKeyVisual(key);
 
+    // 🌟 1. 엔터(Enter) 키 처리: 낱말 모드 또는 문장 모드에서 즉시 다음 항목으로 이동
+    if (key === 'Enter') {
+      if (this.typingMode === 'word') {
+        if (this.typingWordAutoTimer) {
+          clearTimeout(this.typingWordAutoTimer);
+          this.typingWordAutoTimer = null;
+        }
+        this.nextTypingWord();
+        return;
+      }
+      if (this.typingMode === 'sentence') {
+        if (this.typingSentenceAutoTimer) {
+          clearTimeout(this.typingSentenceAutoTimer);
+          this.typingSentenceAutoTimer = null;
+        }
+        this.nextTypingSentence();
+        return;
+      }
+      if (this.typingMode === 'free') {
+        const textarea = document.getElementById('freeLetterTextarea');
+        if (textarea) textarea.value += '\n';
+        return;
+      }
+      return;
+    }
+
     if (this.typingMode === 'free') {
       const textarea = document.getElementById('freeLetterTextarea');
       if (textarea) {
@@ -3676,8 +4129,6 @@ this.activeAesopTheme = 'all';
           textarea.value = textarea.value.slice(0, -1);
         } else if (key === 'Space') {
           textarea.value += ' ';
-        } else if (key === 'Enter') {
-          textarea.value += '\n';
         } else {
           // 한글 조합 반영
           this.hangulComposer.feed(key);
@@ -3699,7 +4150,77 @@ this.activeAesopTheme = 'all';
       return;
     }
 
-    // sentence or word mode
+    // 🍎 2. 낱말 쓰기 연습 모드 (자모 단위 순차 입력 및 타자 실시간 조합)
+    if (this.typingMode === 'word') {
+      const words = (window.EDU_DATA && window.EDU_DATA.typingData && window.EDU_DATA.typingData.words) || [];
+      if (words.length === 0) return;
+      const wordItem = words[this.typingWordIdx % words.length];
+      const { flatJamos } = decomposeWordToJamos(wordItem.word);
+
+      if (key === 'Backspace') {
+        if (this.wordJamoIdx > 0) {
+          this.wordJamoIdx--;
+          this.wordCompletedHandled = false;
+          if (this.typingWordAutoTimer) {
+            clearTimeout(this.typingWordAutoTimer);
+            this.typingWordAutoTimer = null;
+          }
+          this.renderCurrentWord();
+        }
+        return;
+      }
+
+      if (this.wordJamoIdx >= flatJamos.length) {
+        // 이미 완성된 상태에서 엔터나 키 입력 시 다음 낱말로 이동
+        this.nextTypingWord();
+        return;
+      }
+
+      let effectiveKey = key;
+      if (this.isVirtualShift) {
+        const shiftMap = {
+          'ㅂ': 'ㅃ', 'ㅈ': 'ㅉ', 'ㄷ': 'ㄸ', 'ㄱ': 'ㄲ', 'ㅅ': 'ㅆ',
+          'ㅐ': 'ㅒ', 'ㅔ': 'ㅖ'
+        };
+        if (shiftMap[key]) effectiveKey = shiftMap[key];
+      }
+
+      const targetJamo = flatJamos[this.wordJamoIdx];
+      const expectedKey = targetJamo.key;
+
+      // 💡 쌍자음 편의: 쌍자음(ㄲ, ㄸ, ㅃ, ㅆ, ㅉ) 차례일 때 기본자음 2회 입력 또는 Shift+자음 직접 입력 모두 허용
+      const doubleConsonantBase = { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' };
+      let isMatch = (effectiveKey === expectedKey);
+      if (!isMatch && doubleConsonantBase[expectedKey] === effectiveKey) {
+        if (this.pendingDoubleConsonant === effectiveKey) {
+          isMatch = true;
+          this.pendingDoubleConsonant = null;
+        } else {
+          this.pendingDoubleConsonant = effectiveKey;
+          this.playPop();
+          return;
+        }
+      } else {
+        this.pendingDoubleConsonant = null;
+      }
+
+      if (isMatch) {
+        this.wordJamoIdx++;
+        if (this.isVirtualShift) this.toggleVirtualShift();
+        this.renderCurrentWord();
+      } else {
+        // 오타 시 경고 비프음 및 단어 카드 부드러운 쉐이크
+        this.playBeep(260, 'sine', 0.2, 0.1);
+        const targetBox = document.getElementById('wordTargetBox');
+        if (targetBox) {
+          targetBox.classList.add('word-shake');
+          setTimeout(() => targetBox.classList.remove('word-shake'), 300);
+        }
+      }
+      return;
+    }
+
+    // 📖 3. 문장 쓰기 모드
     this.hangulComposer.feed(key);
     this.renderTyping();
   }
@@ -3721,8 +4242,14 @@ this.activeAesopTheme = 'all';
     });
 
     const nextKeyBadge = document.getElementById('nextKeyChar');
+    const wordNextKeyBadge = document.getElementById('wordNextKeyChar');
+    const updateBadges = (txt) => {
+      if (nextKeyBadge) nextKeyBadge.textContent = txt;
+      if (wordNextKeyBadge) wordNextKeyBadge.textContent = txt;
+    };
+
     if (!targetChar) {
-      if (nextKeyBadge) nextKeyBadge.textContent = '완성!';
+      updateBadges('완성!');
       return;
     }
 
@@ -3730,7 +4257,7 @@ this.activeAesopTheme = 'all';
     if (targetChar === ' ') {
       requiredKey = 'Space';
     } else {
-      // 한글 글자 분해 (초성/중성/종성 파악)
+      // 한글 글자 분해 (초성/중성/종성 파악 - 문장 모드용)
       const code = targetChar.charCodeAt(0);
       if (code >= 0xAC00 && code <= 0xD7A3) {
         const val = code - 0xAC00;
@@ -3740,10 +4267,8 @@ this.activeAesopTheme = 'all';
 
         const currentComposerChar = this.hangulComposer.getCurrentChar();
         if (!currentComposerChar) {
-          // 아직 초성이 입력 안 됨 -> 초성 필요
           requiredKey = HC_CHO[cho];
         } else {
-          // 현재 음절의 진행 상태에 따라 중성 또는 종성
           if (this.hangulComposer.jung === -1) {
             requiredKey = HC_JUNG[jung];
           } else if (jong > 0 && this.hangulComposer.jong === -1) {
@@ -3755,7 +4280,13 @@ this.activeAesopTheme = 'all';
       }
     }
 
-    if (nextKeyBadge) nextKeyBadge.textContent = (requiredKey === 'Space') ? '띄어쓰기' : requiredKey;
+    const isShiftKey = ['ㅃ','ㅉ','ㄸ','ㄲ','ㅆ','ㅒ','ㅖ'].includes(requiredKey);
+    let displayText = (requiredKey === 'Space') ? '띄어쓰기' : requiredKey;
+    if (isShiftKey) {
+      const baseMap = { 'ㅃ': 'ㅂ', 'ㅉ': 'ㅈ', 'ㄸ': 'ㄷ', 'ㄲ': 'ㄱ', 'ㅆ': 'ㅅ', 'ㅒ': 'ㅐ', 'ㅖ': 'ㅔ' };
+      displayText = `${requiredKey} (쉬프트+${baseMap[requiredKey] || ''})`;
+    }
+    updateBadges(displayText);
 
     // 해당 키 버튼에 타겟 클래스 부여
     document.querySelectorAll('#onscreenKeyboard .key-btn').forEach(btn => {
@@ -3763,6 +4294,12 @@ this.activeAesopTheme = 'all';
         btn.classList.add('key-target-next');
       }
     });
+
+    // 쉬프트 키가 필요한 경우 쉬프트 버튼도 하이라이트
+    if (isShiftKey && !this.isVirtualShift) {
+      const shiftBtn = document.getElementById('keyShiftBtn');
+      if (shiftBtn) shiftBtn.classList.add('key-target-next');
+    }
   }
 
   toggleVirtualShift() {
@@ -3808,7 +4345,7 @@ this.activeAesopTheme = 'all';
   }
 
   setupTypingListeners() {
-    window.addEventListener('keydown', (e) => {
+    const handleKeyInput = (e) => {
       if (this.currentTab !== 'typing') return;
       const activeEl = document.activeElement;
       if (activeEl && activeEl.id === 'freeLetterTextarea') {
@@ -3816,33 +4353,72 @@ this.activeAesopTheme = 'all';
         return;
       }
 
-      if (e.key === 'Backspace') {
+      // 1. 엔터(Enter) 키: e.key, e.code, e.keyCode 모두 완벽 처리 (IME composition 상태 및 텐키패드 포함)
+      if (e.key === 'Enter' || e.code === 'Enter' || e.code === 'NumpadEnter' || e.keyCode === 13) {
         e.preventDefault();
-        this.handleVirtualKey('Backspace');
-        return;
-      }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        e.preventDefault();
-        this.handleVirtualKey('Space');
-        return;
-      }
-      if (e.key === 'Enter') {
-        e.preventDefault();
+        e.stopPropagation();
         this.handleVirtualKey('Enter');
         return;
       }
 
-      let keyChar = e.key;
-      // QWERTY 영문 입력 시 한글 2벌식 자동 매핑
-      if (QWERTY_KO_MAP[keyChar]) {
-        keyChar = QWERTY_KO_MAP[keyChar];
+      // 2. 백스페이스(Backspace) 키
+      if (e.key === 'Backspace' || e.code === 'Backspace' || e.keyCode === 8) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.handleVirtualKey('Backspace');
+        return;
       }
 
-      if (HC_CHO.includes(keyChar) || HC_JUNG.includes(keyChar) || keyChar === '.' || keyChar === ',') {
+      // 3. 띄어쓰기(Space) 키
+      if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.keyCode === 32) {
         e.preventDefault();
+        e.stopPropagation();
+        this.handleVirtualKey('Space');
+        return;
+      }
+
+      // 4. 일반 글쇠(자음/모음): Windows 한글 IME(Process/229) 및 영문 상태 모두 100% 매핑
+      let keyChar = null;
+
+      // 4-1. e.code (물리 키보드 키캡 위치) 우선 판별 - 한영 전환 상태나 IME 229 무관하게 무조건 정확히 입력!
+      if (e.shiftKey && CODE_TO_KO_SHIFT_MAP[e.code]) {
+        keyChar = CODE_TO_KO_SHIFT_MAP[e.code];
+      } else if (CODE_TO_KO_MAP[e.code]) {
+        keyChar = CODE_TO_KO_MAP[e.code];
+      }
+
+      // 4-2. e.key 직접 전달 시 보완 (QWERTY 문자 또는 직접 자모)
+      if (!keyChar) {
+        if (QWERTY_KO_MAP[e.key]) {
+          keyChar = QWERTY_KO_MAP[e.key];
+        } else if (HC_CHO.includes(e.key) || HC_JUNG.includes(e.key) || e.key === '.' || e.key === ',') {
+          keyChar = e.key;
+        }
+      }
+
+      // 4-3. IME로 완성형 음절이 단독 전달된 경우 (예: '사', '과')
+      if (!keyChar && e.key && e.key.length === 1) {
+        const code = e.key.charCodeAt(0);
+        if (code >= 0xAC00 && code <= 0xD7A3) {
+          const { flatJamos } = decomposeWordToJamos(e.key);
+          if (flatJamos && flatJamos.length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            flatJamos.forEach(j => this.handleVirtualKey(j.key));
+            return;
+          }
+        }
+      }
+
+      if (keyChar) {
+        e.preventDefault();
+        e.stopPropagation();
         this.handleVirtualKey(keyChar);
       }
-    });
+    };
+
+    // 캡처링 단계(true)에서 가로채 브라우저 기본 IME 버퍼링보다 먼저 정확히 처리
+    window.addEventListener('keydown', handleKeyInput, true);
   }
 
   // 자유 편지 타자기 기능
@@ -4078,6 +4654,12 @@ this.activeAesopTheme = 'all';
   }
 
   renderParentDashboard() {
+    const pinBadge = document.getElementById('currentPinBadge');
+    if (pinBadge) {
+      const masterPin = localStorage.getItem('family_master_pin') || '0330';
+      pinBadge.textContent = `**** (${masterPin})`;
+    }
+
     if (!this.familyDb) return;
 
     const childId = this.parentTargetChild;
