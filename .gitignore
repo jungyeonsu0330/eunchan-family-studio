@@ -14,3 +14,6 @@ scroll_test.html
 
 # Binary tools
 cloudflared.exe
+
+*.bak
+setup_and_sync.js

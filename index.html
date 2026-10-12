@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,26 +17,7 @@
   <!-- 최상단 온 가족 프로필 바 -->
   <div class="family-top-bar">
 <!-- 가족 프로필 선택 바 (은찬이, 은우, 아빠, 엄마) -->
-    <div class="family-profile-bar">
-      <div class="family-profiles-group">
-        <button class="profile-switch-btn active" id="profBtn_eunchan" onclick="app.switchProfile('eunchan')">
-          <span class="prof-avatar">👦</span>
-          <span class="prof-label">첫째 은찬이</span>
-        </button>
-        <button class="profile-switch-btn" id="profBtn_eunwoo" onclick="app.switchProfile('eunwoo')">
-          <span class="prof-avatar">👶</span>
-          <span class="prof-label">동생 은우</span>
-        </button>
-        <button class="profile-switch-btn parent-btn" id="profBtn_dad" onclick="app.switchProfile('dad')">
-          <span class="prof-avatar">👨</span>
-          <span class="prof-label">정연수 아빠 (관리·분석)</span>
-        </button>
-        <button class="profile-switch-btn parent-btn" id="profBtn_mom" onclick="app.switchProfile('mom')">
-          <span class="prof-avatar">👩</span>
-          <span class="prof-label">엄마 (칭찬·분석)</span>
-        </button>
-      </div>
-
+    <div class="family-profile-bar" style="justify-content: flex-end;">
       <button class="mobile-access-pill" onclick="app.openMobileModal()">
         <span>📷 스마트폰 QR코드 & 크롬 바로열기</span>
       </button>
@@ -72,9 +53,6 @@
       </button>
       <button class="nav-tab-btn" data-tab="typing">
         <span>⌨️</span> 한글 타자기
-      </button>
-      <button class="nav-tab-btn" data-tab="treasure">
-        <span>⭐</span> 내 보물창고
       </button>
       <button class="nav-tab-btn parent-tab-btn" data-tab="parent" id="tabBtnParent" style="display: none;">
         <span>📊</span> 부모 분석·칭찬관
@@ -432,13 +410,12 @@
 
       <!-- 100명의 위인 노래 1절~5절 필터 탭 -->
       <div class="history-verse-nav">
-        <button class="verse-tab-btn active" onclick="app.filterHistoryVerse('all')">🌟 전체 100 위인들 (26개 탐험)</button>
+        <button class="verse-tab-btn active" onclick="app.filterHistoryVerse('all')">🌟 전체 100 위인들 (25개 탐험)</button>
         <button class="verse-tab-btn" onclick="app.filterHistoryVerse('verse1')">🎵 1절: 고조선·삼국</button>
         <button class="verse-tab-btn" onclick="app.filterHistoryVerse('verse2')">🎵 2절: 통일신라·고려</button>
         <button class="verse-tab-btn" onclick="app.filterHistoryVerse('verse3')">🎵 3절: 조선 건국·수호</button>
         <button class="verse-tab-btn" onclick="app.filterHistoryVerse('verse4')">🎵 4절: 조선 실학·예술</button>
         <button class="verse-tab-btn" onclick="app.filterHistoryVerse('verse5')">🎵 5절: 근현대·독립</button>
-        <button class="verse-tab-btn" onclick="app.filterHistoryVerse('bonus')">🦖 공룡 탐험</button>
       </div>
 
       <div id="historyGrid" class="history-grid"></div>
@@ -471,8 +448,6 @@
       <!-- 자동차 카드 그리드 -->
       <div id="carsGrid" class="cars-grid"></div>
     </section>
-
-    <!-- ==================== 4. 내 보물창고 & 칭찬 도장판 ==================== -->
         <!-- ==================== 5. 이솝우화 이야기 베스트 30 섹션 ==================== -->
     <section id="tab-aesop" class="tab-content">
       <div class="aesop-hero-banner">
@@ -758,33 +733,6 @@
               <button class="key-btn key-space xwide" data-key="Space" onclick="app.handleVirtualKey('Space')">␣ 띄어쓰기 (Space)</button>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-<section id="tab-treasure" class="tab-content">
-      <div class="treasure-card">
-        <div class="stamp-board-header">
-          <h2>💮 정연수 아빠의 참 잘했어요 도장판 💮</h2>
-          <p>단어 공부와 역사 모험을 성공할 때마다 아빠가 황금 도장을 찍어줘요! (현재: <strong id="stampsCountLabel">0 / 10</strong>)</p>
-        </div>
-
-        <!-- 10칸 도장판 그리드 -->
-        <div id="stampsGrid" class="stamps-grid"></div>
-
-        <div style="text-align: center; margin-bottom: 24px;">
-          <button class="btn-bubble primary" style="margin: 0 auto 10px auto; padding: 14px 28px; font-size: 16px;" onclick="app.printCertificate()">
-            <span>🏆 은찬이의 황금 칭찬 상장 인쇄하기</span>
-          </button>
-          <button class="btn-bubble" style="margin: 0 auto; font-size: 13px; color: #94a3b8;" onclick="app.resetStamps()">
-            <span>도장판 초기화</span>
-          </button>
-        </div>
-
-        <!-- 배지 컬렉션 -->
-        <div class="badge-collection-box">
-          <h3>🎖️ 은찬이가 획득한 역사 유물 메달 컬렉션</h3>
-          <div id="badgesList" class="badges-list"></div>
         </div>
       </div>
     </section>

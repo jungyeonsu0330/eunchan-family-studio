@@ -4198,7 +4198,7 @@ this.activeAesopTheme = 'all';
     this.playPop();
     const modal = document.getElementById('stickerCelebrationModal');
     if (modal) modal.classList.remove('active');
-    this.switchTab('treasure');
+    this.switchTab('home');
   }
 
   openMobileModal() {
