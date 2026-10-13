@@ -1078,36 +1078,48 @@
       <div id="brainPanelSpot" class="brain-game-panel" style="display: none;">
         <!-- 스테이지 선택 바 -->
         <div class="spot-stages-bar">
-          <div class="spot-stage-buttons">
-            <button class="btn-spot-stage active" data-stage="0" onclick="app.selectSpotStage(0)">
-              <span>🚗 1탄. 멋진 자동차 마을</span>
-            </button>
-            <button class="btn-spot-stage" data-stage="1" onclick="app.selectSpotStage(1)">
-              <span>🦕 2탄. 아기 공룡 동산</span>
-            </button>
-            <button class="btn-spot-stage" data-stage="2" onclick="app.selectSpotStage(2)">
-              <span>🚀 3탄. 반짝반짝 우주 은하수</span>
-            </button>
-            <button class="btn-spot-stage" data-stage="3" onclick="app.selectSpotStage(3)">
-              <span>🏰 4탄. 동화 요정의 성</span>
-            </button>
-          </div>
-
-          <div class="spot-hud-group">
-            <div class="spot-stars-counter" id="spotStarsCounter">
-              <span class="star-badge" id="spotStar_0">⭐</span>
-              <span class="star-badge" id="spotStar_1">⭐</span>
-              <span class="star-badge" id="spotStar_2">⭐</span>
-              <span class="star-badge" id="spotStar_3">⭐</span>
-              <span class="star-badge" id="spotStar_4">⭐</span>
-              <span class="spot-count-text">발견: <strong id="spotFoundCount">0</strong> / 5</span>
+          <div class="spot-stages-bar-top">
+            <div class="spot-hud-title">
+              <span style="font-weight: 800; color: #065f46; font-size: 15px;">🔍 20개 테마 스테이지:</span>
             </div>
-            <button class="btn-spot-action" onclick="app.showSpotHint()">
-              <span>💡 힌트 보기</span>
-            </button>
-            <button class="btn-spot-action" onclick="app.resetCurrentSpotStage()">
-              <span>🔄 다시 하기</span>
-            </button>
+            <div class="spot-hud-group">
+              <div class="spot-stars-counter" id="spotStarsCounter">
+                <span class="star-badge" id="spotStar_0">⭐</span>
+                <span class="star-badge" id="spotStar_1">⭐</span>
+                <span class="star-badge" id="spotStar_2">⭐</span>
+                <span class="star-badge" id="spotStar_3">⭐</span>
+                <span class="star-badge" id="spotStar_4">⭐</span>
+                <span class="spot-count-text">발견: <strong id="spotFoundCount">0</strong> / 5</span>
+              </div>
+              <button class="btn-spot-action" onclick="app.showSpotHint()">
+                <span>💡 힌트 보기</span>
+              </button>
+              <button class="btn-spot-action" onclick="app.resetCurrentSpotStage()">
+                <span>🔄 다시 하기</span>
+              </button>
+            </div>
+          </div>
+          <div class="spot-stage-buttons" id="spotStageButtons">
+            <button class="btn-spot-stage active" data-stage="0" onclick="app.selectSpotStage(0)"><span>🚗 1탄. 멋진 자동차 마을</span></button>
+            <button class="btn-spot-stage" data-stage="1" onclick="app.selectSpotStage(1)"><span>🦕 2탄. 아기 공룡 동산</span></button>
+            <button class="btn-spot-stage" data-stage="2" onclick="app.selectSpotStage(2)"><span>🚀 3탄. 반짝반짝 우주 은하수</span></button>
+            <button class="btn-spot-stage" data-stage="3" onclick="app.selectSpotStage(3)"><span>🏰 4탄. 동화 요정의 성</span></button>
+            <button class="btn-spot-stage" data-stage="4" onclick="app.selectSpotStage(4)"><span>🦁 5탄. 복작복작 사파리 동물원</span></button>
+            <button class="btn-spot-stage" data-stage="5" onclick="app.selectSpotStage(5)"><span>🌊 6탄. 신비한 바닷속 산호초</span></button>
+            <button class="btn-spot-stage" data-stage="6" onclick="app.selectSpotStage(6)"><span>🍬 7탄. 달콤한 디저트 과자나라</span></button>
+            <button class="btn-spot-stage" data-stage="7" onclick="app.selectSpotStage(7)"><span>❄️ 8탄. 펭귄과 눈사람 겨울마을</span></button>
+            <button class="btn-spot-stage" data-stage="8" onclick="app.selectSpotStage(8)"><span>🌴 9탄. 신비한 아마존 열대정글</span></button>
+            <button class="btn-spot-stage" data-stage="9" onclick="app.selectSpotStage(9)"><span>🤖 10탄. 첨단 미래 로봇 연구소</span></button>
+            <button class="btn-spot-stage" data-stage="10" onclick="app.selectSpotStage(10)"><span>⚽ 11탄. 신나는 학교 운동회</span></button>
+            <button class="btn-spot-stage" data-stage="11" onclick="app.selectSpotStage(11)"><span>🏖️ 12탄. 햇살 가득 모래 해변</span></button>
+            <button class="btn-spot-stage" data-stage="12" onclick="app.selectSpotStage(12)"><span>🏫 13탄. 은찬이의 두뇌 쏙쏙 교실</span></button>
+            <button class="btn-spot-stage" data-stage="13" onclick="app.selectSpotStage(13)"><span>🛒 14탄. 복작복작 마트 장보기</span></button>
+            <button class="btn-spot-stage" data-stage="14" onclick="app.selectSpotStage(14)"><span>🚂 15탄. 칙칙폭폭 기차역</span></button>
+            <button class="btn-spot-stage" data-stage="15" onclick="app.selectSpotStage(15)"><span>✈️ 16탄. 세계 여행 하늘 공항</span></button>
+            <button class="btn-spot-stage" data-stage="16" onclick="app.selectSpotStage(16)"><span>🚒 17탄. 출동 119 소방서</span></button>
+            <button class="btn-spot-stage" data-stage="17" onclick="app.selectSpotStage(17)"><span>🎸 18탄. 숲속 동물 음악 밴드</span></button>
+            <button class="btn-spot-stage" data-stage="18" onclick="app.selectSpotStage(18)"><span>🚜 19탄. 평화로운 시골 농장</span></button>
+            <button class="btn-spot-stage" data-stage="19" onclick="app.selectSpotStage(19)"><span>🎪 20탄. 환상적인 서커스 매직쇼</span></button>
           </div>
         </div>
 
@@ -1151,26 +1163,41 @@
       <div id="brainPanelWhere" class="brain-game-panel" style="display: none;">
         <!-- 테마 선택 바 -->
         <div class="where-theme-bar">
-          <div class="where-theme-buttons">
-            <button class="btn-where-theme active" data-scene="park" onclick="app.selectWhereScene('park')">
-              <span>🎡 테마 1. 와글와글 놀이공원 대축제</span>
-            </button>
-            <button class="btn-where-theme" data-scene="ocean" onclick="app.selectWhereScene('ocean')">
-              <span>🌊 테마 2. 신비한 바닷속 산호초 파티</span>
-            </button>
-            <button class="btn-where-theme" data-scene="safari" onclick="app.selectWhereScene('safari')">
-              <span>🦁 테마 3. 복작복작 사파리 동물원</span>
-            </button>
+          <div class="where-theme-bar-top">
+            <div class="where-hud-title">
+              <span style="font-weight: 800; color: #065f46; font-size: 15px;">🕵️‍♂️ 20개 파노라마 탐험 테마:</span>
+            </div>
+            <div class="where-stats-group">
+              <span class="where-stats-pill">🎯 찾은 목표: <strong id="whereFoundCount">0</strong> / 5</span>
+              <button class="btn-where-action" onclick="app.showWhereHint()">
+                <span>💡 힌트 보기</span>
+              </button>
+              <button class="btn-where-action" onclick="app.resetWhereScene()">
+                <span>🔄 다시 찾기</span>
+              </button>
+            </div>
           </div>
-
-          <div class="where-stats-group">
-            <span class="where-stats-pill">🎯 찾은 목표: <strong id="whereFoundCount">0</strong> / 5</span>
-            <button class="btn-where-action" onclick="app.showWhereHint()">
-              <span>💡 힌트 보기</span>
-            </button>
-            <button class="btn-where-action" onclick="app.resetWhereScene()">
-              <span>🔄 다시 찾기</span>
-            </button>
+          <div class="where-theme-buttons" id="whereThemeButtons">
+            <button class="btn-where-theme active" data-scene="theme_0" onclick="app.selectWhereScene('theme_0')"><span>🎡 1. 와글와글 놀이공원 대축제</span></button>
+            <button class="btn-where-theme" data-scene="theme_1" onclick="app.selectWhereScene('theme_1')"><span>🌊 2. 신비한 바닷속 산호초 파티</span></button>
+            <button class="btn-where-theme" data-scene="theme_2" onclick="app.selectWhereScene('theme_2')"><span>🦁 3. 복작복작 사파리 동물원</span></button>
+            <button class="btn-where-theme" data-scene="theme_3" onclick="app.selectWhereScene('theme_3')"><span>🚀 4. 반짝반짝 은하수 우주정거장</span></button>
+            <button class="btn-where-theme" data-scene="theme_4" onclick="app.selectWhereScene('theme_4')"><span>🦕 5. 백악기 아기 공룡 탐험대</span></button>
+            <button class="btn-where-theme" data-scene="theme_5" onclick="app.selectWhereScene('theme_5')"><span>🍬 6. 달콤새콤 과자 &amp; 젤리 왕국</span></button>
+            <button class="btn-where-theme" data-scene="theme_6" onclick="app.selectWhereScene('theme_6')"><span>❄️ 7. 펭귄과 루돌프 눈꽃 겨울나라</span></button>
+            <button class="btn-where-theme" data-scene="theme_7" onclick="app.selectWhereScene('theme_7')"><span>🌴 8. 깊은 아마존 신비의 숲</span></button>
+            <button class="btn-where-theme" data-scene="theme_8" onclick="app.selectWhereScene('theme_8')"><span>🏰 9. 동화 속 마법 요정의 궁전</span></button>
+            <button class="btn-where-theme" data-scene="theme_9" onclick="app.selectWhereScene('theme_9')"><span>🤖 10. 미래 하이테크 사이버 시티</span></button>
+            <button class="btn-where-theme" data-scene="theme_10" onclick="app.selectWhereScene('theme_10')"><span>⚽ 11. 와글와글 학교 체육대회</span></button>
+            <button class="btn-where-theme" data-scene="theme_11" onclick="app.selectWhereScene('theme_11')"><span>🏖️ 12. 시원한 야자수 모래 해변</span></button>
+            <button class="btn-where-theme" data-scene="theme_12" onclick="app.selectWhereScene('theme_12')"><span>🏫 13. 은찬이네 행복한 초등학교</span></button>
+            <button class="btn-where-theme" data-scene="theme_13" onclick="app.selectWhereScene('theme_13')"><span>🛒 14. 복작복작 행복 대형 마트</span></button>
+            <button class="btn-where-theme" data-scene="theme_14" onclick="app.selectWhereScene('theme_14')"><span>🚂 15. 낭만 가득 중앙 기차역</span></button>
+            <button class="btn-where-theme" data-scene="theme_15" onclick="app.selectWhereScene('theme_15')"><span>✈️ 16. 하늘 높이 세계 여행 공항</span></button>
+            <button class="btn-where-theme" data-scene="theme_16" onclick="app.selectWhereScene('theme_16')"><span>🚒 17. 삐뽀삐뽀 용감한 119 소방서</span></button>
+            <button class="btn-where-theme" data-scene="theme_17" onclick="app.selectWhereScene('theme_17')"><span>🎸 18. 신나는 숲속 록 페스티벌</span></button>
+            <button class="btn-where-theme" data-scene="theme_18" onclick="app.selectWhereScene('theme_18')"><span>🚜 19. 무럭무럭 평화로운 동물 농장</span></button>
+            <button class="btn-where-theme" data-scene="theme_19" onclick="app.selectWhereScene('theme_19')"><span>🎪 20. 환상적인 매직 서커스 천막</span></button>
           </div>
         </div>
 

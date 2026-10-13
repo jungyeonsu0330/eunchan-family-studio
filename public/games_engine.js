@@ -1692,37 +1692,41 @@
   };
 
   // ==========================================================================
-  // 3-2. 🔍 눈썰미 쑥쑥 틀린그림 찾기 (Spot the Differences)
+  // 3-2. 🔍 눈썰미 쑥쑥 틀린그림 찾기 (Spot the Differences) - 20개 다양한 테마 스테이지
   // ==========================================================================
-  EduApp.prototype.initSpotStages = function() {
-    if (this.spotStagesInitialized) return;
-
-    this.spotStages = [
+  EduApp.prototype.buildSpotStagesData = function() {
+    return [
       {
         id: 0,
-        title: '🚗 은찬이의 멋진 자동차 마을',
+        title: '🚗 1탄. 멋진 자동차 마을',
+        badge: '🚗 1탄',
+        themeType: 'cars',
         diffs: [
-          { id: 0, x: 75, y: 70, radius: 32, hint: '신호등 불빛 색깔을 살펴보세요!' },
-          { id: 1, x: 175, y: 280, radius: 34, hint: '빨간 스포츠카의 바퀴 휠 모양을 보세요!' },
+          { id: 0, x: 75, y: 70, radius: 34, hint: '신호등 불빛 색깔을 살펴보세요!' },
+          { id: 1, x: 175, y: 280, radius: 34, hint: '빨간 스포츠카 바퀴 휠 모양을 보세요!' },
           { id: 2, x: 410, y: 55, radius: 36, hint: '하늘에 떠 있는 구름 모양을 찾아보세요!' },
-          { id: 3, x: 480, y: 160, radius: 34, hint: '가로수에 달린 탐스러운 사과 개수를 세어보세요!' },
+          { id: 3, x: 480, y: 160, radius: 34, hint: '가로수 사과 개수를 세어보세요!' },
           { id: 4, x: 295, y: 125, radius: 32, hint: '지붕 위 귀여운 고양이의 모자를 찾아보세요!' }
         ]
       },
       {
         id: 1,
-        title: '🦕 아기 공룡 쥐라기 동산',
+        title: '🦕 2탄. 아기 공룡 동산',
+        badge: '🦕 2탄',
+        themeType: 'dino',
         diffs: [
           { id: 0, x: 100, y: 60, radius: 34, hint: '화산에서 피어오르는 연기 모양을 보세요!' },
           { id: 1, x: 210, y: 240, radius: 34, hint: '아기 티라노의 꼬리 무늬를 살펴보세요!' },
           { id: 2, x: 360, y: 295, radius: 32, hint: '둥지 속 공룡알의 줄무늬를 비교해보세요!' },
-          { id: 3, x: 450, y: 110, radius: 32, hint: '날아다니는 나비의 날개 색을 확인해보세요!' },
+          { id: 3, x: 450, y: 110, radius: 32, hint: '날아다니는 익룡의 날개 색을 확인해보세요!' },
           { id: 4, x: 480, y: 190, radius: 34, hint: '야자수 나무에 달린 코코넛 열매를 찾아보세요!' }
         ]
       },
       {
         id: 2,
-        title: '🚀 반짝반짝 우주 은하수',
+        title: '🚀 3탄. 반짝반짝 우주 은하수',
+        badge: '🚀 3탄',
+        themeType: 'space',
         diffs: [
           { id: 0, x: 130, y: 210, radius: 34, hint: '우주 비행사의 헬멧 유리창 색을 살펴보세요!' },
           { id: 1, x: 275, y: 110, radius: 34, hint: '로켓 우주선의 창문 모양을 비교해보세요!' },
@@ -1733,19 +1737,257 @@
       },
       {
         id: 3,
-        title: '🏰 동화 요정의 비밀의 성',
+        title: '🏰 4탄. 동화 요정의 비밀 성',
+        badge: '🏰 4탄',
+        themeType: 'castle',
         diffs: [
           { id: 0, x: 260, y: 50, radius: 32, hint: '성 꼭대기 펄럭이는 깃발 모양을 보세요!' },
           { id: 1, x: 120, y: 80, radius: 34, hint: '하늘에 걸린 무지개 색깔 순서를 살펴보세요!' },
           { id: 2, x: 270, y: 150, radius: 32, hint: '시계탑의 바늘이 가리키는 시간을 비교해보세요!' },
-          { id: 3, x: 440, y: 290, radius: 34, hint: '호수 위 하얀 백조의 머리 장식을 보세요!' },
+          { id: 3, x: 440, y: 290, radius: 34, hint: '호수 위 하얀 백조의 머리 왕관을 보세요!' },
           { id: 4, x: 150, y: 280, radius: 34, hint: '분수대 가운데 반짝이는 보석 색상을 찾아보세요!' }
+        ]
+      },
+      {
+        id: 4,
+        title: '🦁 5탄. 복작복작 사파리 동물원',
+        badge: '🦁 5탄',
+        themeType: 'safari',
+        diffs: [
+          { id: 0, x: 150, y: 230, radius: 34, hint: '아기 사자의 머리 리본 색상을 살펴보세요!' },
+          { id: 1, x: 400, y: 130, radius: 34, hint: '기린 목의 알록달록 반점 개수를 세어보세요!' },
+          { id: 2, x: 270, y: 280, radius: 34, hint: '얼룩말 줄무늬 모양을 비교해보세요!' },
+          { id: 3, x: 110, y: 310, radius: 34, hint: '연못 위 악어가 쓴 멋진 선글라스를 찾아보세요!' },
+          { id: 4, x: 470, y: 100, radius: 32, hint: '나무 위 원숭이가 쥐고 있는 바나나를 보세요!' }
+        ]
+      },
+      {
+        id: 5,
+        title: '🌊 6탄. 신비한 바닷속 산호초',
+        badge: '🌊 6탄',
+        themeType: 'ocean',
+        diffs: [
+          { id: 0, x: 160, y: 220, radius: 34, hint: '귀여운 문어의 파티 꼬깔모자를 확인해보세요!' },
+          { id: 1, x: 340, y: 170, radius: 34, hint: '황금 해마의 꼬리 방향을 비교해보세요!' },
+          { id: 2, x: 240, y: 310, radius: 34, hint: '거대 조개 속 무지개 진주의 색깔을 찾아보세요!' },
+          { id: 3, x: 430, y: 250, radius: 34, hint: '바다거북 등껍질 위의 별빛 무늬를 살펴보세요!' },
+          { id: 4, x: 90, y: 110, radius: 32, hint: '잠수함 창문 밖으로 지나가는 물고기를 보세요!' }
+        ]
+      },
+      {
+        id: 6,
+        title: '🍬 7탄. 달콤한 디저트 과자나라',
+        badge: '🍬 7탄',
+        themeType: 'candy',
+        diffs: [
+          { id: 0, x: 180, y: 250, radius: 34, hint: '진저브레드 쿠키의 단추 개수를 확인해보세요!' },
+          { id: 1, x: 360, y: 190, radius: 34, hint: '대형 컵케이크 위의 체리 토핑 색상을 보세요!' },
+          { id: 2, x: 100, y: 140, radius: 34, hint: '대왕 롤리팝 사탕의 회오리 줄무늬를 살펴보세요!' },
+          { id: 3, x: 460, y: 80, radius: 32, hint: '아이스크림 성 꼭대기의 깃발을 찾아보세요!' },
+          { id: 4, x: 270, y: 300, radius: 34, hint: '초콜릿 분수에서 퐁퐁 튀는 방울을 세어보세요!' }
+        ]
+      },
+      {
+        id: 7,
+        title: '❄️ 8탄. 펭귄과 눈사람 겨울마을',
+        badge: '❄️ 8탄',
+        themeType: 'winter',
+        diffs: [
+          { id: 0, x: 160, y: 220, radius: 34, hint: '꼬마 눈사람의 따뜻한 목도리 색깔을 보세요!' },
+          { id: 1, x: 320, y: 260, radius: 34, hint: '아기 펭귄이 끼고 있는 푹신한 귀마개를 찾아보세요!' },
+          { id: 2, x: 440, y: 210, radius: 34, hint: '얼음 이글루 입구 모양을 비교해보세요!' },
+          { id: 3, x: 260, y: 60, radius: 32, hint: '겨울 밤하늘에 반짝이는 오로라 별똥별을 보세요!' },
+          { id: 4, x: 100, y: 320, radius: 34, hint: '썰매 위 선물상자 리본 모양을 살펴보세요!' }
+        ]
+      },
+      {
+        id: 8,
+        title: '🌴 9탄. 신비한 아마존 열대정글',
+        badge: '🌴 9탄',
+        themeType: 'jungle',
+        diffs: [
+          { id: 0, x: 120, y: 130, radius: 34, hint: '큰부리새 투칸의 알록달록 부리 색을 보세요!' },
+          { id: 1, x: 280, y: 200, radius: 34, hint: '나뭇가지 위 카멜레온의 피부 색상을 비교해보세요!' },
+          { id: 2, x: 430, y: 270, radius: 34, hint: '폭포 옆에 활짝 핀 정글 꽃잎 모양을 보세요!' },
+          { id: 3, x: 480, y: 90, radius: 32, hint: '덩굴 식물에 달린 신비한 열매 개수를 찾아보세요!' },
+          { id: 4, x: 200, y: 310, radius: 34, hint: '연잎 위 아기 청개구리의 왕관을 살펴보세요!' }
+        ]
+      },
+      {
+        id: 9,
+        title: '🤖 10탄. 첨단 미래 로봇 연구소',
+        badge: '🤖 10탄',
+        themeType: 'robot',
+        diffs: [
+          { id: 0, x: 150, y: 220, radius: 34, hint: '청소 로봇의 머리 안테나 라이트 색상을 보세요!' },
+          { id: 1, x: 270, y: 130, radius: 34, hint: '메인 슈퍼컴퓨터 모니터의 홀로그램 그래프를 보세요!' },
+          { id: 2, x: 400, y: 100, radius: 32, hint: '벽면 에너지 배터리의 충전 게이지 칸수를 세어보세요!' },
+          { id: 3, x: 350, y: 260, radius: 34, hint: '연구원 곰돌이 로봇의 안경테 모양을 찾아보세요!' },
+          { id: 4, x: 90, y: 90, radius: 34, hint: '벽면 톱니바퀴의 황금 톱니를 비교해보세요!' }
+        ]
+      },
+      {
+        id: 10,
+        title: '⚽ 11탄. 신나는 학교 운동회',
+        badge: '⚽ 11탄',
+        themeType: 'sports',
+        diffs: [
+          { id: 0, x: 270, y: 290, radius: 34, hint: '축구공 중앙의 오각형 무늬 색상을 확인해보세요!' },
+          { id: 1, x: 220, y: 70, radius: 34, hint: '운동장 하늘에 걸린 만국기 깃발 모양을 보세요!' },
+          { id: 2, x: 140, y: 210, radius: 34, hint: '열심히 응원하는 은찬이의 머리띠 색을 살펴보세요!' },
+          { id: 3, x: 410, y: 190, radius: 34, hint: '시상대 위 우승 트로피의 별 개수를 세어보세요!' },
+          { id: 4, x: 470, y: 80, radius: 32, hint: '전광판 점수판의 승리 점수 숫자를 확인해보세요!' }
+        ]
+      },
+      {
+        id: 11,
+        title: '🏖️ 12탄. 햇살 가득 모래 해변',
+        badge: '🏖️ 12탄',
+        themeType: 'beach',
+        diffs: [
+          { id: 0, x: 180, y: 160, radius: 34, hint: '알록달록 비치 파라솔의 줄무늬 색을 비교해보세요!' },
+          { id: 1, x: 360, y: 250, radius: 34, hint: '멋진 모래성 꼭대기의 조개 깃발을 찾아보세요!' },
+          { id: 2, x: 450, y: 290, radius: 34, hint: '파도 위 서핑보드의 번개 무늬를 살펴보세요!' },
+          { id: 3, x: 280, y: 60, radius: 32, hint: '푸른 하늘을 나는 갈매기 부리의 물고기를 보세요!' },
+          { id: 4, x: 100, y: 270, radius: 34, hint: '튜브를 탄 귀여운 아기 물개의 선글라스를 찾아보세요!' }
+        ]
+      },
+      {
+        id: 12,
+        title: '🏫 13탄. 은찬이의 두뇌 쏙쏙 교실',
+        badge: '🏫 13탄',
+        themeType: 'school',
+        diffs: [
+          { id: 0, x: 230, y: 110, radius: 34, hint: '초록 칠판에 적힌 덧셈 문제의 정답을 확인해보세요!' },
+          { id: 1, x: 420, y: 130, radius: 34, hint: '책장 위 회전 지구본의 대륙 색상을 비교해보세요!' },
+          { id: 2, x: 150, y: 270, radius: 34, hint: '은찬이의 책가방에 달린 스마일 배지를 찾아보세요!' },
+          { id: 3, x: 310, y: 240, radius: 32, hint: '교탁 위 연필꽂이에 꽂힌 알록달록 연필 수를 세어보세요!' },
+          { id: 4, x: 80, y: 90, radius: 32, hint: '교실 창문 밖으로 날아온 노랑나비를 살펴보세요!' }
+        ]
+      },
+      {
+        id: 13,
+        title: '🛒 14탄. 복작복작 마트 장보기',
+        badge: '🛒 14탄',
+        themeType: 'market',
+        diffs: [
+          { id: 0, x: 200, y: 280, radius: 34, hint: '쇼핑 카트 속 커다란 수박의 줄무늬를 살펴보세요!' },
+          { id: 1, x: 340, y: 170, radius: 34, hint: '과일 코너 진열대의 달콤한 바나나 송이를 세어보세요!' },
+          { id: 2, x: 270, y: 60, radius: 34, hint: '마트 벽면 둥근 시계의 시침 바늘을 비교해보세요!' },
+          { id: 3, x: 440, y: 190, radius: 34, hint: '친절한 마트 점원 모자의 별 마크를 찾아보세요!' },
+          { id: 4, x: 100, y: 190, radius: 32, hint: '음료수 진열대의 탄산음료 캔 색상을 확인해보세요!' }
+        ]
+      },
+      {
+        id: 14,
+        title: '🚂 15탄. 칙칙폭폭 기차역',
+        badge: '🚂 15탄',
+        themeType: 'train',
+        diffs: [
+          { id: 0, x: 180, y: 90, radius: 34, hint: '증기기관차 굴뚝에서 나오는 뭉게구름 하트 모양을 보세요!' },
+          { id: 1, x: 340, y: 230, radius: 34, hint: '역장 곰돌이가 불고 있는 황금 호루라기를 살펴보세요!' },
+          { id: 2, x: 90, y: 250, radius: 34, hint: '기관차 전면의 밝은 라이트 전조등 빛 색을 보세요!' },
+          { id: 3, x: 440, y: 280, radius: 34, hint: '플랫폼 벤치 옆에 놓인 여행가방의 네임택을 찾아보세요!' },
+          { id: 4, x: 270, y: 50, radius: 32, hint: '기차역 꼭대기 시계탑의 시간을 확인해보세요!' }
+        ]
+      },
+      {
+        id: 15,
+        title: '✈️ 16탄. 세계 여행 하늘 공항',
+        badge: '✈️ 16탄',
+        themeType: 'airport',
+        diffs: [
+          { id: 0, x: 220, y: 150, radius: 34, hint: '여객기 날개 제트 엔진의 불꽃 색상을 비교해보세요!' },
+          { id: 1, x: 430, y: 80, radius: 34, hint: '공항 관제탑 레이더 안테나의 회전 날개를 보세요!' },
+          { id: 2, x: 120, y: 310, radius: 34, hint: '활주로 바닥의 비행기 유도등 불빛을 찾아보세요!' },
+          { id: 3, x: 330, y: 270, radius: 34, hint: '여행객 토끼가 손에 쥔 여권 커버 색상을 살펴보세요!' },
+          { id: 4, x: 260, y: 60, radius: 32, hint: '하늘 높이 떠 있는 비행선 풍선의 로고를 확인해보세요!' }
+        ]
+      },
+      {
+        id: 16,
+        title: '🚒 17탄. 출동 119 소방서',
+        badge: '🚒 17탄',
+        themeType: 'fire',
+        diffs: [
+          { id: 0, x: 170, y: 200, radius: 34, hint: '빨간 소방차 위의 경광등 사이렌 색깔을 비교해보세요!' },
+          { id: 1, x: 300, y: 280, radius: 34, hint: '소방관 아저씨가 잡은 소방호스 노즐을 살펴보세요!' },
+          { id: 2, x: 230, y: 160, radius: 34, hint: '용감한 소방관 헬멧의 번개 엠블럼을 찾아보세요!' },
+          { id: 3, x: 420, y: 100, radius: 32, hint: '소방서 옥상 긴급 출동 확성기 개수를 세어보세요!' },
+          { id: 4, x: 450, y: 290, radius: 34, hint: '도로변 빨간 소화전의 밸브 손잡이 모양을 보세요!' }
+        ]
+      },
+      {
+        id: 17,
+        title: '🎸 18탄. 숲속 동물 음악 밴드',
+        badge: '🎸 18탄',
+        themeType: 'concert',
+        diffs: [
+          { id: 0, x: 170, y: 220, radius: 34, hint: '곰 드러머의 신나는 드럼 심벌즈 색상을 확인해보세요!' },
+          { id: 1, x: 270, y: 170, radius: 34, hint: '토끼 보컬의 스탠드 마이크 리본 장식을 찾아보세요!' },
+          { id: 2, x: 370, y: 240, radius: 34, hint: '여우 기타리스트의 기타 피크 모양을 비교해보세요!' },
+          { id: 3, x: 440, y: 180, radius: 32, hint: '음악 보면대에 그려진 높은음자리표를 살펴보세요!' },
+          { id: 4, x: 270, y: 50, radius: 34, hint: '무대 천장에 매달린 반짝반짝 미러볼 조명을 보세요!' }
+        ]
+      },
+      {
+        id: 18,
+        title: '🚜 19탄. 평화로운 시골 농장',
+        badge: '🚜 19탄',
+        themeType: 'farm',
+        diffs: [
+          { id: 0, x: 170, y: 260, radius: 34, hint: '초록 트랙터의 커다란 바퀴 휠 모양을 살펴보세요!' },
+          { id: 1, x: 330, y: 150, radius: 34, hint: '밀짚모자 허수아비 어깨에 앉은 아기 참새를 보세요!' },
+          { id: 2, x: 430, y: 100, radius: 34, hint: '언덕 위 붉은 풍차 날개의 회전 각도를 확인해보세요!' },
+          { id: 3, x: 250, y: 310, radius: 32, hint: '텃밭에서 쑥쑥 자라는 주황 당근의 잎사귀를 세어보세요!' },
+          { id: 4, x: 90, y: 210, radius: 34, hint: '외양간 얼룩송아지의 이마 하트 얼룩무늬를 찾아보세요!' }
+        ]
+      },
+      {
+        id: 19,
+        title: '🎪 20탄. 환상적인 서커스 매직쇼',
+        badge: '🎪 20탄',
+        themeType: 'circus',
+        diffs: [
+          { id: 0, x: 270, y: 130, radius: 34, hint: '마술사 모자 속에서 날아오르는 흰 비둘기를 보세요!' },
+          { id: 1, x: 270, y: 50, radius: 34, hint: '거대한 서커스 천막 꼭대기의 황금 별을 확인해보세요!' },
+          { id: 2, x: 150, y: 240, radius: 34, hint: '외발자전거를 탄 피에로의 알록달록 풍선 개수를 세어보세요!' },
+          { id: 3, x: 390, y: 190, radius: 34, hint: '공중에서 핑핑 도는 저글링 볼의 색상을 비교해보세요!' },
+          { id: 4, x: 460, y: 100, radius: 32, hint: '화려한 레드카펫 무대 커튼의 금빛 태슬을 살펴보세요!' }
         ]
       }
     ];
+  };
 
-    this.spotStagesInitialized = true;
-    this.setupSpotClickListeners();
+  EduApp.prototype.initSpotStages = function() {
+    this.spotStageIdx = (typeof this.spotStageIdx === 'number' && this.spotStageIdx >= 0) ? this.spotStageIdx : 0;
+    this.spotFoundMap = this.spotFoundMap || {};
+    this.spotFoundMap[this.spotStageIdx] = this.spotFoundMap[this.spotStageIdx] || new Set();
+
+    if (!this.spotStagesInitialized) {
+      this.spotStages = this.buildSpotStagesData();
+      this.spotStagesInitialized = true;
+      this.setupSpotClickListeners();
+    }
+
+    this.renderSpotStageButtons();
+  };
+
+  EduApp.prototype.renderSpotStageButtons = function() {
+    const container = document.getElementById('spotStageButtons');
+    if (!container || !this.spotStages) return;
+
+    if (container.children.length !== this.spotStages.length) {
+      container.innerHTML = this.spotStages.map((stage, idx) => `
+        <button class="btn-spot-stage ${idx === this.spotStageIdx ? 'active' : ''}" data-stage="${idx}" onclick="app.selectSpotStage(${idx})">
+          <span>${stage.title}</span>
+        </button>
+      `).join('');
+    } else {
+      Array.from(container.children).forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === this.spotStageIdx);
+      });
+    }
   };
 
   EduApp.prototype.setupSpotClickListeners = function() {
@@ -1762,10 +2004,15 @@
   EduApp.prototype.selectSpotStage = function(idx) {
     this.playPop();
     this.spotStageIdx = idx;
+    this.spotFoundMap = this.spotFoundMap || {};
+    this.spotFoundMap[this.spotStageIdx] = this.spotFoundMap[this.spotStageIdx] || new Set();
 
-    document.querySelectorAll('.btn-spot-stage').forEach(btn => {
-      btn.classList.toggle('active', parseInt(btn.dataset.stage, 10) === idx);
-    });
+    this.renderSpotStageButtons();
+
+    const activeBtn = document.querySelector(`.btn-spot-stage[data-stage="${idx}"]`);
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
 
     const overlay = document.getElementById('spotWinOverlay');
     if (overlay) overlay.style.display = 'none';
@@ -1784,8 +2031,8 @@
     const clickX = (e.clientX - rect.left) * scaleX;
     const clickY = (e.clientY - rect.top) * scaleY;
 
+    if (!this.spotStages || !this.spotStages[this.spotStageIdx]) return;
     const curStage = this.spotStages[this.spotStageIdx];
-    if (!curStage) return;
 
     this.spotFoundMap[this.spotStageIdx] = this.spotFoundMap[this.spotStageIdx] || new Set();
     const foundSet = this.spotFoundMap[this.spotStageIdx];
@@ -1800,7 +2047,6 @@
           this.playSuccess();
           this.renderSpotStage();
 
-          // 모두 찾았을 때
           if (foundSet.size === curStage.diffs.length) {
             setTimeout(() => {
               this.playFanfare();
@@ -1821,6 +2067,7 @@
 
   EduApp.prototype.showSpotHint = function() {
     this.playPop();
+    if (!this.spotStages) return;
     const curStage = this.spotStages[this.spotStageIdx];
     if (!curStage) return;
 
@@ -1841,7 +2088,7 @@
 
   EduApp.prototype.resetCurrentSpotStage = function() {
     this.playPop();
-    if (this.spotFoundMap[this.spotStageIdx]) {
+    if (this.spotFoundMap && this.spotFoundMap[this.spotStageIdx]) {
       this.spotFoundMap[this.spotStageIdx].clear();
     }
     const overlay = document.getElementById('spotWinOverlay');
@@ -1851,7 +2098,7 @@
 
   EduApp.prototype.nextSpotStage = function() {
     this.playPop();
-    const nextIdx = (this.spotStageIdx + 1) % this.spotStages.length;
+    const nextIdx = (this.spotStageIdx + 1) % (this.spotStages ? this.spotStages.length : 20);
     this.selectSpotStage(nextIdx);
   };
 
@@ -1860,10 +2107,10 @@
     const rightCanvas = document.getElementById('spotCanvasRight');
     if (!leftCanvas || !rightCanvas) return;
 
+    this.initSpotStages();
     this.spotFoundMap[this.spotStageIdx] = this.spotFoundMap[this.spotStageIdx] || new Set();
     const foundSet = this.spotFoundMap[this.spotStageIdx];
 
-    // HUD 업데이트
     const countElem = document.getElementById('spotFoundCount');
     if (countElem) countElem.textContent = foundSet.size;
 
@@ -1875,7 +2122,6 @@
     const curStage = this.spotStages[this.spotStageIdx];
     if (!curStage) return;
 
-    // 양쪽 캔버스 그리기
     this.drawSpotScene(leftCanvas, this.spotStageIdx, false, foundSet, curStage.diffs);
     this.drawSpotScene(rightCanvas, this.spotStageIdx, true, foundSet, curStage.diffs);
   };
@@ -1889,19 +2135,52 @@
 
     ctx.clearRect(0, 0, w, h);
 
+    // Palettes and themed rendering for all 20 stages
+    const themePalettes = [
+      { sky: ['#bae6fd', '#e0f2fe'], ground: '#86efac', mainIcon: '🚗', mainX: 175, mainY: 280, env: 'cars' },
+      { sky: ['#fef08a', '#bbf7d0'], ground: '#65a30d', mainIcon: '🦕', mainX: 210, mainY: 240, env: 'dino' },
+      { sky: ['#0f172a', '#1e1b4b'], ground: '#312e81', mainIcon: '🚀', mainX: 275, mainY: 110, env: 'space' },
+      { sky: ['#fbcfe8', '#e0e7ff'], ground: '#a7f3d0', mainIcon: '🏰', mainX: 270, mainY: 150, env: 'castle' },
+      { sky: ['#fed7aa', '#fef08a'], ground: '#84cc16', mainIcon: '🦁', mainX: 150, mainY: 230, env: 'safari' },
+      { sky: ['#38bdf8', '#0284c7'], ground: '#fef08a', mainIcon: '🤿', mainX: 160, mainY: 220, env: 'ocean' },
+      { sky: ['#fce7f3', '#ffe4e6'], ground: '#fbcfe8', mainIcon: '🧁', mainX: 360, mainY: 190, env: 'candy' },
+      { sky: ['#e0f2fe', '#bae6fd'], ground: '#f8fafc', mainIcon: '⛄', mainX: 160, mainY: 220, env: 'winter' },
+      { sky: ['#a7f3d0', '#6ee7b7'], ground: '#15803d', mainIcon: '🦜', mainX: 120, mainY: 130, env: 'jungle' },
+      { sky: ['#0284c7', '#0f172a'], ground: '#1e293b', mainIcon: '🤖', mainX: 150, mainY: 220, env: 'robot' },
+      { sky: ['#bae6fd', '#fed7aa'], ground: '#4ade80', mainIcon: '⚽', mainX: 270, mainY: 290, env: 'sports' },
+      { sky: ['#7dd3fc', '#fef08a'], ground: '#fde047', mainIcon: '🏖️', mainX: 180, mainY: 160, env: 'beach' },
+      { sky: ['#fef3c7', '#dcfce7'], ground: '#cbd5e1', mainIcon: '🏫', mainX: 230, mainY: 110, env: 'school' },
+      { sky: ['#fed7aa', '#ffedd5'], ground: '#e2e8f0', mainIcon: '🛒', mainX: 200, mainY: 280, env: 'market' },
+      { sky: ['#93c5fd', '#dbeafe'], ground: '#475569', mainIcon: '🚂', mainX: 180, mainY: 90, env: 'train' },
+      { sky: ['#60a5fa', '#93c5fd'], ground: '#64748b', mainIcon: '✈️', mainX: 220, mainY: 150, env: 'airport' },
+      { sky: ['#fed7aa', '#fca5a5'], ground: '#334155', mainIcon: '🚒', mainX: 170, mainY: 200, env: 'fire' },
+      { sky: ['#c084fc', '#e9d5ff'], ground: '#166534', mainIcon: '🎸', mainX: 370, mainY: 240, env: 'concert' },
+      { sky: ['#fde047', '#bbf7d0'], ground: '#854d0e', mainIcon: '🚜', mainX: 170, mainY: 260, env: 'farm' },
+      { sky: ['#f43f5e', '#fbbf24'], ground: '#7f1d1d', mainIcon: '🎪', mainX: 270, mainY: 50, env: 'circus' }
+    ];
+
+    const pal = themePalettes[stageIdx % themePalettes.length];
+
+    // 1. Sky & Backdrop
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, 240);
+    skyGrad.addColorStop(0, pal.sky[0]);
+    skyGrad.addColorStop(1, pal.sky[1]);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, w, 240);
+
+    // 2. Ground / Terrain
+    ctx.fillStyle = pal.ground;
+    ctx.beginPath();
+    ctx.moveTo(0, 240);
+    ctx.bezierCurveTo(180, 225, 360, 255, w, 240);
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.fill();
+
+    // 3. Stage-specific Scenery and Differences (0 ~ 4)
     if (stageIdx === 0) {
       // 🚗 1탄. 멋진 자동차 마을
-      // 하늘 & 잔디 배경
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, 240);
-      skyGrad.addColorStop(0, '#bae6fd');
-      skyGrad.addColorStop(1, '#e0f2fe');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, 240);
-
-      ctx.fillStyle = '#86efac';
-      ctx.fillRect(0, 240, w, 60);
-
-      // 아스팔트 도로
+      // 도로
       ctx.fillStyle = '#475569';
       ctx.fillRect(0, 290, w, 90);
       ctx.strokeStyle = '#fef08a';
@@ -1913,13 +2192,11 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // [차이점 2] 하늘 구름 모양 (410, 55)
+      // [차이점 2] 구름 (410, 55)
       ctx.fillStyle = '#ffffff';
       if (isRight) {
-        // 하트 구름
         this.drawHeart(ctx, 410, 55, 30, '#ffffff');
       } else {
-        // 일반 뭉게구름
         ctx.beginPath();
         ctx.arc(395, 55, 18, 0, Math.PI * 2);
         ctx.arc(415, 48, 24, 0, Math.PI * 2);
@@ -1931,276 +2208,154 @@
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(60, 40, 30, 70);
       ctx.fillRect(72, 110, 6, 80);
-      // 빨간불
       ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      ctx.arc(75, 55, 8, 0, Math.PI * 2);
-      ctx.fill();
-      // 초록불 vs 노란불
+      ctx.beginPath(); ctx.arc(75, 55, 8, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = isRight ? '#eab308' : '#22c55e';
-      ctx.beginPath();
-      ctx.arc(75, 85, 8, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(75, 85, 8, 0, Math.PI * 2); ctx.fill();
 
-      // 건물들 & [차이점 4] 지붕 위 고양이 (295, 125)
+      // [차이점 4] 집과 고양이 (295, 125)
       ctx.fillStyle = '#fdba74';
       ctx.fillRect(250, 150, 90, 90);
-      // 삼각형 지붕
       ctx.fillStyle = '#ef4444';
       ctx.beginPath();
-      ctx.moveTo(240, 150);
-      ctx.lineTo(295, 100);
-      ctx.lineTo(350, 150);
-      ctx.fill();
-
-      // 고양이
-      ctx.font = '24px sans-serif';
-      ctx.textAlign = 'center';
+      ctx.moveTo(240, 150); ctx.lineTo(295, 100); ctx.lineTo(350, 150); ctx.fill();
+      ctx.font = '24px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('🐱', 295, 132);
       if (isRight) {
-        // 노란 모자 쓴 고양이
         ctx.font = '16px sans-serif';
         ctx.fillText('🧢', 295, 114);
       }
 
-      // [차이점 3] 가로수 나무와 사과 (480, 160)
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(472, 180, 16, 70);
-      ctx.fillStyle = '#15803d';
-      ctx.beginPath();
-      ctx.arc(480, 155, 38, 0, Math.PI * 2);
-      ctx.fill();
-      // 사과 그리기
+      // [차이점 3] 가로수와 사과 (480, 160)
+      ctx.fillStyle = '#78350f'; ctx.fillRect(472, 180, 16, 70);
+      ctx.fillStyle = '#15803d'; ctx.beginPath(); ctx.arc(480, 155, 38, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#ef4444';
       ctx.beginPath();
       ctx.arc(465, 150, 6, 0, Math.PI * 2);
       ctx.arc(495, 145, 6, 0, Math.PI * 2);
-      if (!isRight) {
-        ctx.arc(480, 170, 6, 0, Math.PI * 2); // 좌측은 사과 3개
-      }
+      if (!isRight) ctx.arc(480, 170, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // [차이점 1] 빨간 스포츠카 & 바퀴 (175, 280)
-      // 자동차 본체
+      // [차이점 1] 스포츠카 (175, 280)
       ctx.fillStyle = '#dc2626';
-      ctx.beginPath();
-      ctx.roundRect(110, 270, 130, 36, 12);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.roundRect(140, 245, 75, 30, 8);
-      ctx.fill();
-      // 유리창
-      ctx.fillStyle = '#e0f2fe';
-      ctx.fillRect(150, 252, 55, 20);
-
-      // 바퀴
+      ctx.beginPath(); ctx.roundRect(110, 270, 130, 36, 12); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(140, 245, 75, 30, 8); ctx.fill();
+      ctx.fillStyle = '#e0f2fe'; ctx.fillRect(150, 252, 55, 20);
       ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(135, 305, 14, 0, Math.PI * 2);
-      ctx.arc(215, 305, 14, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(135, 305, 14, 0, Math.PI * 2); ctx.arc(215, 305, 14, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = isRight ? '#fbbf24' : '#cbd5e1';
+      ctx.beginPath(); ctx.arc(135, 305, 7, 0, Math.PI * 2); ctx.arc(215, 305, 7, 0, Math.PI * 2); ctx.fill();
+    } else {
+      // 2~20탄 공통 프로시저럴 일러스트 렌더링 시스템
+      // 배경 랜드마크 장식
+      ctx.save();
+      ctx.font = '54px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(pal.mainIcon, 270, 220);
 
-      // 휠 모양 (동그라미 vs 별)
-      ctx.fillStyle = '#f8fafc';
-      if (isRight) {
-        ctx.font = '16px sans-serif';
+      // 주변 보조 데코레이션
+      const subIcons = {
+        dino: ['🌋', '🌴', '🌿', '🥚', '🦕', '🦖', '🦋'],
+        space: ['🪐', '⭐', '🛰️', '🛸', '👨‍🚀', '✨', '🌍'],
+        castle: ['🏰', '🌈', '🦢', '⛲', '🧚', '💎', '👑'],
+        safari: ['🦒', '🦓', '🐘', '🐊', '🐒', '🌴', '☀️'],
+        ocean: ['🐙', '🐡', '🐬', '🪸', '🦭', '🐚', '🫧'],
+        candy: ['🧁', '🍪', '🍭', '🍩', '🍫', '🍬', '🍓'],
+        winter: ['⛄', '🐧', '❄️', '🦌', '🎄', '🛷', '🧊'],
+        jungle: ['🌴', '🐒', '🌺', '🐸', '🐍', '🦜', '🌧️'],
+        robot: ['🤖', '🔋', '⚙️', '💻', '💡', '📡', '🕹️'],
+        sports: ['⚽', '🏃', '🏆', '🏁', '🥇', '🏀', '🎉'],
+        beach: ['🏖️', '🏄', '🦀', '🐬', '🥥', '🦪', '☀️'],
+        school: ['🏫', '📚', '🎒', '✏️', '🎨', '📐', '👦'],
+        market: ['🛒', '🍎', '🍌', '🍉', '🍞', '🧀', '🏪'],
+        train: ['🚂', '🛤️', '🐻', '🧳', '🔔', '🎫', '☁️'],
+        airport: ['✈️', '🛫', '🧳', '🌐', '📡', '🐇', '🌤️'],
+        fire: ['🚒', '🧑‍🚒', '🧯', '🚨', '💧', '🐕', '🏢'],
+        concert: ['🎸', '🥁', '🎤', '🦊', '🎵', '🎶', '✨'],
+        farm: ['🚜', '🥕', '🐄', '🐖', '🌾', '🌻', '🐓'],
+        circus: ['🎪', '🎩', '🤹', '🦁', '🎺', '🕊️', '✨']
+      }[pal.env] || ['⭐', '🎈', '🌸', '🍀', '🌈'];
+
+      ctx.font = '28px sans-serif';
+      ctx.fillText(subIcons[0], 80, 180);
+      ctx.fillText(subIcons[1], 460, 210);
+      ctx.fillText(subIcons[2], 370, 310);
+      ctx.restore();
+
+      // 5개 차이점 렌더링
+      diffs.forEach(diff => {
+        ctx.save();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('⭐', 135, 305);
-        ctx.fillText('⭐', 215, 305);
-      } else {
-        ctx.beginPath();
-        ctx.arc(135, 305, 6, 0, Math.PI * 2);
-        ctx.arc(215, 305, 6, 0, Math.PI * 2);
-        ctx.fill();
-      }
 
-    } else if (stageIdx === 1) {
-      // 🦕 2탄. 아기 공룡 쥐라기 동산
-      ctx.fillStyle = '#fef08a';
-      ctx.fillRect(0, 0, w, 220);
-      ctx.fillStyle = '#84cc16';
-      ctx.fillRect(0, 220, w, 160);
-
-      // [차이점 0] 화산 연기 (100, 60)
-      ctx.fillStyle = '#78350f';
-      ctx.beginPath();
-      ctx.moveTo(30, 220);
-      ctx.lineTo(85, 120);
-      ctx.lineTo(125, 120);
-      ctx.lineTo(180, 220);
-      ctx.fill();
-      // 용암
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(88, 120, 34, 10);
-      // 연기
-      ctx.fillStyle = 'rgba(100, 116, 139, 0.7)';
-      if (isRight) {
-        // 도넛 모양 연기
-        ctx.beginPath();
-        ctx.arc(105, 65, 22, 0, Math.PI * 2);
-        ctx.arc(105, 65, 10, 0, Math.PI * 2, true);
-        ctx.fill();
-      } else {
-        ctx.beginPath();
-        ctx.arc(95, 75, 18, 0, Math.PI * 2);
-        ctx.arc(115, 60, 22, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // [차이점 1] 아기 티라노 꼬리 무늬 (210, 240)
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
-      ctx.ellipse(220, 245, 45, 35, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = '54px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🦖', 220, 260);
-
-      // 꼬리 무늬
-      ctx.fillStyle = isRight ? '#f59e0b' : '#3b82f6';
-      ctx.beginPath();
-      ctx.arc(180, 255, 6, 0, Math.PI * 2);
-      ctx.arc(192, 262, 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // [차이점 2] 공룡알 둥지 (360, 295)
-      ctx.font = '36px sans-serif';
-      ctx.fillText('🪺', 360, 320);
-      ctx.font = '28px sans-serif';
-      ctx.fillText(isRight ? '🐣' : '🥚', 360, 295);
-
-      // [차이점 3] 나비 날개 색 (450, 110)
-      ctx.font = '34px sans-serif';
-      ctx.fillText(isRight ? '🦋' : '🐝', 450, 110);
-
-      // [차이점 4] 야자수 코코넛 (480, 190)
-      ctx.fillStyle = '#92400e';
-      ctx.fillRect(475, 170, 16, 120);
-      ctx.font = '50px sans-serif';
-      ctx.fillText('🌴', 482, 175);
-      ctx.fillStyle = '#451a03';
-      ctx.beginPath();
-      ctx.arc(470, 195, 6, 0, Math.PI * 2);
-      ctx.arc(495, 195, 6, 0, Math.PI * 2);
-      if (!isRight) {
-        ctx.arc(482, 205, 6, 0, Math.PI * 2);
-      }
-      ctx.fill();
-
-    } else if (stageIdx === 2) {
-      // 🚀 3탄. 반짝반짝 우주 은하수
-      ctx.fillStyle = '#090d16';
-      ctx.fillRect(0, 0, w, h);
-
-      // 별빛 배경
-      ctx.fillStyle = '#ffffff';
-      for (let i = 0; i < 40; i++) {
-        const bx = (i * 37) % w;
-        const by = (i * 29) % h;
-        ctx.fillRect(bx, by, 1.5, 1.5);
-      }
-
-      // [차이점 0] 우주인 헬멧 바이저 (130, 210)
-      ctx.font = '64px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('👨‍🚀', 130, 240);
-      ctx.fillStyle = isRight ? '#10b981' : '#f59e0b';
-      ctx.beginPath();
-      ctx.arc(130, 208, 9, 0, Math.PI * 2);
-      ctx.fill();
-
-      // [차이점 1] 로켓 창문 (275, 110)
-      ctx.font = '72px sans-serif';
-      ctx.fillText('🚀', 275, 150);
-      ctx.fillStyle = '#0284c7';
-      if (isRight) {
-        ctx.fillRect(268, 105, 14, 14); // 네모 창문
-      } else {
-        ctx.beginPath();
-        ctx.arc(275, 112, 7, 0, Math.PI * 2); // 동그라미 창문
-        ctx.fill();
-      }
-
-      // [차이점 2] 토성 고리 색상 (460, 65)
-      ctx.font = '64px sans-serif';
-      ctx.fillText(isRight ? '🪐' : '🌕', 460, 80);
-
-      // [차이점 3] 인공위성 안테나 장식 (85, 90)
-      ctx.font = '48px sans-serif';
-      ctx.fillText('🛰️', 85, 115);
-      ctx.font = '20px sans-serif';
-      ctx.fillText(isRight ? '🌟' : '🔴', 85, 75);
-
-      // [차이점 4] 외계인 친구 (395, 270)
-      ctx.font = '54px sans-serif';
-      ctx.fillText(isRight ? '👾' : '👽', 395, 290);
-
-    } else if (stageIdx === 3) {
-      // 🏰 4탄. 동화 요정의 성
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, 250);
-      skyGrad.addColorStop(0, '#fbcfe8');
-      skyGrad.addColorStop(1, '#c084fc');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, 250);
-
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(0, 250, w, 130);
-
-      // [차이점 1] 무지개 (120, 80)
-      ctx.font = '54px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(isRight ? '🌈' : '⛅', 120, 95);
-
-      // 마법의 성 본체
-      ctx.font = '84px sans-serif';
-      ctx.fillText('🏰', 270, 180);
-
-      // [차이점 0] 성 꼭대기 깃발 (260, 50)
-      ctx.font = '28px sans-serif';
-      ctx.fillText(isRight ? '👑' : '🚩', 260, 60);
-
-      // [차이점 2] 시계탑 바늘 시간 (270, 150)
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(270, 150, 10, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(270, 150);
-      ctx.lineTo(270, 142);
-      ctx.moveTo(270, 150);
-      ctx.lineTo(isRight ? 270 : 277, isRight ? 157 : 150);
-      ctx.stroke();
-
-      // [차이점 3] 호수 백조 머리 장식 (440, 290)
-      ctx.font = '48px sans-serif';
-      ctx.fillText('🦢', 440, 310);
-      ctx.font = '20px sans-serif';
-      ctx.fillText(isRight ? '👑' : '🌸', 440, 275);
-
-      // [차이점 4] 분수대 보석 (150, 280)
-      ctx.font = '44px sans-serif';
-      ctx.fillText('⛲', 150, 310);
-      ctx.font = '22px sans-serif';
-      ctx.fillText(isRight ? '💎' : '💖', 150, 275);
+        if (diff.id === 0) {
+          // [차이점 0] 색상/라이트 차이
+          ctx.fillStyle = isRight ? '#f59e0b' : '#3b82f6';
+          ctx.beginPath();
+          ctx.arc(diff.x, diff.y, 16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          ctx.font = '16px sans-serif';
+          ctx.fillText(isRight ? '⭐' : '🔵', diff.x, diff.y);
+        } else if (diff.id === 1) {
+          // [차이점 1] 메인 캐릭터/패턴 차이
+          ctx.font = '32px sans-serif';
+          const iconA = subIcons[3] || '🎈';
+          const iconB = subIcons[4] || '🎁';
+          ctx.fillText(isRight ? iconB : iconA, diff.x, diff.y);
+        } else if (diff.id === 2) {
+          // [차이점 2] 배경 구름/하늘 오브젝트
+          if (isRight) {
+            this.drawHeart(ctx, diff.x, diff.y, 26, '#ffffff');
+          } else {
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(diff.x - 12, diff.y, 13, 0, Math.PI * 2);
+            ctx.arc(diff.x + 4, diff.y - 6, 17, 0, Math.PI * 2);
+            ctx.arc(diff.x + 18, diff.y, 13, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        } else if (diff.id === 3) {
+          // [차이점 3] 개수 차이 (사과/열매/별 3개 vs 2개)
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(diff.x - 12, diff.y - 4, 7, 0, Math.PI * 2);
+          ctx.arc(diff.x + 12, diff.y - 4, 7, 0, Math.PI * 2);
+          if (!isRight) {
+            ctx.arc(diff.x, diff.y + 10, 7, 0, Math.PI * 2);
+          }
+          ctx.fill();
+        } else if (diff.id === 4) {
+          // [차이점 4] 액세서리 차이 (모자, 리본, 안경)
+          ctx.font = '28px sans-serif';
+          const charIcon = subIcons[5] || '🐱';
+          ctx.fillText(charIcon, diff.x, diff.y + 6);
+          if (isRight) {
+            ctx.font = '16px sans-serif';
+            ctx.fillText('🎀', diff.x, diff.y - 14);
+          }
+        }
+        ctx.restore();
+      });
     }
 
-    // 이미 발견한 다른 점들에 초록색 반짝이 링 ⭕ 표시
+    // 이미 찾은 차이점에 초록색 체크 원 표시
     diffs.forEach(diff => {
       if (foundSet.has(diff.id)) {
         ctx.save();
         ctx.strokeStyle = '#22c55e';
-        ctx.lineWidth = 4;
-        ctx.shadowColor = 'rgba(34, 197, 94, 0.6)';
-        ctx.shadowBlur = 8;
+        ctx.lineWidth = 3.5;
         ctx.beginPath();
-        ctx.arc(diff.x, diff.y, diff.radius * 0.9, 0, Math.PI * 2);
+        ctx.arc(diff.x, diff.y, diff.radius + 2, 0, Math.PI * 2);
         ctx.stroke();
 
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.15)';
+        ctx.fill();
+
         ctx.fillStyle = '#22c55e';
-        ctx.font = 'bold 16px sans-serif';
+        ctx.font = 'bold 18px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('✓', diff.x, diff.y);
@@ -2212,10 +2367,10 @@
     if (this.spotHintPos) {
       ctx.save();
       ctx.strokeStyle = '#eab308';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.setLineDash([6, 4]);
       ctx.beginPath();
-      ctx.arc(this.spotHintPos.x, this.spotHintPos.y, 36, 0, Math.PI * 2);
+      ctx.arc(this.spotHintPos.x, this.spotHintPos.y, 38, 0, Math.PI * 2);
       ctx.stroke();
 
       ctx.font = '28px sans-serif';
@@ -2241,15 +2396,15 @@
   };
 
   // ==========================================================================
-  // 3-3. 🕵️‍♂️ 와글와글 은찬이를 찾아라! (Where's Eunchan? / 윌리를 찾아라 스타일)
+  // 3-3. 🕵️‍♂️ 와글와글 은찬이를 찾아라! (Where's Eunchan? / 윌리를 찾아라 스타일) - 20개 다양한 테마
   // ==========================================================================
-  EduApp.prototype.initWhereScenes = function() {
-    if (this.whereScenesInitialized) return;
-
-    this.whereScenes = {
-      park: {
-        id: 'park',
-        title: '🎡 와글와글 놀이공원 대축제',
+  EduApp.prototype.buildWhereScenesData = function() {
+    return {
+      theme_0: {
+        id: 'theme_0',
+        title: '🎡 1. 와글와글 놀이공원 대축제',
+        badge: '🎡 테마 1',
+        themeType: 'park',
         targets: [
           { id: 't_eunchan', name: '빨간 줄무늬 은찬이', icon: '👦', x: 520, y: 390, clue: '대관람차와 솜사탕 근처에서 신나게 손을 흔들고 있어요!' },
           { id: 't_cat', name: '핑크 선글라스 고양이', icon: '🐱', x: 230, y: 220, clue: '바이킹 배 지붕 위를 조심스럽게 올려다보세요!' },
@@ -2258,9 +2413,11 @@
           { id: 't_dog', name: '탐정 망토 강아지', icon: '🐶', x: 350, y: 520, clue: '분수대 벤치에서 돋보기를 들고 탐정 흉내를 내고 있어요!' }
         ]
       },
-      ocean: {
-        id: 'ocean',
-        title: '🌊 신비한 바닷속 산호초 파티',
+      theme_1: {
+        id: 'theme_1',
+        title: '🌊 2. 신비한 바닷속 산호초 파티',
+        badge: '🌊 테마 2',
+        themeType: 'ocean',
         targets: [
           { id: 't_eunchan', name: '잠수부 은찬이', icon: '🤿', x: 740, y: 310, clue: '노란 잠수함 창문 옆에서 물안경을 끼고 헤엄치고 있어요!' },
           { id: 't_fish', name: '황금 왕관 복어', icon: '🐡', x: 310, y: 190, clue: '해파리 숲 위쪽에서 반짝이는 왕관을 쓰고 둥둥 떠 있어요!' },
@@ -2269,9 +2426,11 @@
           { id: 't_bottle', name: '유리병 속 보물 지도', icon: '🗺️', x: 530, y: 560, clue: '모래사장 해초 덤불 사이에 숨겨져 있답니다!' }
         ]
       },
-      safari: {
-        id: 'safari',
-        title: '🦁 복작복작 사파리 동물원',
+      theme_2: {
+        id: 'theme_2',
+        title: '🦁 3. 복작복작 사파리 동물원',
+        badge: '🦁 테마 3',
+        themeType: 'safari',
         targets: [
           { id: 't_eunchan', name: '탐험가 은찬이', icon: '🧭', x: 380, y: 330, clue: '사파리 지프차 보닛 옆에서 망원경을 들고 관찰하고 있어요!' },
           { id: 't_lion', name: '선글라스 아기 사자', icon: '🦁', x: 820, y: 260, clue: '사자 바위 그늘 아래에서 멋진 선글라스를 끼고 있어요!' },
@@ -2279,11 +2438,269 @@
           { id: 't_dad', name: '카메라 든 정연수 아빠', icon: '👨', x: 1020, y: 490, clue: '기린 타워 앞에서 은찬이의 멋진 모습을 찰칵 찍고 있어요!' },
           { id: 't_bird', name: '오색 깃털 앵무새', icon: '🦜', x: 610, y: 150, clue: '폭포 위 큰 나무 나뭇가지 꼭대기에 앉아 있어요!' }
         ]
+      },
+      theme_3: {
+        id: 'theme_3',
+        title: '🚀 4. 반짝반짝 은하수 우주정거장',
+        badge: '🚀 테마 4',
+        themeType: 'space',
+        targets: [
+          { id: 't_eunchan', name: '우주비행사 은찬이', icon: '👨‍🚀', x: 460, y: 280, clue: '우주 왕복선 해치 문 앞에서 헬멧을 쓰고 손을 흔들어요!' },
+          { id: 't_alien', name: '외계인 아기 삐뽀', icon: '👽', x: 820, y: 350, clue: '보라색 분화구 옆에서 안테나를 쫑긋 세우고 있어요!' },
+          { id: 't_dad', name: '우주 망원경 든 아빠', icon: '🔭', x: 1040, y: 480, clue: '관측 돔 타워에서 토성 고리를 열심히 관찰하고 있어요!' },
+          { id: 't_star', name: '황금 스타 크리스탈', icon: '⭐', x: 210, y: 510, clue: '인공위성 태양광 패널 아래에서 영롱하게 반짝여요!' },
+          { id: 't_bot', name: '우주 청소 로봇', icon: '🤖', x: 670, y: 170, clue: '우주정거장 안테나 사이를 날아다니고 있어요!' }
+        ]
+      },
+      theme_4: {
+        id: 'theme_4',
+        title: '🦕 5. 백악기 아기 공룡 탐험대',
+        badge: '🦕 테마 5',
+        themeType: 'dino',
+        targets: [
+          { id: 't_eunchan', name: '공룡 모자 은찬이', icon: '🦖', x: 580, y: 370, clue: '거대한 브라키오사우루스 다리 뒤에서 웃고 있어요!' },
+          { id: 't_pterodactyl', name: '날개 펄럭 아기 프테라', icon: '🦅', x: 310, y: 140, clue: '화산 바위 절벽 위에서 큰 날개를 펄럭이고 있어요!' },
+          { id: 't_triceratops', name: '알 품는 엄마 트리케라', icon: '🦕', x: 850, y: 430, clue: '따뜻한 고사리 덤불 둥지에서 아기알을 돌보고 있어요!' },
+          { id: 't_amber', name: '황금 호박 공룡 화석', icon: '🔮', x: 160, y: 550, clue: '시냇물 조약돌 틈 사이에 반짝이는 노란 호박 보석이에요!' },
+          { id: 't_dad', name: '캠핑 쌍안경 아빠', icon: '🏕️', x: 1010, y: 490, clue: '탐험 텐트 앞에서 쌍안경으로 공룡을 스케치하고 있어요!' }
+        ]
+      },
+      theme_5: {
+        id: 'theme_5',
+        title: '🍬 6. 달콤새콤 과자 & 젤리 왕국',
+        badge: '🍬 테마 6',
+        themeType: 'candy',
+        targets: [
+          { id: 't_eunchan', name: '파티셰 모자 은찬이', icon: '👨‍🍳', x: 490, y: 340, clue: '대형 딸기 생크림 케이크 계단 앞에서 숟가락을 들고 있어요!' },
+          { id: 't_ginger', name: '거대 딸기 든 진저쿠키', icon: '🍪', x: 230, y: 420, clue: '초콜릿 쿠키 벽돌집 문앞에서 딸기를 안고 있어요!' },
+          { id: 't_bear', name: '마시멜로 아기 곰', icon: '🧸', x: 830, y: 280, clue: '솜사탕 구름 미끄럼틀 위에서 폭신폭신 쉬고 있어요!' },
+          { id: 't_candy', name: '황금 롤리팝 사탕', icon: '🍭', x: 1060, y: 520, clue: '젤리빈 분수대 옆 잔디밭에 꽂혀 있답니다!' },
+          { id: 't_mom', name: '초콜릿 맛보는 엄마', icon: '👩', x: 680, y: 470, clue: '와플 테이블에서 은찬이에게 줄 쿠키를 고르고 있어요!' }
+        ]
+      },
+      theme_6: {
+        id: 'theme_6',
+        title: '❄️ 7. 펭귄과 루돌프 눈꽃 겨울나라',
+        badge: '❄️ 테마 7',
+        themeType: 'winter',
+        targets: [
+          { id: 't_eunchan', name: '털모자 썰매 은찬이', icon: '🛷', x: 530, y: 390, clue: '완만한 눈 언덕에서 붉은 썰매를 타고 씽씽 달려요!' },
+          { id: 't_snowman', name: '목도리 칭칭 눈사람', icon: '⛄', x: 280, y: 460, clue: '얼음 이글루 마당에서 주황 당근 코를 뽐내고 있어요!' },
+          { id: 't_deer', name: '선물상자 루돌프', icon: '🦌', x: 890, y: 320, clue: '크리스마스트리 숲 사이에서 빨간 코를 뽐내고 있어요!' },
+          { id: 't_crystal', name: '얼음 보석 결정', icon: '❄️', x: 170, y: 230, clue: '고드름 절벽 끝에서 은빛 다이아몬드처럼 빛나요!' },
+          { id: 't_dad', name: '따뜻한 코코아 든 아빠', icon: '☕', x: 1030, y: 510, clue: '모닥불 쉼터 벤치에서 김이 모락모락 코코아를 들고 있어요!' }
+        ]
+      },
+      theme_7: {
+        id: 'theme_7',
+        title: '🌴 8. 깊은 아마존 신비의 숲',
+        badge: '🌴 테마 8',
+        themeType: 'jungle',
+        targets: [
+          { id: 't_eunchan', name: '정글 모자 은찬이', icon: '👒', x: 420, y: 360, clue: '흔들 다리 입구에서 나침반을 보며 길을 찾고 있어요!' },
+          { id: 't_monkey', name: '하트 꼬리 원숭이', icon: '🐒', x: 770, y: 230, clue: '덩굴 타잔 줄에 대롱대롱 매달려 바나나를 먹어요!' },
+          { id: 't_toucan', name: '나뭇잎 왕관 투칸', icon: '🦜', x: 210, y: 160, clue: '키 큰 야자수 잎사귀 꼭대기에 앉아 지저귀고 있어요!' },
+          { id: 't_relic', name: '황금 잉카 유물 나침반', icon: '🧭', x: 930, y: 540, clue: '신전 돌계단 틈 사이 덩굴에 감싸여 반짝여요!' },
+          { id: 't_dad', name: '지도 펼친 아빠', icon: '🗺️', x: 610, y: 480, clue: '고대 유적지 석탑 앞에서 비밀 지도를 해독하고 있어요!' }
+        ]
+      },
+      theme_8: {
+        id: 'theme_8',
+        title: '🏰 9. 동화 속 마법 요정의 궁전',
+        badge: '🏰 테마 9',
+        themeType: 'castle',
+        targets: [
+          { id: 't_eunchan', name: '별빛 망토 마법사 은찬이', icon: '🧙‍♂️', x: 600, y: 310, clue: '대리석 분수대 난간에서 요술 지팡이로 별가루를 뿌려요!' },
+          { id: 't_fairy', name: '요술봉 아기 요정', icon: '🧚‍♀️', x: 340, y: 210, clue: '장미 덩굴 아치문 위를 날아다니고 있어요!' },
+          { id: 't_owl', name: '안경 쓴 지혜 부엉이', icon: '🦉', x: 880, y: 170, clue: '도서관 높은 탑 창틀에서 두꺼운 마법책을 읽고 있어요!' },
+          { id: 't_shoe', name: '다이아몬드 유리구두', icon: '👠', x: 190, y: 520, clue: '호박 마차 바퀴 옆 레드카펫 끝에 놓여 있어요!' },
+          { id: 't_king', name: '왕관 쓴 친절한 국왕', icon: '👑', x: 1040, y: 440, clue: '궁전 테라스에서 따뜻하게 손을 흔들어 맞이해줘요!' }
+        ]
+      },
+      theme_9: {
+        id: 'theme_9',
+        title: '🤖 10. 미래 하이테크 사이버 시티',
+        badge: '🤖 테마 10',
+        themeType: 'robot',
+        targets: [
+          { id: 't_eunchan', name: '사이버 고글 은찬이', icon: '🥽', x: 510, y: 350, clue: '하늘을 나는 에어택시 정류장에서 멋진 고글을 쓰고 있어요!' },
+          { id: 't_droid', name: '안내 바퀴 안드로이드', icon: '🤖', x: 260, y: 430, clue: '홀로그램 도로 중앙에서 길을 친절히 안내해요!' },
+          { id: 't_cat', name: '홀로그램 핑크 고양이', icon: '🐱', x: 820, y: 220, clue: '네온사인 전광판 지붕 위에서 빛나고 있어요!' },
+          { id: 't_core', name: '무한 동력 황금 코어', icon: '🔋', x: 150, y: 540, clue: '충전 스테이션 캡슐 안에서 번쩍이고 있어요!' },
+          { id: 't_dad', name: '드론 조종기 든 아빠', icon: '🎮', x: 1020, y: 370, clue: '스카이라운지 데크에서 촬영 드론을 조종하고 있어요!' }
+        ]
+      },
+      theme_10: {
+        id: 'theme_10',
+        title: '⚽ 11. 와글와글 학교 체육대회',
+        badge: '⚽ 테마 11',
+        themeType: 'sports',
+        targets: [
+          { id: 't_eunchan', name: '1등 번호표 은찬이', icon: '🏃‍♂️', x: 470, y: 370, clue: '결승선 테이프를 향해 힘차게 달려가는 중이에요!' },
+          { id: 't_bear', name: '대형 응원 깃발 곰돌이', icon: '🚩', x: 220, y: 280, clue: '청군 응원석 맨 앞줄에서 펄럭펄럭 깃발을 흔들어요!' },
+          { id: 't_referee', name: '호루라기 심판 코알라', icon: '🐨', x: 780, y: 330, clue: '트랙 중앙선에서 호루라기를 입에 물고 경기를 지켜봐요!' },
+          { id: 't_cup', name: '번쩍이는 황금 우승컵', icon: '🏆', x: 1050, y: 480, clue: '중앙 시상대 테이블 위 붉은 보자기 위에 놓여 있어요!' },
+          { id: 't_dad', name: '확성기 응원단장 아빠', icon: '📢', x: 890, y: 510, clue: '백군 응원석에서 은찬이 이름을 목청껏 외치고 있어요!' }
+        ]
+      },
+      theme_11: {
+        id: 'theme_11',
+        title: '🏖️ 12. 시원한 야자수 모래 해변',
+        badge: '🏖️ 테마 12',
+        themeType: 'beach',
+        targets: [
+          { id: 't_eunchan', name: '스노클링 은찬이', icon: '🏊‍♂️', x: 620, y: 380, clue: '에메랄드빛 얕은 파도 속에서 스노클을 물고 있어요!' },
+          { id: 't_crab', name: '선글라스 아기 꽃게', icon: '🦀', x: 290, y: 520, clue: '모래성 해자 옆에서 집게발을 흔들고 있어요!' },
+          { id: 't_dolphin', name: '점프하는 무지개 돌고래', icon: '🐬', x: 850, y: 240, clue: '수평선 바다 위로 시원하게 물보라를 뿜으며 뛰어요!' },
+          { id: 't_pearl', name: '조개 속 분홍 진주', icon: '🦪', x: 140, y: 470, clue: '비치체어 그늘 아래 예쁜 조개껍데기 속에 숨어있어요!' },
+          { id: 't_dad', name: '파라솔 아래 아빠', icon: '⛱️', x: 1020, y: 460, clue: '시원한 수박 주스를 마시며 은찬이를 흐뭇하게 바라봐요!' }
+        ]
+      },
+      theme_12: {
+        id: 'theme_12',
+        title: '🏫 13. 은찬이네 행복한 초등학교',
+        badge: '🏫 테마 13',
+        themeType: 'school',
+        targets: [
+          { id: 't_eunchan', name: '책가방 멘 은찬이', icon: '🎒', x: 530, y: 360, clue: '중앙 현관 분수대 앞에서 친구들에게 반갑게 인사해요!' },
+          { id: 't_rabbit', name: '하모니카 부는 토끼', icon: '🐰', x: 810, y: 230, clue: '2층 음악실 창가에서 맑은 하모니카 소리를 연주해요!' },
+          { id: 't_friend', name: '돋보기 든 척척박사 친구', icon: '👓', x: 310, y: 410, clue: '화단 속 무당벌레를 돋보기로 신기하게 관찰해요!' },
+          { id: 't_paper', name: '100점 맞은 황금 시험지', icon: '💯', x: 170, y: 520, clue: '도서관 게시판 칭찬 코너에 멋지게 붙어있어요!' },
+          { id: 't_dad', name: '교문 앞 마중 나온 아빠', icon: '🚗', x: 1040, y: 470, clue: '정문 시계탑 아래에서 은찬이를 기다리며 손을 흔들어요!' }
+        ]
+      },
+      theme_13: {
+        id: 'theme_13',
+        title: '🛒 14. 복작복작 행복 대형 마트',
+        badge: '🛒 테마 14',
+        themeType: 'market',
+        targets: [
+          { id: 't_eunchan', name: '쇼핑카트 끄는 은찬이', icon: '🛒', x: 440, y: 390, clue: '맛있는 유기농 과일 코너 앞에서 카트를 밀고 있어요!' },
+          { id: 't_chef', name: '시식 코너 햄스터 셰프', icon: '🐹', x: 760, y: 340, clue: '노릇노릇 만두를 구우며 맛보라고 손짓하고 있어요!' },
+          { id: 't_cat', name: '과일 상자 위 아기 고양이', icon: '🐈', x: 220, y: 260, clue: '사과 박스 더미 꼭대기에서 꼬리를 살랑살랑 흔들어요!' },
+          { id: 't_ticket', name: '황금 VIP 할인 쿠폰', icon: '🎟️', x: 1070, y: 530, clue: '계산대 카운터 모니터 옆에 반짝반짝 꽂혀 있어요!' },
+          { id: 't_dad', name: '영수증 꼼꼼히 보는 아빠', icon: '🧾', x: 910, y: 490, clue: '장바구니를 든 채 알뜰하게 할인 내역을 확인해요!' }
+        ]
+      },
+      theme_14: {
+        id: 'theme_14',
+        title: '🚂 15. 낭만 가득 중앙 기차역',
+        badge: '🚂 테마 15',
+        themeType: 'train',
+        targets: [
+          { id: 't_eunchan', name: '기관사 모자 은찬이', icon: '🚂', x: 490, y: 320, clue: '증기기관차 운전실 창문에서 칙칙폭폭 손을 흔들어요!' },
+          { id: 't_bear', name: '시계 보는 곰돌이 역장', icon: '🐻', x: 820, y: 360, clue: '1번 플랫폼 출발 신호기 아래에서 회중시계를 확인해요!' },
+          { id: 't_cat', name: '악기 가방 멘 여행객 고양이', icon: '🎸', x: 260, y: 440, clue: '대합실 벤치에서 기타를 치며 기차를 기다려요!' },
+          { id: 't_ticket', name: '황금빛 골든 익스프레스 티켓', icon: '🎫', x: 1040, y: 530, clue: '개찰구 자동 차단기 옆 바닥에 떨어져 반짝여요!' },
+          { id: 't_dad', name: '기차표 확인하는 아빠', icon: '👨', x: 680, y: 480, clue: '매점 옆에서 은찬이와 탈 열차 좌석 번호를 보고 있어요!' }
+        ]
+      },
+      theme_15: {
+        id: 'theme_15',
+        title: '✈️ 16. 하늘 높이 세계 여행 공항',
+        badge: '✈️ 테마 16',
+        themeType: 'airport',
+        targets: [
+          { id: 't_eunchan', name: '캐리어 끄는 파일럿 은찬이', icon: '🛫', x: 540, y: 370, clue: '탑승구 게이트 앞 통로에서 파란 캐리어를 끌고 있어요!' },
+          { id: 't_squirrel', name: '승무원 다람쥐', icon: '🐿️', x: 310, y: 320, clue: '기내식 카트를 밀며 손님들에게 오렌지 주스를 건네요!' },
+          { id: 't_panda', name: '여권 챙기는 판다', icon: '🐼', x: 860, y: 410, clue: '출국 심사대 줄에서 초록색 모자를 쓰고 기다리고 있어요!' },
+          { id: 't_passport', name: '황금 여권 케이스', icon: '🛂', x: 180, y: 540, clue: '환전소 앞 벤치 틈에 황금빛으로 놓여 있어요!' },
+          { id: 't_dad', name: '면세점 선물 상자 든 아빠', icon: '🎁', x: 1030, y: 480, clue: '은찬이가 좋아하는 장난감 비행기 상자를 들고 웃어요!' }
+        ]
+      },
+      theme_16: {
+        id: 'theme_16',
+        title: '🚒 17. 삐뽀삐뽀 용감한 119 소방서',
+        badge: '🚒 테마 17',
+        themeType: 'fire',
+        targets: [
+          { id: 't_eunchan', name: '소방관 헬멧 쓴 은찬이', icon: '🧑‍🚒', x: 470, y: 350, clue: '반짝이는 빨간 소방차 문 옆에서 경례하고 있어요!' },
+          { id: 't_dog', name: '소방 마스코트 달마시안', icon: '🐕', x: 240, y: 450, clue: '소방서 앞마당 잔디에서 구조 배낭을 메고 서 있어요!' },
+          { id: 't_chief', name: '사다리차 위 든든한 대장님', icon: '👨‍🚒', x: 790, y: 210, clue: '높이 뻗은 구조 사다리 바스켓 위에서 지휘하고 있어요!' },
+          { id: 't_extinguisher', name: '황금 소화기', icon: '🧯', x: 1050, y: 520, clue: '소방 장비 보관함 유리 진열대 안에서 빛나요!' },
+          { id: 't_dad', name: '격려 박수 치는 아빠', icon: '👏', x: 670, y: 470, clue: '소방 훈련을 멋지게 마친 은찬이에게 박수를 보내요!' }
+        ]
+      },
+      theme_17: {
+        id: 'theme_17',
+        title: '🎸 18. 신나는 숲속 록 페스티벌',
+        badge: '🎸 테마 18',
+        themeType: 'concert',
+        targets: [
+          { id: 't_eunchan', name: '일렉기타 연주 은찬이', icon: '🎸', x: 520, y: 330, clue: '메인 야외 무대 중앙에서 멋진 기타 솔로를 뽐내요!' },
+          { id: 't_gorilla', name: '선글라스 드러머 고릴라', icon: '🦍', x: 810, y: 240, clue: '대형 앰프 뒤 드럼 세트에서 파워풀하게 드럼을 쳐요!' },
+          { id: 't_rabbit', name: '야광봉 흔드는 토끼 팬', icon: '🐰', x: 320, y: 470, clue: '스탠딩 구역 맨 앞줄에서 은찬이 팬클럽 야광봉을 흔들어요!' },
+          { id: 't_trophy', name: '황금 높은음자리표 트로피', icon: '🏆', x: 160, y: 530, clue: '심사위원석 테이블 위 벨벳 쿠션에 놓여 있어요!' },
+          { id: 't_dad', name: '캠코더 촬영 중인 아빠', icon: '📹', x: 1010, y: 480, clue: '객석 뒤 삼각대에서 은찬이의 공연 영상을 정성껏 담아요!' }
+        ]
+      },
+      theme_18: {
+        id: 'theme_18',
+        title: '🚜 19. 무럭무럭 평화로운 동물 농장',
+        badge: '🚜 테마 19',
+        themeType: 'farm',
+        targets: [
+          { id: 't_eunchan', name: '밀짚모자 농부 은찬이', icon: '🧑‍🌾', x: 450, y: 370, clue: '빨간 멜빵바지를 입고 초록 배추밭에 물을 주고 있어요!' },
+          { id: 't_rabbit', name: '당근 갉아먹는 아기 토끼', icon: '🐇', x: 210, y: 460, clue: '주황 당근 두둑 사이에서 귀를 쫑긋거리며 오물오물해요!' },
+          { id: 't_cow', name: '방울 단 아기 젖소', icon: '🐄', x: 840, y: 390, clue: '목장 나무 울타리 옆에서 신선한 풀을 뜯고 있어요!' },
+          { id: 't_pumpkin', name: '황금 왕호박 바구니', icon: '🎃', x: 1060, y: 530, clue: '헛간 수레 뒤에 탐스럽게 놓여 노란 빛을 뿜어요!' },
+          { id: 't_dad', name: '트랙터 운전하는 아빠', icon: '🚜', x: 690, y: 470, clue: '밭 고랑을 갈며 은찬이에게 활짝 웃으며 손을 흔들어요!' }
+        ]
+      },
+      theme_19: {
+        id: 'theme_19',
+        title: '🎪 20. 환상적인 매직 서커스 천막',
+        badge: '🎪 테마 20',
+        themeType: 'circus',
+        targets: [
+          { id: 't_eunchan', name: '실크햇 마술사 은찬이', icon: '🎩', x: 530, y: 330, clue: '중앙 링 마술 테이블에서 비둘기를 날리는 중이에요!' },
+          { id: 't_seal', name: '공 굴리는 아기 물개', icon: '🦭', x: 250, y: 460, clue: '원형 발판 위에서 알록달록 무지개 공을 코로 굴려요!' },
+          { id: 't_clown', name: '외발자전거 타는 피에로', icon: '🤡', x: 830, y: 270, clue: '공중 줄타기 트랙 아래에서 저글링을 하며 자전거를 타요!' },
+          { id: 't_wand', name: '마법의 황금 별 요술봉', icon: '🪄', x: 170, y: 540, clue: '서커스 분장실 트렁크 가방 뚜껑 위에 놓여 반짝여요!' },
+          { id: 't_dad', name: '환호하며 기립박수 치는 아빠', icon: '🙌', x: 1020, y: 490, clue: 'VIP 관람석 앞줄에서 은찬이 마술에 열렬히 환호해요!' }
+        ]
       }
     };
+  };
 
-    this.whereScenesInitialized = true;
-    this.setupWhereClickListeners();
+  EduApp.prototype.initWhereScenes = function() {
+    // 호환성 처리 (이전 park, ocean, safari 등의 키를 theme_0, theme_1, theme_2로 매핑)
+    if (this.whereSceneIdx === 'park') this.whereSceneIdx = 'theme_0';
+    else if (this.whereSceneIdx === 'ocean') this.whereSceneIdx = 'theme_1';
+    else if (this.whereSceneIdx === 'safari') this.whereSceneIdx = 'theme_2';
+    else if (!this.whereSceneIdx) this.whereSceneIdx = 'theme_0';
+
+    this.whereFoundTargets = this.whereFoundTargets || {};
+    this.whereFoundTargets[this.whereSceneIdx] = this.whereFoundTargets[this.whereSceneIdx] || new Set();
+
+    if (!this.whereScenesInitialized) {
+      this.whereScenes = this.buildWhereScenesData();
+      this.whereScenesInitialized = true;
+      this.setupWhereClickListeners();
+    }
+
+    this.renderWhereSceneButtons();
+  };
+
+  EduApp.prototype.renderWhereSceneButtons = function() {
+    const container = document.getElementById('whereThemeButtons');
+    if (!container || !this.whereScenes) return;
+
+    const sceneKeys = Object.keys(this.whereScenes);
+    if (container.children.length !== sceneKeys.length) {
+      container.innerHTML = sceneKeys.map((key) => {
+        const sc = this.whereScenes[key];
+        return `
+          <button class="btn-where-theme ${key === this.whereSceneIdx ? 'active' : ''}" data-scene="${key}" onclick="app.selectWhereScene('${key}')">
+            <span>${sc.title}</span>
+          </button>
+        `;
+      }).join('');
+    } else {
+      Array.from(container.children).forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.scene === this.whereSceneIdx);
+      });
+    }
   };
 
   EduApp.prototype.setupWhereClickListeners = function() {
@@ -2294,11 +2711,20 @@
 
   EduApp.prototype.selectWhereScene = function(sceneId) {
     this.playPop();
-    this.whereSceneIdx = sceneId;
+    if (sceneId === 'park') sceneId = 'theme_0';
+    if (sceneId === 'ocean') sceneId = 'theme_1';
+    if (sceneId === 'safari') sceneId = 'theme_2';
 
-    document.querySelectorAll('.btn-where-theme').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.scene === sceneId);
-    });
+    this.whereSceneIdx = sceneId;
+    this.whereFoundTargets = this.whereFoundTargets || {};
+    this.whereFoundTargets[this.whereSceneIdx] = this.whereFoundTargets[this.whereSceneIdx] || new Set();
+
+    this.renderWhereSceneButtons();
+
+    const activeBtn = document.querySelector(`.btn-where-theme[data-scene="${sceneId}"]`);
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
 
     const overlay = document.getElementById('whereWinOverlay');
     if (overlay) overlay.style.display = 'none';
@@ -2317,6 +2743,7 @@
     const clickX = (e.clientX - rect.left) * scaleX;
     const clickY = (e.clientY - rect.top) * scaleY;
 
+    if (!this.whereScenes) return;
     const curScene = this.whereScenes[this.whereSceneIdx];
     if (!curScene) return;
 
@@ -2327,7 +2754,7 @@
     curScene.targets.forEach(target => {
       if (!foundSet.has(target.id)) {
         const dist = Math.hypot(clickX - target.x, clickY - target.y);
-        if (dist <= 42) {
+        if (dist <= 44) {
           foundTarget = target;
         }
       }
@@ -2339,7 +2766,6 @@
       this.speak(`찾았다! ${foundTarget.name}!`, 'ko-KR');
       this.renderWhereScene();
 
-      // 모두 찾았을 때
       if (foundSet.size === curScene.targets.length) {
         setTimeout(() => {
           this.playFanfare();
@@ -2356,6 +2782,7 @@
 
   EduApp.prototype.showWhereHint = function() {
     this.playPop();
+    if (!this.whereScenes) return;
     const curScene = this.whereScenes[this.whereSceneIdx];
     if (!curScene) return;
 
@@ -2367,7 +2794,6 @@
       this.whereHintTargetId = unfound.id;
       this.renderWhereScene();
 
-      // 타깃 위치로 부드럽게 스크롤
       const scrollBox = document.getElementById('whereScrollBox');
       if (scrollBox) {
         const targetScrollLeft = Math.max(0, unfound.x - scrollBox.clientWidth / 2);
@@ -2385,7 +2811,7 @@
 
   EduApp.prototype.resetWhereScene = function() {
     this.playPop();
-    if (this.whereFoundTargets[this.whereSceneIdx]) {
+    if (this.whereFoundTargets && this.whereFoundTargets[this.whereSceneIdx]) {
       this.whereFoundTargets[this.whereSceneIdx].clear();
     }
     const overlay = document.getElementById('whereWinOverlay');
@@ -2395,6 +2821,7 @@
 
   EduApp.prototype.nextWhereScene = function() {
     this.playPop();
+    if (!this.whereScenes) return;
     const sceneKeys = Object.keys(this.whereScenes);
     const curIdx = sceneKeys.indexOf(this.whereSceneIdx);
     const nextKey = sceneKeys[(curIdx + 1) % sceneKeys.length];
@@ -2402,6 +2829,7 @@
   };
 
   EduApp.prototype.renderWhereScene = function() {
+    this.initWhereScenes();
     const curScene = this.whereScenes[this.whereSceneIdx];
     if (!curScene) return;
 
@@ -2432,10 +2860,10 @@
     const canvas = document.getElementById('whereCanvas');
     if (!canvas) return;
 
-    this.drawWhereScene(canvas, this.whereSceneIdx, foundSet, curScene.targets);
+    this.drawWhereScene(canvas, this.whereSceneIdx, foundSet, curScene.targets, curScene.themeType);
   };
 
-  EduApp.prototype.drawWhereScene = function(canvas, sceneId, foundSet, targets) {
+  EduApp.prototype.drawWhereScene = function(canvas, sceneId, foundSet, targets, themeType) {
     const ctx = canvas.getContext('2d');
     const w = 1200;
     const h = 650;
@@ -2444,181 +2872,278 @@
 
     ctx.clearRect(0, 0, w, h);
 
-    if (sceneId === 'park') {
-      // 🎡 와글와글 놀이공원 대축제
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, 320);
-      skyGrad.addColorStop(0, '#67e8f9');
-      skyGrad.addColorStop(1, '#e0f2fe');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, 320);
-
-      // 잔디광장
-      ctx.fillStyle = '#86efac';
-      ctx.fillRect(0, 320, w, 330);
-
-      // 돌 보도블록 도로
-      ctx.fillStyle = '#fde68a';
-      ctx.beginPath();
-      ctx.ellipse(600, 500, 560, 160, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 대관람차 (중앙 상단 520, 200)
-      ctx.strokeStyle = '#f43f5e';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(520, 180, 110, 0, Math.PI * 2);
-      ctx.stroke();
-
-      for (let a = 0; a < 8; a++) {
-        const rad = (a * Math.PI) / 4;
-        ctx.beginPath();
-        ctx.moveTo(520, 180);
-        ctx.lineTo(520 + Math.cos(rad) * 110, 180 + Math.sin(rad) * 110);
-        ctx.stroke();
-        // 곤돌라
-        ctx.fillStyle = '#3b82f6';
-        ctx.fillRect(520 + Math.cos(rad) * 110 - 12, 180 + Math.sin(rad) * 110 - 12, 24, 24);
+    // 20개 테마별 파노라마 색상 & 무대 배경 구성
+    const themeVisuals = {
+      park: {
+        sky: ['#67e8f9', '#e0f2fe'],
+        ground: '#86efac',
+        path: '#fde68a',
+        crowd: ['👨‍👩‍👧', '🏃‍♂️', '🚶‍♀️', '💃', '🕺', '👧', '👦', '👵', '👴', '🐶', '🐩', '🐱', '🐦', '🐰', '🐼', '🐯', '🐧', '🎈', '🍿', '🍦', '🎪']
+      },
+      ocean: {
+        sky: ['#38bdf8', '#0284c7'],
+        ground: '#082f49',
+        path: '#fef08a',
+        crowd: ['🐟', '🐠', '🐡', '🐬', '🐳', '🦈', '🦭', '🦀', '🦞', '🦐', '🦑', '🪼', '🐢', '🫧', '🐚', '🪸', '🐙', '🌊', '⚓', '🟡']
+      },
+      safari: {
+        sky: ['#fef08a', '#fed7aa'],
+        ground: '#65a30d',
+        path: '#d97706',
+        crowd: ['🐒', '🦍', '🦧', '🦘', '🦙', '🦔', '🦥', '🦦', '🦨', '🦩', '🦚', '🦜', '🐊', '🌴', '🌲', '🌿', '🪵', '🦒', '🐘', '🦓']
+      },
+      space: {
+        sky: ['#0f172a', '#1e1b4b'],
+        ground: '#312e81',
+        path: '#4338ca',
+        crowd: ['🪐', '⭐', '🛰️', '🛸', '👨‍🚀', '✨', '🌍', '☄️', '🌙', '🔭', '🚀', '👽', '👾', '🌟', '💫', '🟣', '🔷']
+      },
+      dino: {
+        sky: ['#fef08a', '#dcfce7'],
+        ground: '#15803d',
+        path: '#b45309',
+        crowd: ['🌋', '🌴', '🌿', '🥚', '🦕', '🦖', '🦋', '🦎', '🌲', '🌾', '🐾', '🪨', '🦅', '🍀', '✨', '🔥']
+      },
+      candy: {
+        sky: ['#fce7f3', '#ffe4e6'],
+        ground: '#fbcfe8',
+        path: '#f472b6',
+        crowd: ['🧁', '🍪', '🍭', '🍩', '🍫', '🍬', '🍓', '🍰', '🧇', '🥞', '🍮', '🍡', '🍦', '🍒', '🍯', '🎀']
+      },
+      winter: {
+        sky: ['#e0f2fe', '#bae6fd'],
+        ground: '#f8fafc',
+        path: '#cbd5e1',
+        crowd: ['⛄', '🐧', '❄️', '🦌', '🎄', '🛷', '🧊', '🧤', '🧣', '🎿', '🏂', '🐻‍❄️', '🔔', '🕯️', '🌨️', '✨']
+      },
+      jungle: {
+        sky: ['#a7f3d0', '#6ee7b7'],
+        ground: '#166534',
+        path: '#92400e',
+        crowd: ['🌴', '🐒', '🌺', '🐸', '🐍', '🦜', '🌧️', '🐆', '🦋', '🦎', '🌳', '🎋', '🍃', '☀️', '💧', '🪵']
+      },
+      castle: {
+        sky: ['#fbcfe8', '#e0e7ff'],
+        ground: '#86efac',
+        path: '#fed7aa',
+        crowd: ['🏰', '🌈', '🦢', '⛲', '🧚', '💎', '👑', '🐴', '🌹', '🪞', '🕯️', '🪄', '🛡️', '⚔️', '🕊️', '💐']
+      },
+      robot: {
+        sky: ['#0369a1', '#0f172a'],
+        ground: '#1e293b',
+        path: '#06b6d4',
+        crowd: ['🤖', '🔋', '⚙️', '💻', '💡', '📡', '🕹️', '📟', '🔌', '🖲️', '🥽', '🚘', '🚁', '🛰️', '⚡', '🔷']
+      },
+      sports: {
+        sky: ['#bae6fd', '#fed7aa'],
+        ground: '#22c55e',
+        path: '#ef4444',
+        crowd: ['⚽', '🏃', '🏆', '🏁', '🥇', '🏀', '🎉', '⚾', '🎾', '🏐', '👟', '📣', '🎈', '🎪', '🚴', '🎽']
+      },
+      beach: {
+        sky: ['#7dd3fc', '#fef08a'],
+        ground: '#fde047',
+        path: '#38bdf8',
+        crowd: ['🏖️', '🏄', '🦀', '🐬', '🥥', '🦪', '☀️', '🍉', '🌴', '🤿', '⛵', '🩴', '🕶️', '🐚', '⛱️', '🪸']
+      },
+      school: {
+        sky: ['#fef3c7', '#dcfce7'],
+        ground: '#cbd5e1',
+        path: '#fbbf24',
+        crowd: ['🏫', '📚', '🎒', '✏️', '🎨', '📐', '👦', '👧', '👩‍🏫', '🎹', '🏀', '🔬', '🌍', '📝', '🔔', '🍎']
+      },
+      market: {
+        sky: ['#fed7aa', '#ffedd5'],
+        ground: '#f1f5f9',
+        path: '#fb923c',
+        crowd: ['🛒', '🍎', '🍌', '🍉', '🍞', '🧀', '🏪', '🥕', '🍇', '🥛', '🥩', '🍕', '🥫', '📦', '🧾', '🛍️']
+      },
+      train: {
+        sky: ['#93c5fd', '#dbeafe'],
+        ground: '#475569',
+        path: '#94a3b8',
+        crowd: ['🚂', '🛤️', '🐻', '🧳', '🔔', '🎫', '☁️', '🚃', '🎩', '📦', '🪑', '⏰', '🥖', '☕', '📰', '🏮']
+      },
+      airport: {
+        sky: ['#60a5fa', '#93c5fd'],
+        ground: '#64748b',
+        path: '#cbd5e1',
+        crowd: ['✈️', '🛫', '🧳', '🌐', '📡', '🐇', '🌤️', '🛬', '🛂', '☕', '🏬', '🛍️', '🎫', '💺', '📻', '🗼']
+      },
+      fire: {
+        sky: ['#fed7aa', '#fca5a5'],
+        ground: '#334155',
+        path: '#ef4444',
+        crowd: ['🚒', '🧑‍🚒', '🧯', '🚨', '💧', '🐕', '🏢', '🪜', '🪓', '📻', '📢', '🚑', '🦺', '🪖', '🔥', '✨']
+      },
+      concert: {
+        sky: ['#c084fc', '#3b0764'],
+        ground: '#166534',
+        path: '#ec4899',
+        crowd: ['🎸', '🥁', '🎤', '🦊', '🎵', '🎶', '✨', '🎹', '🎷', '🎺', '🪩', '🐰', '🐻', '💡', '🎉', '🕶️']
+      },
+      farm: {
+        sky: ['#fde047', '#bbf7d0'],
+        ground: '#854d0e',
+        path: '#ca8a04',
+        crowd: ['🚜', '🥕', '🐄', '🐖', '🌾', '🌻', '🐓', '🐑', '🦆', '🐎', '🥔', '🌽', '🥬', '🏡', '🪵', '🧺']
+      },
+      circus: {
+        sky: ['#f43f5e', '#fbbf24'],
+        ground: '#7f1d1d',
+        path: '#eab308',
+        crowd: ['🎪', '🎩', '🤹', '🦁', '🎺', '🕊️', '✨', '🤡', '🦭', '🚲', '🎈', '🦯', '🥁', '🍿', '🐯', '🌟']
       }
+    };
 
-      // 바이킹 배 (좌측 230, 240)
-      ctx.font = '84px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('⛵', 230, 260);
+    const visual = themeVisuals[themeType] || themeVisuals.park;
 
-      // 회전목마 (우측 880, 260)
-      ctx.font = '96px sans-serif';
-      ctx.fillText('🎠', 880, 290);
+    // 1. 하늘 / 실내 상단 그라데이션
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, 320);
+    skyGrad.addColorStop(0, visual.sky[0]);
+    skyGrad.addColorStop(1, visual.sky[1]);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, w, 320);
 
-      // 롤러코스터 트랙
-      ctx.strokeStyle = '#a855f7';
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(0, 150);
-      ctx.bezierCurveTo(200, 60, 350, 260, 500, 120);
-      ctx.bezierCurveTo(650, 0, 800, 240, 1200, 100);
-      ctx.stroke();
+    // 2. 잔디 / 대지 / 바닥
+    ctx.fillStyle = visual.ground;
+    ctx.fillRect(0, 320, w, 330);
 
-      // 분수대 (350, 520)
-      ctx.font = '72px sans-serif';
+    // 3. 중앙 보도블록 / 트랙 / 도로 타원
+    ctx.fillStyle = visual.path;
+    ctx.beginPath();
+    ctx.ellipse(600, 490, 560, 150, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4. 대형 랜드마크 장식들 (테마별)
+    ctx.save();
+    ctx.font = '100px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (themeType === 'park') {
+      ctx.fillText('🎡', 520, 180);
+      ctx.fillText('⛵', 230, 240);
+      ctx.fillText('🎠', 880, 260);
       ctx.fillText('⛲', 350, 550);
-
-      // 아이스크림 카트 (1060, 540)
-      ctx.font = '72px sans-serif';
       ctx.fillText('🍦', 1060, 560);
-
-      // 텐트 & 부스들
-      ctx.font = '64px sans-serif';
-      ctx.fillText('🎪', 100, 420);
-      ctx.fillText('🎈', 750, 420);
-      ctx.fillText('🍿', 620, 470);
-      ctx.fillText('🎡', 1140, 380);
-
-      // 와글와글 수많은 시민 군중 캐릭터들 (50명)
-      const crowdEmojis = ['👨‍👩‍👧', '🏃‍♂️', '🚶‍♀️', '💃', '🕺', '👧', '👦', '👵', '👴', '🐶', '🐩', '🐱', '🐦', '🐰', '🐼', '🐯', '🐧'];
-      for (let i = 0; i < 45; i++) {
-        const cx = 80 + (i * 26) % 1060;
-        const cy = 350 + ((i * 47) % 270);
-        ctx.font = '26px sans-serif';
-        ctx.fillText(crowdEmojis[i % crowdEmojis.length], cx, cy);
-      }
-
-    } else if (sceneId === 'ocean') {
-      // 🌊 신비한 바닷속 산호초 파티
-      const seaGrad = ctx.createLinearGradient(0, 0, 0, h);
-      seaGrad.addColorStop(0, '#38bdf8');
-      seaGrad.addColorStop(0.4, '#0284c7');
-      seaGrad.addColorStop(1, '#082f49');
-      ctx.fillStyle = seaGrad;
-      ctx.fillRect(0, 0, w, h);
-
-      // 모래 바닥
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.moveTo(0, 580);
-      ctx.bezierCurveTo(400, 550, 800, 610, 1200, 570);
-      ctx.lineTo(1200, h);
-      ctx.lineTo(0, h);
-      ctx.fill();
-
-      // 노란 잠수함 (740, 240)
-      ctx.font = '110px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🪸', 120, 560);
-      ctx.fillText('🪸', 420, 570);
-      ctx.fillText('🪸', 840, 580);
-      ctx.fillText('🪸', 1120, 560);
-
-      // 잠수함
-      ctx.fillStyle = '#eab308';
-      ctx.beginPath();
-      ctx.ellipse(740, 220, 110, 50, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#38bdf8';
-      ctx.beginPath();
-      ctx.arc(710, 220, 16, 0, Math.PI * 2);
-      ctx.arc(770, 220, 16, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 바다 동물 친구들 가득
-      const seaCreatures = ['🐟', '🐠', '🐡', '🐬', '🐳', '🦈', '🦭', '🦀', '🦞', '🦐', '🦑', '🪼', '🐢', '🫧', '🐚'];
-      for (let i = 0; i < 48; i++) {
-        const sx = 60 + (i * 24) % 1100;
-        const sy = 80 + ((i * 53) % 520);
-        ctx.font = '32px sans-serif';
-        ctx.fillText(seaCreatures[i % seaCreatures.length], sx, sy);
-      }
-
-    } else if (sceneId === 'safari') {
-      // 🦁 복작복작 사파리 동물원
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, 280);
-      skyGrad.addColorStop(0, '#fef08a');
-      skyGrad.addColorStop(1, '#fed7aa');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, 280);
-
-      // 초원 & 흙길
-      ctx.fillStyle = '#65a30d';
-      ctx.fillRect(0, 280, w, 370);
-
-      ctx.fillStyle = '#d97706';
-      ctx.beginPath();
-      ctx.moveTo(0, 480);
-      ctx.bezierCurveTo(400, 420, 800, 540, 1200, 460);
-      ctx.lineTo(1200, 560);
-      ctx.bezierCurveTo(800, 620, 400, 500, 0, 580);
-      ctx.fill();
-
-      // 사파리 지프차 (380, 400)
-      ctx.font = '84px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🚙', 380, 400);
-
-      // 기린 타워 & 나무들
-      ctx.font = '96px sans-serif';
+    } else if (themeType === 'ocean') {
+      ctx.fillText('🪸', 200, 540);
+      ctx.fillText('🚢', 740, 210);
+      ctx.fillText('🪸', 950, 550);
+      ctx.fillText('🫧', 420, 310);
+    } else if (themeType === 'safari') {
+      ctx.fillText('🚙', 380, 380);
       ctx.fillText('🦒', 980, 360);
       ctx.fillText('🐘', 640, 480);
-      ctx.fillText('🦛', 160, 550);
-      ctx.fillText('🦓', 520, 360);
-      ctx.fillText('🦏', 880, 550);
+      ctx.fillText('🌴', 160, 230);
+    } else if (themeType === 'space') {
+      ctx.fillText('🚀', 480, 210);
+      ctx.fillText('🪐', 840, 190);
+      ctx.fillText('🛸', 220, 230);
+      ctx.fillText('🛰️', 1040, 260);
+    } else if (themeType === 'dino') {
+      ctx.fillText('🌋', 310, 180);
+      ctx.fillText('🦕', 850, 380);
+      ctx.fillText('🌴', 160, 300);
+      ctx.fillText('🦖', 600, 480);
+    } else if (themeType === 'candy') {
+      ctx.fillText('🎂', 500, 220);
+      ctx.fillText('🏠', 230, 350);
+      ctx.fillText('🍭', 850, 320);
+      ctx.fillText('🧁', 1050, 480);
+    } else if (themeType === 'winter') {
+      ctx.fillText('🏰', 520, 190);
+      ctx.fillText('🏠', 260, 380);
+      ctx.fillText('🎄', 880, 280);
+      ctx.fillText('⛄', 160, 480);
+    } else if (themeType === 'jungle') {
+      ctx.fillText('🏛️', 520, 220);
+      ctx.fillText('🌴', 210, 280);
+      ctx.fillText('🌴', 850, 290);
+      ctx.fillText('🌊', 1050, 460);
+    } else if (themeType === 'castle') {
+      ctx.fillText('🏰', 540, 180);
+      ctx.fillText('⛲', 340, 470);
+      ctx.fillText('🪞', 880, 260);
+      ctx.fillText('🎠', 170, 380);
+    } else if (themeType === 'robot') {
+      ctx.fillText('🏢', 530, 190);
+      ctx.fillText('⚡', 240, 360);
+      ctx.fillText('📡', 820, 240);
+      ctx.fillText('🚘', 1040, 460);
+    } else if (themeType === 'sports') {
+      ctx.fillText('🏟️', 530, 190);
+      ctx.fillText('🏁', 220, 340);
+      ctx.fillText('🏆', 840, 340);
+      ctx.fillText('🎉', 1050, 450);
+    } else if (themeType === 'beach') {
+      ctx.fillText('⛵', 530, 190);
+      ctx.fillText('🏖️', 260, 400);
+      ctx.fillText('🌴', 850, 310);
+      ctx.fillText('⛱️', 1040, 460);
+    } else if (themeType === 'school') {
+      ctx.fillText('🏫', 530, 190);
+      ctx.fillText('🌳', 240, 340);
+      ctx.fillText('🔔', 820, 250);
+      ctx.fillText('🚌', 1040, 460);
+    } else if (themeType === 'market') {
+      ctx.fillText('🏪', 530, 190);
+      ctx.fillText('🍇', 240, 350);
+      ctx.fillText('🍞', 820, 340);
+      ctx.fillText('🛒', 1040, 460);
+    } else if (themeType === 'train') {
+      ctx.fillText('🚂', 530, 210);
+      ctx.fillText('🚉', 240, 340);
+      ctx.fillText('⏰', 820, 250);
+      ctx.fillText('🛤️', 1040, 460);
+    } else if (themeType === 'airport') {
+      ctx.fillText('✈️', 530, 190);
+      ctx.fillText('🗼', 240, 260);
+      ctx.fillText('🛬', 820, 320);
+      ctx.fillText('🧳', 1040, 460);
+    } else if (themeType === 'fire') {
+      ctx.fillText('🚒', 530, 230);
+      ctx.fillText('🏢', 240, 320);
+      ctx.fillText('🚨', 820, 260);
+      ctx.fillText('🧯', 1040, 460);
+    } else if (themeType === 'concert') {
+      ctx.fillText('🎪', 530, 190);
+      ctx.fillText('🎙️', 240, 340);
+      ctx.fillText('🪩', 820, 240);
+      ctx.fillText('🥁', 1040, 460);
+    } else if (themeType === 'farm') {
+      ctx.fillText('🚜', 530, 240);
+      ctx.fillText('🏡', 240, 320);
+      ctx.fillText('🌾', 820, 340);
+      ctx.fillText('🌻', 1040, 460);
+    } else if (themeType === 'circus') {
+      ctx.fillText('🎪', 530, 190);
+      ctx.fillText('🤹', 240, 340);
+      ctx.fillText('🎈', 820, 250);
+      ctx.fillText('🎺', 1040, 460);
+    }
+    ctx.restore();
 
-      // 동물원 식구들
-      const zooAnimals = ['🐒', '🦍', '🦧', '🦘', '🦙', '🦔', '🦥', '🦦', '🦨', '🦩', '🦚', '🦜', '🐊', '🌴', '🌲', '🌿', '🪵'];
-      for (let i = 0; i < 45; i++) {
-        const zx = 60 + (i * 26) % 1100;
-        const zy = 180 + ((i * 49) % 430);
-        ctx.font = '32px sans-serif';
-        ctx.fillText(zooAnimals[i % zooAnimals.length], zx, zy);
-      }
+    // 5. 와글와글 군중 캐릭터 (45~50명 이상 골고루 배치)
+    const crowdList = visual.crowd;
+    for (let i = 0; i < 48; i++) {
+      const cx = 70 + (i * 24) % 1080;
+      const cy = 340 + ((i * 47) % 270);
+      ctx.font = '26px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(crowdList[i % crowdList.length], cx, cy);
     }
 
-    // 5명의 타깃 캐릭터 렌더링
+    // 6. 5명의 타깃 캐릭터 & 보물 렌더링
     targets.forEach(t => {
       ctx.save();
       ctx.font = '40px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // 힌트 상태일 때 펄스 강조
+      // 힌트 상태일 때 강조 표시
       if (this.whereHintTargetId === t.id) {
         ctx.strokeStyle = '#eab308';
         ctx.lineWidth = 4;
@@ -2632,7 +3157,7 @@
 
       ctx.fillText(t.icon, t.x, t.y);
 
-      // 이미 찾은 대상에게 초록색 체크 동그라미 표시
+      // 이미 찾은 대상에게 초록색 체크 원 표시
       if (foundSet.has(t.id)) {
         ctx.strokeStyle = '#10b981';
         ctx.lineWidth = 3.5;

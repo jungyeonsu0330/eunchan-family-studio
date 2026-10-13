@@ -10018,18 +10018,30 @@ button, .nav-tab-btn, .subnav-btn, .verse-tab-btn, .key-btn, .card-bubble-btn {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
   border: 1px solid #d1fae5;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.spot-stages-bar-top {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 .spot-stage-buttons {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 .btn-spot-stage {
+  flex-shrink: 0;
   border: 1px solid #cbd5e1;
   background: #f8fafc;
   color: #334155;
@@ -10177,18 +10189,30 @@ button, .nav-tab-btn, .subnav-btn, .verse-tab-btn, .key-btn, .card-bubble-btn {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
   border: 1px solid #d1fae5;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.where-theme-bar-top {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 .where-theme-buttons {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 .btn-where-theme {
+  flex-shrink: 0;
   border: 1px solid #cbd5e1;
   background: #f8fafc;
   color: #334155;
