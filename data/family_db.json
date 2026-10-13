@@ -14,7 +14,7 @@
         "세종대왕 한글 메달",
         "충무공 이순신 메달"
       ],
-      "lastActive": "2026-10-11 09:23"
+      "lastActive": "2026-10-13 13:06"
     },
     "eunwoo": {
       "id": "eunwoo",
@@ -145,6 +145,32 @@
     }
   ],
   "activities": [
+    {
+      "id": "act_1791864371571",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "👑",
+      "title": "100 위인 그림책: 세종대왕의 훈민정음과 장영실의 발명",
+      "detail": "조선 세종 시대 (1443년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-13 13:06:11",
+      "date": "2026-10-13"
+    },
+    {
+      "id": "act_1791864371501",
+      "childId": "eunchan",
+      "childName": "정은찬",
+      "type": "history",
+      "icon": "🐢",
+      "title": "100 위인 그림책: 나라 구한 영웅 충무공 이순신 장군",
+      "detail": "임진왜란 (1592~1598년) 그림책 펼침",
+      "category": "history",
+      "timeSpentSec": 60,
+      "timestamp": "2026-10-13 13:06:11",
+      "date": "2026-10-13"
+    },
     {
       "id": "act_1791678230250",
       "childId": "eunchan",

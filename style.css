@@ -28,6 +28,10 @@
   user-select: none;
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
   background: var(--bg-gradient);
@@ -35,17 +39,19 @@ body {
   color: #1e293b;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow-x: clip;
   padding-bottom: 40px;
 }
 
 /* 상단 메인 네비게이션 헤더 */
 .app-header {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 2px solid #e2e8f0;
   padding: 12px 20px;
   display: flex;
@@ -372,19 +378,27 @@ body {
   padding: 20px;
   border: 2px solid var(--card-border);
   box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer !important;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto !important;
 }
 
 .adventure-card:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: var(--shadow-lg);
   border-color: var(--primary);
+}
+
+.adventure-card:active {
+  transform: translateY(-1px) scale(0.98) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
 }
 
 .adv-badge {
@@ -421,10 +435,56 @@ body {
 .adv-footer {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.btn-adv-pill {
+  display: inline-flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--primary);
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  pointer-events: auto !important;
+}
+
+.btn-adv-pill:hover,
+.adventure-card:hover .btn-adv-pill {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+  transform: translateY(-2px);
+}
+
+.btn-adv-pill.primary,
+.adventure-card:hover .btn-adv-pill.primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+.btn-adv-pill:active {
+  transform: scale(0.96) !important;
+}
+
+.btn-adv-pill .arrow {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.adventure-card:hover .btn-adv-pill .arrow {
+  transform: translateX(4px);
 }
 
 /* ==================================================== */
@@ -6207,6 +6267,17 @@ body.studio-locked .family-top-bar {
   user-select: none;
 }
 
+/* 잠금 해제 시 모든 요소의 클릭 상호작용 100% 보장 */
+body:not(.studio-locked) .app-main,
+body:not(.studio-locked) .app-header,
+body:not(.studio-locked) .adventure-card,
+body:not(.studio-locked) .btn-adv-pill,
+body:not(.studio-locked) .nav-tab-btn,
+body:not(.studio-locked) .side-wing-photo,
+body:not(.studio-locked) .floating-home-btn {
+  pointer-events: auto !important;
+}
+
 @keyframes lockShake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-10px); }
@@ -10414,7 +10485,30 @@ button, .nav-tab-btn, .subnav-btn, .verse-tab-btn, .key-btn, .card-bubble-btn {
   .brain-subnav-btn {
     min-width: 100%;
     padding: 10px 14px !important;
-    font-size: 14px !important;
-  }
 }
 
+/* 전역 토스트 알림 (Global App Toast) */
+.global-app-toast {
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(15, 23, 42, 0.94);
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 999999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-app-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
