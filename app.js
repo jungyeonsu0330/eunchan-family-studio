@@ -3962,6 +3962,7 @@ class EduApp {
 
   setTypingMode(mode, btnElem) {
     this.playPop();
+    this.currentTab = 'typing';
     this.typingMode = mode;
     this.hangulComposer.clear();
     this.wordJamoIdx = 0;
@@ -4133,28 +4134,50 @@ class EduApp {
     const step = Math.min(this.wordJamoIdx, flatJamos.length);
     const currentJamos = flatJamos.slice(0, step);
     const activeSylIdx = step < flatJamos.length ? flatJamos[step].sylIdx : -1;
+    const isAllComplete = (step >= flatJamos.length && flatJamos.length > 0);
 
     let html = '';
     syllables.forEach((syl, sIdx) => {
       const sylJamos = currentJamos.filter(j => j.sylIdx === sIdx).map(j => j.key);
       let text = syl.char;
-      let charClass = 'sentence-char';
+      let statusClass = 'pending';
+      let statusBadge = '대기';
 
       if (sylJamos.length === syl.jamos.length) {
-        charClass += ' correct';
+        statusClass = 'correct';
+        statusBadge = '완료 ✓';
         text = syl.char;
       } else if (sylJamos.length > 0) {
-        charClass += ' current';
+        statusClass = 'current';
+        statusBadge = '입력 중...';
         text = composePartialJamos(sylJamos);
       } else if (sIdx === activeSylIdx) {
-        charClass += ' current';
+        statusClass = 'current';
+        statusBadge = '지금 글쇠!';
         text = syl.char;
       } else {
-        charClass += ' pending';
+        statusClass = 'pending';
+        statusBadge = `${sIdx + 1}번째`;
         text = syl.char;
       }
 
-      html += `<span class="${charClass}">${text}</span>`;
+      // 🌟 낱말 글자 하나하나를 키보드 자판 키 모양(3D 키캡)으로 완벽하게 구현
+      html += `
+        <div class="word-keycap ${statusClass}" onclick="app.speak('${syl.char}', 'ko-KR')" title="[${syl.char}] 발음 듣기">
+          <div class="keycap-header">
+            <span class="keycap-step-num">${sIdx + 1}</span>
+            <span class="keycap-status-badge">${statusBadge}</span>
+          </div>
+          <div class="keycap-char">${text}</div>
+          <div class="keycap-jamos">
+            ${syl.jamos.map((j, jIdx) => {
+              const isTyped = jIdx < sylJamos.length;
+              const isCurrentKey = (sIdx === activeSylIdx && jIdx === sylJamos.length);
+              return `<span class="jamo-key-pill ${isTyped ? 'typed' : ''} ${isCurrentKey ? 'current' : ''}">${j}</span>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
     });
 
     if (targetBox) targetBox.innerHTML = html;
@@ -4162,22 +4185,38 @@ class EduApp {
     // 통계 업데이트
     this.updateTypingStats(currentJamos.map(j => j.key).join(''), flatJamos.map(j => j.key).join(''));
 
-    // 하이라이트 글쇠 지정
+    // 하이라이트 글쇠 지정 및 엔터 키 상태 갱신
+    const enterKeyBtn = document.querySelector('#onscreenKeyboard .key-enter');
     if (step < flatJamos.length) {
       const nextTargetKey = flatJamos[step].key;
       this.highlightNextTargetKey(nextTargetKey);
+      if (enterKeyBtn) {
+        enterKeyBtn.classList.remove('key-enter-ready');
+        enterKeyBtn.innerHTML = '↵ 엔터';
+      }
+      const guideText = document.getElementById('wordTypingGuideText');
+      if (guideText) guideText.innerHTML = `글쇠 <strong>[${nextTargetKey}]</strong>를 화면 키보드나 자판에서 눌러보세요! <span style="color:#64748b; font-size:12px;">(언제든 ↵ 엔터를 누르면 다음 낱말로 넘어가요)</span>`;
     } else {
       this.highlightNextTargetKey(null);
+      // 🌟 낱말이 완성되었을 때 가상 키보드의 엔터 키를 하이라이트하여 엔터 안내!
+      if (enterKeyBtn) {
+        enterKeyBtn.classList.add('key-target-next', 'key-enter-ready');
+        enterKeyBtn.innerHTML = '↵ 엔터 (다음 낱말 ➔)';
+      }
+      const guideText = document.getElementById('wordTypingGuideText');
+      if (guideText) guideText.innerHTML = `🎉 <strong>완벽해요!</strong> 키보드의 <strong>[↵ 엔터(Enter)]</strong>를 누르면 바로 다음 낱말로 넘어가요!`;
+      const nextKeyBadge = document.getElementById('wordNextKeyChar');
+      if (nextKeyBadge) nextKeyBadge.textContent = '↵ 엔터';
     }
 
     // 낱말 완성 여부 판정
-    if (step >= flatJamos.length && flatJamos.length > 0) {
+    if (isAllComplete) {
       if (!this.wordCompletedHandled) {
         this.wordCompletedHandled = true;
         this.playTypewriterBell();
         this.playSuccess();
         this.triggerConfetti();
-        this.speak(`참 잘했어요! ${wordItem.word}!`, 'ko-KR');
+        this.speak(`참 잘했어요! ${wordItem.word}! 엔터를 누르면 다음 낱말로 넘어가요!`, 'ko-KR', null, 'dad');
         this.addStamp(1);
         this.logChildActivity('typing', '🍎', `낱말 타자 성공: ${wordItem.word}`, wordItem.hint, 'typing', 30);
 
@@ -4185,10 +4224,10 @@ class EduApp {
           clearTimeout(this.typingWordAutoTimer);
           this.typingWordAutoTimer = null;
         }
-        // ⚡ 1.5초 후 다음 낱말로 자동 이동 (사용자가 Enter를 누르면 즉시 이동)
+        // ⚡ 사용자가 엔터(Enter)를 누르면 즉각 이동하고, 기다릴 경우 2.5초 후 자동으로 다음 낱말 이동
         this.typingWordAutoTimer = setTimeout(() => {
           this.nextTypingWord();
-        }, 1500);
+        }, 2500);
       }
     } else {
       this.wordCompletedHandled = false;
@@ -4208,6 +4247,11 @@ class EduApp {
     this.pendingDoubleConsonant = null;
     this.hangulComposer.clear();
     this.renderCurrentWord();
+
+    const curWord = words[this.typingWordIdx % words.length];
+    if (curWord) {
+      this.speak(`다음 낱말은 [${curWord.word}]!`, 'ko-KR', null, 'dad');
+    }
   }
 
   renderCurrentKey() {
@@ -4492,7 +4536,11 @@ class EduApp {
 
   setupTypingListeners() {
     const handleKeyInput = (e) => {
-      if (this.currentTab !== 'typing') return;
+      const isTypingActive = (this.currentTab === 'typing') || 
+        (document.getElementById('tab-typing') && document.getElementById('tab-typing').classList.contains('active')) ||
+        (document.getElementById('typingWordView') && document.getElementById('typingWordView').offsetParent !== null);
+      if (!isTypingActive) return;
+
       const activeEl = document.activeElement;
       if (activeEl && activeEl.id === 'freeLetterTextarea') {
         this.playTypewriterKey();
