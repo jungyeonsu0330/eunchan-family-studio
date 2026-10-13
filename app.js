@@ -4899,15 +4899,34 @@ class EduApp {
   }
 
   fetchFamilyData(showToast = false) {
+    // 이미 요청 중이면 중복 호출을 합치고, 토스트 요청만 기억해 둔다
+    if (this.isFetchingFamily) {
+      this._fetchWantsToast = this._fetchWantsToast || showToast;
+      return;
+    }
+    this.isFetchingFamily = true;
+    this._fetchWantsToast = showToast;
+
     const syncStatus = document.getElementById('parentSyncStatus');
     if (syncStatus) syncStatus.textContent = '동기화 중...';
 
-    fetch('/api/family', { headers: this.getAuthHeaders() })
+    // 네트워크가 느리거나 끊겨도 "동기화 중..."에 갇히지 않도록 8초 제한
+    const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const abortTimer = ctrl ? setTimeout(() => ctrl.abort(), 8000) : null;
+    const done = () => {
+      if (abortTimer) clearTimeout(abortTimer);
+      this.isFetchingFamily = false;
+      showToast = this._fetchWantsToast;
+      this._fetchWantsToast = false;
+    };
+
+    fetch('/api/family', { headers: this.getAuthHeaders(), signal: ctrl ? ctrl.signal : undefined })
       .then(res => {
         if (!res.ok) throw new Error("Server not responding");
         return res.json();
       })
       .then(data => {
+        done();
         this.familyDb = data;
         this.saveLocalFamilyDb(data);
         if (syncStatus) syncStatus.textContent = '패밀리 서버 실시간 연동 완료 (' + (data.serverTime ? data.serverTime.split(' ')[1] : '') + ')';
@@ -4918,6 +4937,7 @@ class EduApp {
         }
       })
       .catch(err => {
+        if (this.isFetchingFamily) done();
         // Fallback to local DB (PC turned off or offline)
         this.familyDb = this.getLocalFamilyDb();
         if (syncStatus) syncStatus.textContent = '24시간 클라우드 자율 모드 (컴퓨터 OFF 대응)';
@@ -5055,9 +5075,12 @@ class EduApp {
     this.isSendingSticker = true;
     const sendBtn = document.querySelector('.btn-send-sticker');
     if (sendBtn) sendBtn.disabled = true;
+    const sendLabel = document.getElementById('sendStickerBtnText');
+    if (sendLabel) sendLabel.textContent = '⏳ 전송 중...';
     const unlockSend = () => {
       this.isSendingSticker = false;
       if (sendBtn) sendBtn.disabled = false;
+      this.updateStickerButtonLabel();
     };
 
     const input = document.getElementById('customStickerReason');
@@ -6233,7 +6256,32 @@ class EduApp {
 }
 
 // 앱 실행 인스턴스 (안전한 즉시/이벤트 초기화)
+function showContentLoadFallback() {
+  if (document.getElementById('contentLoadFallback')) return;
+  const box = document.createElement('div');
+  box.id = 'contentLoadFallback';
+  box.setAttribute('role', 'alert');
+  box.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:4000;background:#fff7ed;' +
+    'border:2px solid #fb923c;border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;' +
+    'justify-content:space-between;font-weight:700;color:#9a3412;box-shadow:0 8px 24px rgba(0,0,0,.18);';
+  box.innerHTML = '<span>콘텐츠를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.</span>';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = '다시 불러오기';
+  btn.style.cssText = 'min-height:44px;padding:0 16px;border:0;border-radius:12px;background:#f97316;' +
+    'color:#fff;font-weight:800;cursor:pointer;touch-action:manipulation;flex-shrink:0;';
+  btn.addEventListener('click', () => window.location.reload());
+  box.appendChild(btn);
+  document.body.appendChild(box);
+}
+
 function initEduApp() {
+  if (!window.EDU_DATA) {
+    // content_data.js 로드 실패: 빈 객체로 앱이 흰 화면이 되지 않게 하고 안내를 띄운다
+    window.EDU_DATA = {};
+    if (document.body) showContentLoadFallback();
+    else window.addEventListener('DOMContentLoaded', showContentLoadFallback);
+  }
   if (!window.app) {
     try {
       window.app = new EduApp();

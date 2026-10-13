@@ -10519,3 +10519,21 @@ body .floating-home-btn { z-index: 150; }
 body.modal-open { overflow: hidden; }
 
 body.modal-open .floating-home-btn { display: none; }
+
+/* --- 터치 영역 보장: 더블탭 확대 지연 제거, 손가락 크기(44px) 확보 --- */
+button, [onclick], [role="button"], .nav-tab-btn, .profile-switch-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(:disabled), [onclick] { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.6; }
+@media (pointer: coarse) {
+  button:not(.key-btn):not(.pstamp-box),
+  .nav-tab-btn, .profile-switch-btn, .btn-bubble {
+    min-height: 44px;
+  }
+  .modal-close, .modal-close-book, .modal-close-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
