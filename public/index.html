@@ -57,6 +57,12 @@
       <button class="nav-tab-btn" data-tab="typing">
         <span>⌨️</span> 한글 타자기
       </button>
+      <button class="nav-tab-btn" data-tab="baduk">
+        <span>⚫⚪</span> 바둑·오목
+      </button>
+      <button class="nav-tab-btn" data-tab="brain">
+        <span>🧩</span> 두뇌 놀이터
+      </button>
       <button class="nav-tab-btn parent-tab-btn" data-tab="parent" id="tabBtnParent" style="display: none;">
         <span>📊</span> 부모 분석·칭찬관
       </button>
@@ -246,6 +252,32 @@
           </div>
           <div class="adv-footer">
             <span>타자기 치러 가기</span>
+            <span>➔</span>
+          </div>
+        </div>
+
+        <div class="adventure-card" onclick="app.switchTab('baduk')">
+          <div>
+            <span class="adv-badge" style="background:#fef08a;color:#854d0e;">⚫⚪ 두뇌 전략 대결</span>
+            <div class="adv-icon">🥋</div>
+            <h3 class="adv-title">신나는 바둑 & 오목 대국장</h3>
+            <p class="adv-desc">짜릿한 오목 5목 승부와 9x9/13x13/19x19 바둑돌 따먹기 대결! 아빠와 둘이서 두거나 똑똑한 AI와 실력을 겨뤄봐요!</p>
+          </div>
+          <div class="adv-footer">
+            <span>대국장 입장</span>
+            <span>➔</span>
+          </div>
+        </div>
+
+        <div class="adventure-card" onclick="app.switchTab('brain')">
+          <div>
+            <span class="adv-badge" style="background:#dcfce7;color:#166534;">🧩 두뇌 관찰력 UP</span>
+            <div class="adv-icon">🔍</div>
+            <h3 class="adv-title">집중력 쑥쑥 두뇌 탐험 놀이터</h3>
+            <p class="adv-desc">요리조리 미로 탈출, 눈썰미 쑥쑥 틀린그림 찾기, 와글와글 은찬이를 찾아라(윌리 스타일)! 신나는 집중력 모험!</p>
+          </div>
+          <div class="adv-footer">
+            <span>놀이터 입장</span>
             <span>➔</span>
           </div>
         </div>
@@ -747,6 +779,434 @@
       </div>
     </section>
 
+    <!-- ==================== 5-2. 바둑 & 오목 대국장 섹션 ==================== -->
+    <section id="tab-baduk" class="tab-content">
+      <div class="baduk-hero-banner">
+        <div class="baduk-banner-content">
+          <div class="baduk-pill-tag">
+            <span>⚫⚪ 정연수 아빠와 함께하는 지혜 대결</span>
+            <span class="tag-sep">|</span>
+            <span>🎯 오목 5목 승부 & 바둑돌 따먹기</span>
+            <span class="tag-sep">|</span>
+            <span>🤖 인공지능(AI) 대국 지원</span>
+          </div>
+          <h2>⚫⚪ 신나는 바둑 & 오목 대국장</h2>
+          <p>
+            가로·세로·대각선으로 5개의 돌을 먼저 연결하는 짜릿한 오목과, 상대방 돌의 숨구멍(활로)을 둘러싸서 잡는 신나는 바둑 대결!
+            아빠와 둘이서 마주 앉아 두거나, 똑똑한 AI 친구와 실력을 겨뤄보세요!
+          </p>
+        </div>
+        <div class="baduk-banner-bg-icon">🥋</div>
+      </div>
+
+      <!-- 상단 모드 & 판 크기 & 대전 설정 바 -->
+      <div class="baduk-settings-card">
+        <div class="baduk-setting-row">
+          <div class="setting-item-group">
+            <span class="baduk-setting-label">🎮 게임 종류:</span>
+            <div class="btn-group-pill">
+              <button id="btnBadukModeOmok" class="btn-baduk-toggle active" onclick="app.setBadukGameType('omok')">
+                <span>⚪⚫ 1. 오목 (5목 승부)</span>
+              </button>
+              <button id="btnBadukModeBaduk" class="btn-baduk-toggle" onclick="app.setBadukGameType('baduk')">
+                <span>🥋 2. 바둑 (돌 따먹기 & 집짓기)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item-group">
+            <span class="baduk-setting-label">📐 바둑판 크기:</span>
+            <div class="btn-group-pill">
+              <button class="btn-baduk-size active" data-size="9" onclick="app.setBadukBoardSize(9)">9 x 9 (입문/초보)</button>
+              <button class="btn-baduk-size" data-size="13" onclick="app.setBadukBoardSize(13)">13 x 13 (중급)</button>
+              <button class="btn-baduk-size" data-size="15" onclick="app.setBadukBoardSize(15)">15 x 15 (오목표준)</button>
+              <button class="btn-baduk-size" data-size="19" onclick="app.setBadukBoardSize(19)">19 x 19 (정통)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="baduk-setting-row" style="margin-top: 10px;">
+          <div class="setting-item-group">
+            <span class="baduk-setting-label">👥 대국 상대:</span>
+            <div class="btn-group-pill">
+              <button id="btnBadukOppPve" class="btn-baduk-opp active" onclick="app.setBadukOpponent('pve')">
+                <span>🤖 똑똑한 AI와 대국</span>
+              </button>
+              <button id="btnBadukOppPvp" class="btn-baduk-opp" onclick="app.setBadukOpponent('pvp')">
+                <span>👨‍👦 아빠와 둘이서 (2인)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item-group" id="badukPlayerColorGroup">
+            <span class="baduk-setting-label">⚪⚫ 내 돌 선택:</span>
+            <div class="btn-group-pill">
+              <button id="btnBadukColorBlack" class="btn-baduk-color active" data-color="black" onclick="app.setBadukPlayerColor('black')">
+                <span>⚫ 흑돌 (선공 먼저두기)</span>
+              </button>
+              <button id="btnBadukColorWhite" class="btn-baduk-color" data-color="white" onclick="app.setBadukPlayerColor('white')">
+                <span>⚪ 백돌 (후공 나중두기)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item-group" id="badukRuleTypeGroup" style="display: none;">
+            <span class="baduk-setting-label">📜 바둑 승리 방식:</span>
+            <div class="btn-group-pill">
+              <button class="btn-baduk-rule active" data-rule="capture5" onclick="app.setBadukRule('capture5')">💥 5개 먼저 따먹기</button>
+              <button class="btn-baduk-rule" data-rule="free" onclick="app.setBadukRule('free')">👑 자유 대국</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI 난이도 5단계 선택 바 -->
+        <div class="baduk-setting-row" id="badukAiLevelRow" style="margin-top: 10px;">
+          <div class="setting-item-group" id="badukAiLevelGroup">
+            <span class="baduk-setting-label">🧠 AI 난이도 (5단계):</span>
+            <div class="btn-group-pill" style="flex-wrap: wrap;">
+              <button class="btn-baduk-level" data-level="lv1" onclick="app.setBadukAiLevel('lv1')">🐣 1단계 병아리 (입문)</button>
+              <button class="btn-baduk-level active" data-level="lv2" onclick="app.setBadukAiLevel('lv2')">🐰 2단계 토끼 (쉬움)</button>
+              <button class="btn-baduk-level" data-level="lv3" onclick="app.setBadukAiLevel('lv3')">🐯 3단계 호랑이 (보통)</button>
+              <button class="btn-baduk-level" data-level="lv4" onclick="app.setBadukAiLevel('lv4')">🦁 4단계 사자 (어려움)</button>
+              <button class="btn-baduk-level" data-level="lv5" onclick="app.setBadukAiLevel('lv5')">👑 5단계 알파고 (최강)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 대국장 메인 경기장 -->
+      <div class="baduk-arena-wrapper">
+        <!-- 상단 대국 스코어 & 턴 안내 보드 -->
+        <div class="baduk-scoreboard">
+          <!-- 은찬이 (플레이어 1) -->
+          <div class="baduk-player-card black-player active" id="badukPlayerBlackCard">
+            <div class="bplayer-avatar-wrap">
+              <div class="bplayer-stone black-stone-avatar" id="player1StoneAvatar"></div>
+              <img src="images/eunchan_photo.jpg" alt="은찬이" class="bplayer-photo">
+            </div>
+            <div class="bplayer-info">
+              <div class="bplayer-name">
+                <span id="player1NameText">👦 은찬이 (흑돌)</span>
+                <span class="bplayer-turn-pill" id="blackTurnPill">내 차례!</span>
+              </div>
+              <div class="bplayer-captured">
+                <span id="player1CaptureLabel">따먹은 백돌: <strong id="blackCaptureCount" class="score-highlight">0</strong>개</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 중앙 VS 상태 알림 배너 -->
+          <div class="baduk-vs-center">
+            <div class="baduk-move-count-badge" id="badukMoveBadge">제 1 수</div>
+            <div class="baduk-turn-status-text" id="badukTurnStatusText">
+              ⚫ 흑돌(은찬이)의 선공 차례예요! 바둑판을 터치해보세요.
+            </div>
+          </div>
+
+          <!-- 상대 플레이어 (AI 또는 아빠) -->
+          <div class="baduk-player-card white-player" id="badukPlayerWhiteCard">
+            <div class="bplayer-info text-right">
+              <div class="bplayer-name">
+                <span class="bplayer-turn-pill" id="whiteTurnPill" style="display: none;">차례!</span>
+                <span id="whitePlayerNameText">🤖 똑똑한 AI (백돌)</span>
+              </div>
+              <div class="bplayer-captured">
+                <span id="player2CaptureLabel">따먹은 흑돌: <strong id="whiteCaptureCount" class="score-highlight">0</strong>개</span>
+              </div>
+            </div>
+            <div class="bplayer-avatar-wrap">
+              <div class="bplayer-stone white-stone-avatar" id="player2StoneAvatar"></div>
+              <div class="bplayer-photo-placeholder" id="whitePlayerAvatarBox">🤖</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 고급 원목 바둑판 캔버스 영역 -->
+        <div class="baduk-board-container" id="badukBoardContainer">
+          <div class="wood-board-frame">
+            <div class="wood-board-inner">
+              <canvas id="badukCanvas" width="600" height="600"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 하단 대국 액션 컨트롤 바 -->
+        <div class="baduk-actions-bar">
+          <button class="btn-baduk-action primary" onclick="app.resetBadukGame()">
+            <span>🔄 새 대국 시작</span>
+          </button>
+          <button class="btn-baduk-action" id="btnBadukUndo" onclick="app.undoBadukMove()">
+            <span>↩️ 한 수 무르기</span>
+          </button>
+          <button class="btn-baduk-action" id="btnBadukHint" onclick="app.showBadukHint()">
+            <span>💡 힌트 보기</span>
+          </button>
+          <button class="btn-baduk-action" onclick="app.openBadukRulesModal()">
+            <span>📜 쉬운 규칙 설명</span>
+          </button>
+          <button class="btn-baduk-action" id="btnBadukPass" onclick="app.passBadukMove()" style="display:none;">
+            <span>🏳️ 한 수 쉼 (Pass)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 바둑/오목 쉬운 규칙 설명 모달 -->
+      <div id="badukRulesModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) app.closeBadukRulesModal()">
+        <div class="modal-content baduk-rules-content">
+          <button class="modal-close-btn" onclick="app.closeBadukRulesModal()">✕</button>
+          <div class="modal-header">
+            <h3>📜 은찬이를 위한 바둑 & 오목 쉬운 규칙</h3>
+          </div>
+          <div class="baduk-rules-body">
+            <div class="rule-card">
+              <h4>⚪⚫ 1. 오목 규칙</h4>
+              <p>• 흑돌과 백돌이 번갈아 가며 한 수씩 돌을 놓습니다.</p>
+              <p>• <strong>가로, 세로, 대각선</strong> 어느 방향이든 <strong>5개의 돌</strong>을 먼저 빈틈없이 나란히 연결하는 사람이 승리합니다!</p>
+            </div>
+            <div class="rule-card" style="margin-top: 14px;">
+              <h4>🥋 2. 바둑 규칙 (돌 따먹기와 활로)</h4>
+              <p>• 바둑돌은 선과 선이 만나는 <strong>교차점</strong>에 놓습니다.</p>
+              <p>• 돌이 놓인 곳의 위, 아래, 왼쪽, 오른쪽을 <strong>'활로(숨구멍)'</strong>라고 불러요.</p>
+              <p>• 상대방 돌의 활로를 내 돌로 모두 둘러싸서 막으면, 그 돌을 <strong>'따먹어서(사석)'</strong> 내 통으로 가져옵니다!</p>
+              <p>• 활로가 없는 곳에는 돌을 둘 수 없지만(착수 금지), 상대 돌을 따먹을 수 있는 경우에는 둘 수 있답니다!</p>
+              <p>• <strong>어린이 따먹기 바둑:</strong> 9x9 판에서 상대 돌 5개를 먼저 따먹는 사람이 승리하는 가장 재미있고 빠른 바둑이에요!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5-3. 두뇌 탐험 놀이터 섹션 ==================== -->
+    <section id="tab-brain" class="tab-content">
+      <div class="brain-hero-banner">
+        <div class="brain-banner-content">
+          <div class="brain-pill-tag">
+            <span>🧩 집중력 & 관찰력 쑥쑥 두뇌 놀이터</span>
+            <span class="tag-sep">|</span>
+            <span>🌀 미로 탈출</span>
+            <span class="tag-sep">|</span>
+            <span>🔍 틀린그림 찾기</span>
+            <span class="tag-sep">|</span>
+            <span>🕵️‍♂️ 와글와글 은찬이를 찾아라</span>
+          </div>
+          <h2>🧩 정연수 아빠와 함께하는 두뇌 탐험 놀이터</h2>
+          <p>
+            요리조리 신나는 미로를 탈출하고, 눈썰미를 발휘해 5개의 다른 점을 찾고, 와글와글 복작복작한 일러스트 세상 속에서 숨은 은찬이와 보물들을 찾아보세요!
+            놀다 보면 공간지각력과 집중력, 관찰력이 쑥쑥 자라납니다!
+          </p>
+        </div>
+        <div class="brain-banner-bg-icon">🧩</div>
+      </div>
+
+      <!-- 두뇌 놀이터 3대 미니게임 탭 버튼 바 -->
+      <div class="brain-subnav-bar">
+        <button class="brain-subnav-btn active" id="btnBrainMaze" onclick="app.setBrainSubGame('maze')">
+          <span>🌀 1. 요리조리 미로 탈출</span>
+        </button>
+        <button class="brain-subnav-btn" id="btnBrainSpot" onclick="app.setBrainSubGame('spot')">
+          <span>🔍 2. 눈썰미 쑥쑥 틀린그림 찾기</span>
+        </button>
+        <button class="brain-subnav-btn" id="btnBrainWhere" onclick="app.setBrainSubGame('where')">
+          <span>🕵️‍♂️ 3. 와글와글 은찬이를 찾아라!</span>
+        </button>
+      </div>
+
+      <!-- ================= 1. 미로 탈출 패널 ================= -->
+      <div id="brainPanelMaze" class="brain-game-panel active">
+        <div class="maze-control-bar">
+          <div class="maze-setting-group">
+            <span class="setting-label">📏 난이도:</span>
+            <div class="btn-group-pill">
+              <button class="btn-maze-opt active" data-size="9" onclick="app.setMazeDifficulty(9)">🐣 초급 (9x9)</button>
+              <button class="btn-maze-opt" data-size="13" onclick="app.setMazeDifficulty(13)">🦊 중급 (13x13)</button>
+              <button class="btn-maze-opt" data-size="17" onclick="app.setMazeDifficulty(17)">🐯 고급 (17x17)</button>
+            </div>
+          </div>
+
+          <div class="maze-setting-group">
+            <span class="setting-label">🎨 테마:</span>
+            <div class="btn-group-pill">
+              <button class="btn-maze-theme active" data-theme="castle" onclick="app.setMazeTheme('castle')">🏰 마법의 성</button>
+              <button class="btn-maze-theme" data-theme="forest" onclick="app.setMazeTheme('forest')">🌲 비밀의 숲</button>
+              <button class="btn-maze-theme" data-theme="space" onclick="app.setMazeTheme('space')">🚀 우주 은하수</button>
+            </div>
+          </div>
+
+          <div class="maze-stats-group">
+            <span class="maze-stat-pill">⭐ 모은 별: <strong id="mazeStarCount">0</strong> / <span id="mazeTotalStars">3</span></span>
+            <button class="btn-bubble primary" onclick="app.generateNewMaze()">
+              <span>🔄 새로운 미로 생성</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 미로 경기장 -->
+        <div class="maze-game-arena">
+          <div class="maze-canvas-container">
+            <canvas id="mazeCanvas" width="560" height="560"></canvas>
+            <!-- 골인 축하 오버레이 -->
+            <div id="mazeWinOverlay" class="maze-win-overlay" style="display: none;">
+              <div class="maze-win-card">
+                <div class="maze-win-icon">🎉</div>
+                <h3>탈출 대성공! 만세!</h3>
+                <p id="mazeWinMessage">은찬이가 멋진 길 찾기 실력으로 아빠를 만났어요!</p>
+                <div class="maze-win-stars" id="mazeWinStarsRow">⭐⭐⭐</div>
+                <button class="btn-bubble primary" onclick="app.nextMazeLevel()">
+                  <span>🚀 다음 레벨 도전하기</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 모바일/태블릿 터치 조작 D-패드 -->
+          <div class="maze-dpad-wrapper">
+            <div class="dpad-legend">📱 화면 터치 또는 키보드 방향키(↑↓←→)로 은찬이를 움직여보세요!</div>
+            <div class="dpad-cross">
+              <button class="dpad-btn up" onclick="app.moveMazePlayer(0, -1)" aria-label="위로">▲</button>
+              <div class="dpad-middle-row">
+                <button class="dpad-btn left" onclick="app.moveMazePlayer(-1, 0)" aria-label="왼쪽으로">◀</button>
+                <div class="dpad-center-hub">👦</div>
+                <button class="dpad-btn right" onclick="app.moveMazePlayer(1, 0)" aria-label="오른쪽으로">▶</button>
+              </div>
+              <button class="dpad-btn down" onclick="app.moveMazePlayer(0, 1)" aria-label="아래로">▼</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 2. 틀린그림 찾기 패널 ================= -->
+      <div id="brainPanelSpot" class="brain-game-panel" style="display: none;">
+        <!-- 스테이지 선택 바 -->
+        <div class="spot-stages-bar">
+          <div class="spot-stage-buttons">
+            <button class="btn-spot-stage active" data-stage="0" onclick="app.selectSpotStage(0)">
+              <span>🚗 1탄. 멋진 자동차 마을</span>
+            </button>
+            <button class="btn-spot-stage" data-stage="1" onclick="app.selectSpotStage(1)">
+              <span>🦕 2탄. 아기 공룡 동산</span>
+            </button>
+            <button class="btn-spot-stage" data-stage="2" onclick="app.selectSpotStage(2)">
+              <span>🚀 3탄. 반짝반짝 우주 은하수</span>
+            </button>
+            <button class="btn-spot-stage" data-stage="3" onclick="app.selectSpotStage(3)">
+              <span>🏰 4탄. 동화 요정의 성</span>
+            </button>
+          </div>
+
+          <div class="spot-hud-group">
+            <div class="spot-stars-counter" id="spotStarsCounter">
+              <span class="star-badge" id="spotStar_0">⭐</span>
+              <span class="star-badge" id="spotStar_1">⭐</span>
+              <span class="star-badge" id="spotStar_2">⭐</span>
+              <span class="star-badge" id="spotStar_3">⭐</span>
+              <span class="star-badge" id="spotStar_4">⭐</span>
+              <span class="spot-count-text">발견: <strong id="spotFoundCount">0</strong> / 5</span>
+            </div>
+            <button class="btn-spot-action" onclick="app.showSpotHint()">
+              <span>💡 힌트 보기</span>
+            </button>
+            <button class="btn-spot-action" onclick="app.resetCurrentSpotStage()">
+              <span>🔄 다시 하기</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 양쪽 비교 그림 프레임 -->
+        <div class="spot-dual-viewport">
+          <!-- 왼쪽: 원본 그림 -->
+          <div class="spot-frame">
+            <div class="spot-frame-header">
+              <span>🖼️ 원본 그림</span>
+            </div>
+            <div class="spot-canvas-wrap" id="spotCanvasWrapLeft">
+              <canvas id="spotCanvasLeft" width="540" height="380"></canvas>
+            </div>
+          </div>
+
+          <!-- 오른쪽: 5군데가 다른 그림 -->
+          <div class="spot-frame">
+            <div class="spot-frame-header">
+              <span>🔍 5곳이 다른 그림 (터치해보세요!)</span>
+            </div>
+            <div class="spot-canvas-wrap" id="spotCanvasWrapRight">
+              <canvas id="spotCanvasRight" width="540" height="380"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 틀린그림 클리어 축하 팝업 -->
+        <div id="spotWinOverlay" class="spot-win-overlay" style="display: none;">
+          <div class="spot-win-card">
+            <div class="spot-win-icon">🏆</div>
+            <h3>5곳의 다른 점을 모두 찾았어요!</h3>
+            <p>우리 은찬이의 관찰력과 눈썰미는 명탐정 홈즈 박사님 수준이에요!</p>
+            <button class="btn-bubble primary" onclick="app.nextSpotStage()">
+              <span>다음 스테이지로 이동 ➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. 와글와글 은찬이를 찾아라 패널 ================= -->
+      <div id="brainPanelWhere" class="brain-game-panel" style="display: none;">
+        <!-- 테마 선택 바 -->
+        <div class="where-theme-bar">
+          <div class="where-theme-buttons">
+            <button class="btn-where-theme active" data-scene="park" onclick="app.selectWhereScene('park')">
+              <span>🎡 테마 1. 와글와글 놀이공원 대축제</span>
+            </button>
+            <button class="btn-where-theme" data-scene="ocean" onclick="app.selectWhereScene('ocean')">
+              <span>🌊 테마 2. 신비한 바닷속 산호초 파티</span>
+            </button>
+            <button class="btn-where-theme" data-scene="safari" onclick="app.selectWhereScene('safari')">
+              <span>🦁 테마 3. 복작복작 사파리 동물원</span>
+            </button>
+          </div>
+
+          <div class="where-stats-group">
+            <span class="where-stats-pill">🎯 찾은 목표: <strong id="whereFoundCount">0</strong> / 5</span>
+            <button class="btn-where-action" onclick="app.showWhereHint()">
+              <span>💡 힌트 보기</span>
+            </button>
+            <button class="btn-where-action" onclick="app.resetWhereScene()">
+              <span>🔄 다시 찾기</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 탐색 타깃 HUD 카드 리스트 -->
+        <div class="where-mission-card">
+          <div class="where-mission-title">
+            <span>🔎 이번 스테이지에서 찾아야 할 5명의 숨은 친구 & 보물:</span>
+          </div>
+          <div class="where-targets-grid" id="whereTargetsGrid">
+            <!-- 자바스크립트로 동적 렌더링 -->
+          </div>
+        </div>
+
+        <!-- 대형 파노라마 일러스트 뷰포트 -->
+        <div class="where-panoramic-container">
+          <div class="where-scroll-guide">
+            <span>👉 마우스로 드래그하거나 좌우로 스크롤하여 넓은 그림 구석구석을 탐색해보세요!</span>
+          </div>
+          <div class="where-canvas-scroll-box" id="whereScrollBox">
+            <canvas id="whereCanvas" width="1200" height="650"></canvas>
+          </div>
+        </div>
+
+        <!-- 윌리 클리어 축하 팝업 -->
+        <div id="whereWinOverlay" class="where-win-overlay" style="display: none;">
+          <div class="where-win-card">
+            <div class="where-win-icon">🏅</div>
+            <h3>은찬이는 최고의 명탐정!</h3>
+            <p id="whereWinDesc">모든 숨은 친구와 보물을 척척 찾아냈어요! 은찬이에게 황금 탐정 뱃지를 드립니다!</p>
+            <button class="btn-bubble primary" onclick="app.nextWhereScene()">
+              <span>다음 테마 탐험하기 ➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- ==================== 5. 부모 전용 AI 분석 & 실시간 칭찬관 ==================== -->
     <section id="tab-parent" class="tab-content">
@@ -1107,6 +1567,7 @@
   <!-- 자바스크립트 로드 -->
   <script src="content_data.js?v=20261012_3"></script>
   <script src="app.js?v=20261012_3"></script>
+  <script src="games_engine.js?v=20261013_1"></script>
 
   <!-- 자동차 전문가 상세 제원 및 4개국어 대화 모달 -->
   <div id="carDetailModal" class="modal-overlay">

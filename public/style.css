@@ -9344,3 +9344,1053 @@ button, .nav-tab-btn, .subnav-btn, .verse-tab-btn, .key-btn, .card-bubble-btn {
 .praise-pop {
   animation: praisePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+/* ============================================================================
+   ⚫⚪ 신나는 바둑 & 오목 대국장 (Baduk & Gomoku Studio) Styles
+   ============================================================================ */
+.baduk-hero-banner {
+  background: linear-gradient(135deg, #78350f 0%, #92400e 40%, #451a03 100%);
+  border-radius: 24px;
+  padding: 32px 36px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(120, 53, 15, 0.25);
+  margin-bottom: 24px;
+}
+.baduk-banner-content {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+}
+.baduk-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #fef3c7;
+}
+.baduk-hero-banner h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.baduk-hero-banner p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  color: #fde68a;
+  opacity: 0.95;
+}
+.baduk-banner-bg-icon {
+  position: absolute;
+  right: 28px;
+  bottom: -15px;
+  font-size: 110px;
+  opacity: 0.15;
+  user-select: none;
+  pointer-events: none;
+}
+
+.baduk-settings-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid #fed7aa;
+  margin-bottom: 24px;
+}
+.baduk-setting-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+.setting-item-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.baduk-setting-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #78350f;
+}
+.btn-group-pill {
+  display: inline-flex;
+  background: #fef3c7;
+  padding: 4px;
+  border-radius: 24px;
+  gap: 4px;
+}
+.btn-baduk-toggle,
+.btn-baduk-size,
+.btn-baduk-opp,
+.btn-baduk-color,
+.btn-baduk-level,
+.btn-baduk-rule {
+  border: none;
+  background: transparent;
+  padding: 7px 14px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+.btn-baduk-toggle:hover,
+.btn-baduk-size:hover,
+.btn-baduk-opp:hover,
+.btn-baduk-color:hover,
+.btn-baduk-level:hover,
+.btn-baduk-rule:hover {
+  background: rgba(245, 158, 11, 0.2);
+  color: #78350f;
+}
+.btn-baduk-toggle.active,
+.btn-baduk-size.active,
+.btn-baduk-opp.active,
+.btn-baduk-level.active,
+.btn-baduk-rule.active {
+  background: #d97706;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(217, 119, 6, 0.35);
+}
+.btn-baduk-color.active[data-color="black"] {
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.4);
+}
+.btn-baduk-color.active[data-color="white"] {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.baduk-arena-wrapper {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+  border: 1px solid #fde68a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+/* 스코어보드 & 플레이어 상태 */
+.baduk-scoreboard {
+  width: 100%;
+  max-width: 660px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: #fdfaf6;
+  padding: 12px 18px;
+  border-radius: 18px;
+  border: 1px solid #fed7aa;
+}
+.baduk-player-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.baduk-player-card.active {
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25), 0 4px 12px rgba(217, 119, 6, 0.2);
+  transform: translateY(-2px);
+}
+.bplayer-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.bplayer-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.bplayer-photo-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.bplayer-stone {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  z-index: 3;
+}
+.black-stone-avatar {
+  background: radial-gradient(circle at 35% 35%, #555555, #111111 80%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  border: 1px solid #000;
+}
+.white-stone-avatar {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #e2e8f0 80%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  border: 1px solid #cbd5e1;
+}
+.bplayer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bplayer-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bplayer-turn-pill {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  animation: pulsePill 1.2s infinite ease-in-out;
+}
+@keyframes pulsePill {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.06); }
+}
+.bplayer-captured {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+.score-highlight {
+  color: #d97706;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.baduk-vs-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 10px;
+}
+.baduk-move-count-badge {
+  background: #d97706;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+.baduk-turn-status-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #78350f;
+  max-width: 220px;
+  line-height: 1.35;
+}
+
+/* 원목 바둑판 */
+.baduk-board-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.wood-board-frame {
+  background: linear-gradient(135deg, #a36528 0%, #7d4915 50%, #58310c 100%);
+  padding: 14px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.25), inset 0 -3px 6px rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  max-width: 100%;
+}
+.wood-board-inner {
+  background: #e3a968;
+  background-image: 
+    repeating-linear-gradient(90deg, rgba(160, 95, 30, 0.08) 0px, rgba(160, 95, 30, 0.08) 2px, transparent 2px, transparent 16px),
+    linear-gradient(180deg, #f0ba7a 0%, #deb06c 40%, #c99850 100%);
+  border-radius: 8px;
+  box-shadow: inset 0 0 12px rgba(80, 40, 10, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px;
+}
+#badukCanvas {
+  display: block;
+  cursor: pointer;
+  touch-action: none;
+  border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 대국 액션 버튼 바 */
+.baduk-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.btn-baduk-action {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-baduk-action:hover {
+  background: #f9fafb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.btn-baduk-action.primary {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+.btn-baduk-action.primary:hover {
+  background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
+}
+
+/* 룰 모달 */
+.baduk-rules-content {
+  max-width: 600px !important;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px !important;
+}
+.rule-card {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: 14px;
+  padding: 16px;
+}
+.rule-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #854d0e;
+}
+.rule-card p {
+  margin: 4px 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #713f12;
+}
+
+/* ============================================================================
+   🧩 집중력 쑥쑥 두뇌 탐험 놀이터 (Brain Playground) Styles
+   ============================================================================ */
+.brain-hero-banner {
+  background: linear-gradient(135deg, #059669 0%, #047857 40%, #064e3b 100%);
+  border-radius: 24px;
+  padding: 32px 36px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(5, 150, 105, 0.25);
+  margin-bottom: 24px;
+}
+.brain-banner-content {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+}
+.brain-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #d1fae5;
+}
+.brain-hero-banner h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.brain-hero-banner p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  color: #a7f3d0;
+  opacity: 0.95;
+}
+.brain-banner-bg-icon {
+  position: absolute;
+  right: 28px;
+  bottom: -15px;
+  font-size: 110px;
+  opacity: 0.15;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 3대 미니게임 탭 전환 바 */
+.brain-subnav-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.brain-subnav-btn {
+  flex: 1;
+  min-width: 200px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 14px 20px;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+.brain-subnav-btn:hover {
+  border-color: #10b981;
+  color: #047857;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+}
+.brain-subnav-btn.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+  transform: translateY(-2px);
+}
+
+.brain-game-panel {
+  display: none;
+  animation: fadeInPanel 0.3s ease forwards;
+}
+.brain-game-panel.active {
+  display: block;
+}
+@keyframes fadeInPanel {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 1. 미로 탈출 스타일 */
+.maze-control-bar {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  border: 1px solid #d1fae5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.maze-setting-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-maze-opt,
+.btn-maze-theme {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #065f46;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-maze-opt.active,
+.btn-maze-theme.active {
+  background: #059669;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+}
+.maze-stats-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.maze-stat-pill {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 7px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid #fde68a;
+}
+.maze-game-arena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.maze-canvas-container {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 12px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.1);
+  border: 2px solid #a7f3d0;
+  max-width: 100%;
+}
+#mazeCanvas {
+  display: block;
+  border-radius: 12px;
+  touch-action: none;
+  max-width: 100%;
+  height: auto;
+}
+.maze-win-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: fadeInPanel 0.3s ease;
+}
+.maze-win-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px 32px;
+  text-align: center;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
+  max-width: 380px;
+}
+.maze-win-icon {
+  font-size: 56px;
+  margin-bottom: 8px;
+}
+.maze-win-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 6px 0;
+}
+.maze-win-card p {
+  font-size: 14px;
+  color: #475569;
+  margin: 0 0 14px 0;
+}
+.maze-win-stars {
+  font-size: 28px;
+  margin-bottom: 18px;
+  letter-spacing: 4px;
+}
+
+/* 터치 가상 D-패드 */
+.maze-dpad-wrapper {
+  background: #ffffff;
+  padding: 16px 24px;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dpad-legend {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.dpad-cross {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.dpad-middle-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dpad-center-hub {
+  width: 52px;
+  height: 52px;
+  background: #ecfdf5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 1px solid #a7f3d0;
+  user-select: none;
+}
+.dpad-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+.dpad-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: #cbd5e1;
+}
+
+/* 2. 틀린그림 찾기 스타일 */
+.spot-stages-bar {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 14px 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #d1fae5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.spot-stage-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-spot-stage {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-spot-stage.active {
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+.spot-hud-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.spot-stars-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  padding: 6px 12px;
+  border-radius: 16px;
+}
+.star-badge {
+  font-size: 18px;
+  opacity: 0.25;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.star-badge.found {
+  opacity: 1;
+  transform: scale(1.2);
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.5));
+}
+.spot-count-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #854d0e;
+  margin-left: 6px;
+}
+.btn-spot-action {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+.btn-spot-action:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.spot-dual-viewport {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.spot-frame {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 12px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
+  border: 2px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.spot-frame-header {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #065f46;
+  margin-bottom: 8px;
+}
+.spot-canvas-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
+.spot-canvas-wrap canvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+  max-width: 100%;
+  height: auto;
+}
+.spot-win-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spot-win-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  max-width: 420px;
+  animation: praisePop 0.4s ease forwards;
+}
+.spot-win-icon {
+  font-size: 56px;
+  margin-bottom: 8px;
+}
+.spot-win-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 8px 0;
+}
+.spot-win-card p {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 18px 0;
+}
+
+/* 3. 와글와글 은찬이를 찾아라 스타일 */
+.where-theme-bar {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 14px 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #d1fae5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.where-theme-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-where-theme {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-where-theme.active {
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+.where-stats-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.where-stats-pill {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 7px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid #fde68a;
+}
+.btn-where-action {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+.btn-where-action:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.where-mission-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid #fed7aa;
+  margin-bottom: 16px;
+}
+.where-mission-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #78350f;
+  margin-bottom: 12px;
+}
+.where-targets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.where-target-item {
+  background: #fefce8;
+  border: 2px solid #fef08a;
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+}
+.where-target-item.found {
+  background: #ecfdf5;
+  border-color: #10b981;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+.where-target-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.where-target-details {
+  display: flex;
+  flex-direction: column;
+}
+.where-target-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.where-target-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d97706;
+}
+.where-target-item.found .where-target-status {
+  color: #059669;
+}
+
+.where-panoramic-container {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 2px solid #d1fae5;
+  margin-bottom: 24px;
+}
+.where-scroll-guide {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #059669;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.where-canvas-scroll-box {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 14px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+.where-canvas-scroll-box:active {
+  cursor: grabbing;
+}
+#whereCanvas {
+  display: block;
+  touch-action: pan-x;
+}
+.where-win-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.where-win-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  max-width: 420px;
+  animation: praisePop 0.4s ease forwards;
+}
+.where-win-icon {
+  font-size: 56px;
+  margin-bottom: 8px;
+}
+.where-win-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 8px 0;
+}
+.where-win-card p {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 18px 0;
+}
+
+/* 모바일 반응형 쿼리 추가 */
+@media (max-width: 768px) {
+  .baduk-hero-banner, .brain-hero-banner {
+    padding: 20px 18px !important;
+  }
+  .baduk-hero-banner h2, .brain-hero-banner h2 {
+    font-size: 20px !important;
+  }
+  .baduk-hero-banner p, .brain-hero-banner p {
+    font-size: 13px !important;
+  }
+  .baduk-scoreboard {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .baduk-player-card {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .wood-board-frame {
+    padding: 8px !important;
+  }
+  .spot-dual-viewport {
+    grid-template-columns: 1fr !important;
+  }
+  .brain-subnav-btn {
+    min-width: 100%;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+  }
+}
+

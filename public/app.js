@@ -1435,6 +1435,12 @@ class EduApp {
     if (tabId === 'parent') {
       this.fetchFamilyData();
     }
+    if (tabId === 'baduk') {
+      if (typeof this.initBaduk === 'function') this.initBaduk();
+    }
+    if (tabId === 'brain') {
+      if (typeof this.initBrainPlayground === 'function') this.initBrainPlayground();
+    }
   }
 
   // =========================================================================
