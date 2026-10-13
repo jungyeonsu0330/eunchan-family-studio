@@ -10512,3 +10512,10 @@ button, .nav-tab-btn, .subnav-btn, .verse-tab-btn, .key-btn, .card-bubble-btn {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* --- 레이어 정리: 칭찬 축하 팝업은 항상 최상단, 플로팅 홈 버튼은 모달 아래 --- */
+#stickerCelebrationModal { z-index: 3500; }
+body .floating-home-btn { z-index: 150; }
+body.modal-open { overflow: hidden; }
+
+body.modal-open .floating-home-btn { display: none; }

@@ -471,10 +471,29 @@ class EduApp {
     // 전역 ESC 키 모달 닫기
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        app.closePhotoLightbox();
-        app.closeCarModal();
+        const isOpen = (id) => {
+          const m = document.getElementById(id);
+          return !!(m && m.classList.contains('active'));
+        };
+        // 가장 위에 있는 모달부터 하나씩 닫는다
+        if (isOpen('photoLightboxModal')) return this.closePhotoLightbox();
+        if (isOpen('carDetailModal')) return this.closeCarModal();
+        if (isOpen('countryQuizModal')) return this.closeCountryQuiz();
+        if (isOpen('aesopStoryModal')) return this.closeAesopModal();
+        if (isOpen('historyModal')) return this.closeHistoryModal();
+        if (isOpen('countryDetailModal')) return this.closeCountryModal();
       }
     });
+
+    // 모달이 열려 있는 동안 배경 스크롤을 잠근다
+    try {
+      const syncModalLock = () => {
+        document.body.classList.toggle('modal-open', !!document.querySelector('.modal-overlay.active'));
+      };
+      document.querySelectorAll('.modal-overlay').forEach(m => {
+        new MutationObserver(syncModalLock).observe(m, { attributes: true, attributeFilter: ['class'] });
+      });
+    } catch (e) {}
     this.renderStamps();
     this.setupSpeechRecognition();
 
@@ -1279,11 +1298,15 @@ class EduApp {
       const dadImg = document.getElementById('heroDadAvatar');
       if (dadImg) dadImg.style.transform = 'scale(1.08)';
 
+      // 새 발화가 시작되면 이전 발화의 늦은 종료 이벤트가 아바타를 되돌리지 못하게 한다
+      const speakSeq = (this._speakSeq = (this._speakSeq || 0) + 1);
       let done = false;
+      let watchdog = null;
       const finish = () => {
         if (done) return;
         done = true;
-        if (dadImg) dadImg.style.transform = 'scale(1)';
+        if (watchdog) clearTimeout(watchdog);
+        if (dadImg && speakSeq === this._speakSeq) dadImg.style.transform = 'scale(1)';
         if (onEndCallback) onEndCallback();
       };
 
@@ -1293,9 +1316,7 @@ class EduApp {
         finish();
       };
 
-      const watchdog = setTimeout(finish, Math.max(3500, text.length * 350));
-      utter.addEventListener('end', () => clearTimeout(watchdog));
-      utter.addEventListener('error', () => clearTimeout(watchdog));
+      watchdog = setTimeout(finish, Math.max(3500, text.length * 350));
 
       window.speechSynthesis.speak(utter);
     } catch(e) {
@@ -2361,7 +2382,7 @@ class EduApp {
   }
 
   openHistoryModal(epId) {
-    const ep = window.EDU_DATA.historyEpisodes.find(e => e.id === epId);
+    const ep = ((window.EDU_DATA && window.EDU_DATA.historyEpisodes) || []).find(e => e.id === epId);
     if (!ep) return;
 
     this.stopStorybookAudio();
@@ -2889,7 +2910,7 @@ class EduApp {
     this.activeCarGenIndex[carId] = genIndex;
 
     const cardEl = document.getElementById('carCard_' + carId);
-    const car = window.EDU_DATA.cars.find(c => c.id === carId);
+    const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === carId);
 
     if (cardEl && car) {
       cardEl.innerHTML = this.renderCarCardInner(car, genIndex);
@@ -2906,7 +2927,7 @@ class EduApp {
 
   // ==================== 실제 사진 고화질 돋보기 라이트박스 ====================
   openPhotoLightbox(carId, genIndex, initialAngle = 'front') {
-    const car = window.EDU_DATA.cars.find(c => c.id === carId);
+    const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === carId);
     if (!car) return;
     this.activeCarGenIndex[carId] = genIndex;
     this.currentLightboxCarId = carId;
@@ -2928,7 +2949,7 @@ class EduApp {
   }
 
   renderLightboxContent() {
-    const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+    const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === this.currentLightboxCarId);
     if (!car) return;
     const genIndex = this.currentLightboxGenIdx || 0;
     const genData = car.generations[genIndex] || car.generations[0];
@@ -3049,13 +3070,13 @@ class EduApp {
       this.activeCarGenIndex[this.currentLightboxCarId] = newGenIdx;
       // 카드도 백그라운드에서 동기화
       const cardEl = document.getElementById('carCard_' + this.currentLightboxCarId);
-      const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+      const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === this.currentLightboxCarId);
       if (cardEl && car) {
         cardEl.innerHTML = this.renderCarCardInner(car, newGenIdx);
       }
     }
     this.renderLightboxContent();
-    const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+    const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === this.currentLightboxCarId);
     const genData = car?.generations[newGenIdx];
     if (genData && genData.angleHints && genData.angleHints[this.currentLightboxAngle]) {
       this.speak(genData.angleHints[this.currentLightboxAngle], 'ko-KR');
@@ -3066,7 +3087,7 @@ class EduApp {
     this.playPop();
     this.currentLightboxAngle = angle;
     this.renderLightboxContent();
-    const car = window.EDU_DATA.cars.find(c => c.id === this.currentLightboxCarId);
+    const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === this.currentLightboxCarId);
     const genData = car?.generations[this.currentLightboxGenIdx || 0];
     if (genData && genData.angleHints && genData.angleHints[angle]) {
       this.speak(genData.angleHints[angle], 'ko-KR');
@@ -3090,7 +3111,7 @@ class EduApp {
 
   // ==================== 4개국어 대화 & 브랜드 역사 모달 ====================
   openCarModal(carId) {
-    const car = window.EDU_DATA.cars.find(c => c.id === carId);
+    const car = ((window.EDU_DATA && window.EDU_DATA.cars) || []).find(c => c.id === carId);
     if (!car) return;
 
     this.playPop();
@@ -4574,6 +4595,14 @@ class EduApp {
         (document.getElementById('typingWordView') && document.getElementById('typingWordView').offsetParent !== null);
       if (!isTypingActive) return;
 
+      // 브라우저/OS 단축키(Ctrl+R, Ctrl+C 등)는 가로채지 않는다
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      // 잠금 화면(PIN 입력)이나 다른 입력창에서는 타자 연습이 키를 가로채지 않는다
+      if (document.body.classList.contains('studio-locked')) return;
+      const focusEl = document.activeElement;
+      if (focusEl && focusEl.id !== 'freeLetterTextarea' &&
+          (focusEl.tagName === 'INPUT' || focusEl.tagName === 'TEXTAREA' || focusEl.isContentEditable)) return;
+
       const activeEl = document.activeElement;
       if (activeEl && activeEl.id === 'freeLetterTextarea') {
         this.playTypewriterKey();
@@ -4729,7 +4758,7 @@ class EduApp {
 
     const badgeContainer = document.getElementById('badgesList');
     if (badgeContainer) {
-      badgeContainer.innerHTML = window.EDU_DATA.historyEpisodes.map(ep => {
+      badgeContainer.innerHTML = ((window.EDU_DATA && window.EDU_DATA.historyEpisodes) || []).map(ep => {
         const unlocked = Array.isArray(this.unlockedBadges) ? this.unlockedBadges : [];
         const isUnlocked = unlocked.includes(ep.badge);
         return `
@@ -4742,15 +4771,31 @@ class EduApp {
     }
   }
 
+  // 아이별 도장 저장 키 (은우 도장이 은찬 키에 섞이던 문제 방지)
+  getStampsStorageKey(profileId = this.currentProfile) {
+    return profileId === 'eunwoo' ? 'eunwoo_stamps' : 'eunchan_stamps';
+  }
+
+  loadStampsForProfile(profileId = this.currentProfile) {
+    let n = 0;
+    try {
+      n = parseInt(localStorage.getItem(this.getStampsStorageKey(profileId)) || '0', 10);
+    } catch (e) {}
+    this.stampsCount = Number.isFinite(n) ? Math.max(0, Math.min(n, 10)) : 0;
+  }
+
   addStamp(count = 1) {
-    this.stampsCount = Math.min(this.stampsCount + count, 10);
-    localStorage.setItem('eunchan_stamps', this.stampsCount.toString());
+    const before = this.stampsCount || 0;
+    this.stampsCount = Math.min(before + count, 10);
+    try { localStorage.setItem(this.getStampsStorageKey(), this.stampsCount.toString()); } catch (e) {}
     this.renderStamps();
 
-    if (this.stampsCount >= 10) {
+    // 10개를 "처음 채우는 순간"에만 축하 (이후 정답마다 반복 알림 방지)
+    if (before < 10 && this.stampsCount >= 10) {
       this.playSuccess();
+      const nick = this.currentProfile === 'eunwoo' ? '은우야' : '은찬아';
       setTimeout(() => {
-        alert("🎉 대단해 은찬아!\n\n참 잘했어요 도장 10개를 모두 모았어!\n지금 바로 황금 칭찬 상장을 출력해보자!");
+        this.showToast(`🎉 대단해 ${nick}! 참 잘했어요 도장 10개를 모두 모았어! 황금 칭찬 상장을 출력해보자!`, 5000);
       }, 500);
     }
   }
@@ -4758,7 +4803,7 @@ class EduApp {
   resetStamps() {
     if (confirm("도장판을 초기화하고 새 도전을 시작할까요?")) {
       this.stampsCount = 0;
-      localStorage.setItem('eunchan_stamps', '0');
+      try { localStorage.setItem(this.getStampsStorageKey(), '0'); } catch (e) {}
       this.renderStamps();
     }
   }
@@ -4804,6 +4849,10 @@ class EduApp {
     } else {
       if (parentTabBtn) parentTabBtn.style.display = 'none';
       if (this.currentTab === 'parent') this.switchTab('home');
+
+      // 프로필마다 자기 도장 수를 불러온다 (은찬/은우 값 혼선 방지)
+      this.loadStampsForProfile(profileId);
+      this.renderStamps();
 
       if (brandTitle) brandTitle.textContent = '☀️ 은찬, 은우 스튜디오';
       if (brandDesc) brandDesc.textContent = '';
@@ -4865,7 +4914,7 @@ class EduApp {
         this.renderParentDashboard();
         if (showToast) {
           this.playSuccess();
-          alert('🔄 실시간 타임라인 및 AI 분석 데이터를 최신으로 갱신했습니다!');
+          this.showToast('🔄 실시간 타임라인 및 AI 분석 데이터를 최신으로 갱신했습니다!');
         }
       })
       .catch(err => {
@@ -4875,9 +4924,18 @@ class EduApp {
         this.renderParentDashboard();
         if (showToast) {
           this.playPop();
-          alert('📱 24시간 클라우드 모드로 작동 중입니다! (모바일에서 모든 기능을 자유롭게 사용하실 수 있습니다)');
+          this.showToast('📱 서버에 연결되지 않아 이 기기 저장소로 동작 중이에요. (연결되면 자동으로 동기화됩니다)');
         }
       });
+  }
+
+  escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   renderParentDashboard() {
@@ -4923,13 +4981,13 @@ class EduApp {
       } else {
         timelineContainer.innerHTML = childActivities.map(a => `
           <div class="timeline-item-card">
-            <span class="timeline-item-icon">${a.icon || '🌟'}</span>
+            <span class="timeline-item-icon">${this.escapeHtml(a.icon || '🌟')}</span>
             <div class="timeline-item-body">
               <div class="timeline-item-top">
-                <span class="timeline-item-title">${a.title}</span>
-                <span class="timeline-item-time">${a.timestamp ? a.timestamp.split(' ')[1] : ''}</span>
+                <span class="timeline-item-title">${this.escapeHtml(a.title)}</span>
+                <span class="timeline-item-time">${this.escapeHtml(a.timestamp ? String(a.timestamp).split(' ')[1] || '' : '')}</span>
               </div>
-              <p class="timeline-item-detail">${a.detail}</p>
+              <p class="timeline-item-detail">${this.escapeHtml(a.detail)}</p>
             </div>
           </div>
         `).join('');
@@ -4954,8 +5012,8 @@ class EduApp {
           const stk = childStickers[i] || { icon: '🏆', giverName: '아빠' };
           html += `
             <div class="pstamp-box stamped">
-              <span class="pstamp-icon">${stk.icon || '🏆'}</span>
-              <span class="pstamp-giver">${stk.giverName ? stk.giverName.replace('정연수 ', '') : '아빠'}</span>
+              <span class="pstamp-icon">${this.escapeHtml(stk.icon || '🏆')}</span>
+              <span class="pstamp-giver">${this.escapeHtml(stk.giverName ? String(stk.giverName).replace('정연수 ', '') : '아빠')}</span>
             </div>
           `;
         } else {
@@ -4993,6 +5051,15 @@ class EduApp {
   }
 
   sendStickerFromParent() {
+    if (this.isSendingSticker) return;
+    this.isSendingSticker = true;
+    const sendBtn = document.querySelector('.btn-send-sticker');
+    if (sendBtn) sendBtn.disabled = true;
+    const unlockSend = () => {
+      this.isSendingSticker = false;
+      if (sendBtn) sendBtn.disabled = false;
+    };
+
     const input = document.getElementById('customStickerReason');
     const reason = (input && input.value.trim()) ? input.value.trim() : '스스로 씩씩하게 멋지게 해냄!';
     const giver = this.currentProfile === 'mom' ? 'mom' : 'dad';
@@ -5015,17 +5082,35 @@ class EduApp {
       headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(payload)
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          // 서버가 응답했지만 거절(401/500 등): 오프라인 폴백으로 보내지 않는다
+          const httpErr = new Error('HTTP ' + res.status);
+          httpErr.httpStatus = res.status;
+          throw httpErr;
+        }
+        return res.json();
+      })
       .then(result => {
-        if (result.success) {
+        if (result && result.success) {
           this.playSuccess();
           if (input) input.value = '';
-          alert(`🎉 전송 완료!\n\n${childName}에게 [${payload.title}] 칭찬 도장을 쾅 찍어 보냈습니다!\n아이 화면에 실시간 축하 팡파르가 울려 퍼집니다.`);
+          this.showToast(`🎉 ${childName}에게 [${payload.title}] 칭찬 도장을 보냈어요! 아이 화면에 축하 팡파르가 울려요.`, 3500);
           this.fetchFamilyData();
+        } else {
+          this.playError();
+          this.showToast('⚠️ 도장 전송에 실패했어요. 잠시 후 다시 시도해 주세요.');
         }
+        unlockSend();
       })
       .catch(err => {
-        // Local offline fallback
+        unlockSend();
+        if (err && err.httpStatus) {
+          this.playError();
+          this.showToast(`⚠️ 서버가 전송을 거절했어요 (${err.httpStatus}). 비밀번호나 연결 상태를 확인해 주세요.`);
+          return;
+        }
+        // Local offline fallback (네트워크 단절일 때만)
         const db = this.getLocalFamilyDb();
         const newSticker = {
           id: 'stk_' + Date.now(),
@@ -5038,8 +5123,10 @@ class EduApp {
           reason: reason,
           timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19)
         };
+        db.stickers = db.stickers || [];
+        db.profiles = db.profiles || {};
         db.stickers.unshift(newSticker);
-        const p = db.profiles[targetChild] || {};
+        const p = db.profiles[targetChild] || (db.profiles[targetChild] = {});
         p.stampsCount = Math.min((p.stampsCount || 0) + 1, 10);
         db.unreadForChild = db.unreadForChild || {};
         db.unreadForChild[targetChild] = db.unreadForChild[targetChild] || [];
@@ -5048,7 +5135,7 @@ class EduApp {
         this.familyDb = db;
         this.playSuccess();
         if (input) input.value = '';
-        alert(`🎉 [24H 클라우드 모드] 전송 완료!\n\n${childName}에게 [${payload.title}] 칭찬 도장을 쾅 찍었습니다! (현재 도장: ${p.stampsCount}개)`);
+        this.showToast(`🎉 [오프라인 저장] ${childName}에게 [${payload.title}] 도장을 이 기기에 저장했어요. (현재 ${p.stampsCount}개, 연결되면 서버와 맞춰져요)`, 4500);
         this.renderParentDashboard();
       });
   }
@@ -5060,17 +5147,39 @@ class EduApp {
 
     this.stickerPollTimer = setInterval(() => {
       if (this.currentProfile === 'dad' || this.currentProfile === 'mom') return;
+      // 이전 요청이 끝나기 전이거나 백그라운드 탭이면 건너뜀 (요청 중첩 방지)
+      if (document.hidden || this.isPollingStickers) return;
+      this.isPollingStickers = true;
 
       const authPin = this.familyPin || localStorage.getItem('family_auth_pin') || '7979';
       fetch(`/api/check_stickers?child=${this.currentProfile}&pin=${authPin}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
         .then(stickers => {
           if (Array.isArray(stickers) && stickers.length > 0) {
-            stickers.forEach(stk => this.showStickerCelebration(stk));
+            this.enqueueStickerCelebrations(stickers);
           }
         })
-        .catch(() => {});
+        .catch(() => {})
+        .then(() => { this.isPollingStickers = false; });
     }, 3000);
+  }
+
+  // 여러 도장이 한 번에 도착해도 하나씩 순서대로 보여준다
+  enqueueStickerCelebrations(stickers) {
+    this.stickerQueue = this.stickerQueue || [];
+    this.stickerQueue.push(...stickers);
+    const modal = document.getElementById('stickerCelebrationModal');
+    const isOpen = modal && modal.classList.contains('active');
+    if (!isOpen) this.showNextQueuedSticker();
+  }
+
+  showNextQueuedSticker() {
+    if (!this.stickerQueue || this.stickerQueue.length === 0) return false;
+    this.showStickerCelebration(this.stickerQueue.shift());
+    return true;
   }
 
   showStickerCelebration(stk) {
@@ -5090,7 +5199,7 @@ class EduApp {
     if (reasonElem) reasonElem.textContent = stk.reason || '참 잘했어요!';
 
     this.stampsCount = Math.min((this.stampsCount || 0) + 1, 10);
-    localStorage.setItem('eunchan_stamps', this.stampsCount.toString());
+    try { localStorage.setItem(this.getStampsStorageKey(), this.stampsCount.toString()); } catch (e) {}
     this.renderStamps();
 
     if (countElem) countElem.textContent = `현재 도장: ${this.stampsCount} / 10`;
@@ -5106,6 +5215,8 @@ class EduApp {
     this.playPop();
     const modal = document.getElementById('stickerCelebrationModal');
     if (modal) modal.classList.remove('active');
+    // 대기 중인 도장이 있으면 홈으로 이동하지 않고 다음 도장을 먼저 보여준다
+    if (this.showNextQueuedSticker()) return;
     this.switchTab('home');
   }
 
@@ -5563,11 +5674,25 @@ class EduApp {
   }
 
   loadNextCountryQuiz() {
-    const pool = this.getCountryQuizPool();
+    if (this.countryQuizAutoTimer) {
+      clearTimeout(this.countryQuizAutoTimer);
+      this.countryQuizAutoTimer = null;
+    }
+
+    let pool = this.getCountryQuizPool();
     if (pool.length === 0) {
-      // fallback
+      // fallback: 국가/모드 필터를 풀고 한 번만 재조회 (재귀 금지)
       this.countryQuizTargetCountryId = null;
-      return this.loadNextCountryQuiz();
+      this.countryQuizMode = 'mixed';
+      pool = this.getCountryQuizPool();
+    }
+    if (pool.length === 0) {
+      this.currentCountryQuiz = null;
+      const emptyBody = document.getElementById('countryQuizBody');
+      if (emptyBody) {
+        emptyBody.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b;">퀴즈 문제를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';
+      }
+      return;
     }
 
     // 직전 문제와 다른 문제 무작위 선택
@@ -6018,7 +6143,7 @@ class EduApp {
 
     if (this.currentProfile === childId) {
       this.stampsCount = 0;
-      localStorage.setItem(childId === 'eunwoo' ? 'eunwoo_stamps' : 'eunchan_stamps', '0');
+      try { localStorage.setItem(this.getStampsStorageKey(childId), '0'); } catch (e) {}
       this.renderStamps();
     }
 
@@ -6032,11 +6157,17 @@ class EduApp {
       headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ childId: childId })
     })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
     .then(data => {
       this.fetchFamilyData();
     })
-    .catch(() => {});
+    .catch(() => {
+      // 서버 반영 실패를 숨기지 않는다 (다음 동기화 때 값이 되살아나는 원인)
+      this.showToast('⚠️ 서버에는 반영되지 않았어요. 이 기기에서만 비워졌고, 연결되면 다시 시도해 주세요.', 4500);
+    });
 
     this.showToast(`✨ ${childName}의 도장판이 0개로 비워졌습니다! 새 도전을 시작해보세요!`);
   }

@@ -102,19 +102,32 @@
     });
 
     // 모바일 터치 이벤트
+    // touchstart에서 막지 않고 touchend에서 "거의 안 움직인 탭"만 착수로 인정한다.
+    // (스크롤 제스처는 그대로 통과하고, 탭일 때만 합성 click을 막아 이중 착수를 방지)
+    let touchStartPt = null;
     canvas.addEventListener('touchstart', (e) => {
-      if (e.touches && e.touches.length > 0) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const clientX = touch.clientX;
-        const clientY = touch.clientY;
-        const coord = this.getBadukGridCoord(canvas, clientX, clientY);
-        if (coord) {
-          this.placeBadukStone(coord.x, coord.y);
-        }
+      if (e.touches && e.touches.length === 1) {
+        touchStartPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else {
+        touchStartPt = null;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', (e) => {
+      if (!touchStartPt || !e.changedTouches || e.changedTouches.length === 0) return;
+      const t = e.changedTouches[0];
+      const moved = Math.hypot(t.clientX - touchStartPt.x, t.clientY - touchStartPt.y);
+      touchStartPt = null;
+      if (moved > 10) return; // 스크롤/드래그로 판단
+      if (e.cancelable) e.preventDefault(); // 이어지는 click 방지
+      if (!this.canBadukHumanMove()) return;
+      const coord = this.getBadukGridCoord(canvas, t.clientX, t.clientY);
+      if (coord) {
+        this.placeBadukStone(coord.x, coord.y);
       }
     }, { passive: false });
+
+    canvas.addEventListener('touchcancel', () => { touchStartPt = null; }, { passive: true });
 
     // 윈도우 리사이즈 시 다시 그리기
     window.addEventListener('resize', () => {
@@ -286,10 +299,15 @@
     }
   };
 
-  EduApp.prototype.handleBadukClick = function(e) {
-    if (this.badukIsGameOver || this.isBadukAiThinking) return;
+  EduApp.prototype.canBadukHumanMove = function() {
+    if (this.badukIsGameOver || this.isBadukAiThinking) return false;
     const humanStone = (this.badukPlayerColor === 'white') ? 2 : 1;
-    if (this.badukOpponent === 'pve' && this.badukTurn !== humanStone) return;
+    if (this.badukOpponent === 'pve' && this.badukTurn !== humanStone) return false;
+    return true;
+  };
+
+  EduApp.prototype.handleBadukClick = function(e) {
+    if (!this.canBadukHumanMove()) return;
 
     const canvas = document.getElementById('badukCanvas');
     if (!canvas) return;
